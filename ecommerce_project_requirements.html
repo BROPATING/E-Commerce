@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce System — Course Completion Project</title>
+  <style>
+    /* VS Code Markdown Preview Style Template for Student Notes */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #24292e;
+      background-color: #ffffff;
+      padding: 0 20px;
+      margin: 0 auto;
+      max-width: 980px;
+      word-wrap: break-word;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 600;
+      line-height: 1.25;
+      margin-top: 24px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 2em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid #eaecef;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid #eaecef;
+    }
+
+    h3 {
+      font-size: 1.25em;
+    }
+
+    h4 {
+      font-size: 1em;
+    }
+
+    h5 {
+      font-size: 0.875em;
+    }
+
+    h6 {
+      font-size: 0.85em;
+      color: #6a737d;
+    }
+
+    /* Paragraphs and text */
+    p {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    /* Links */
+    a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Lists */
+    ul, ol {
+      padding-left: 2em;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    li + li {
+      margin-top: 0.25em;
+    }
+
+    /* Code blocks */
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 85%;
+      background-color: rgba(27, 31, 35, 0.05);
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+    }
+
+    pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 85%;
+      line-height: 1.45;
+      background-color: #f6f8fa;
+      border-radius: 3px;
+      padding: 16px;
+      overflow: auto;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    pre code {
+      background-color: transparent;
+      padding: 0;
+      font-size: 100%;
+    }
+
+    /* Blockquotes */
+    blockquote {
+      padding: 0 1em;
+      color: #6a737d;
+      border-left: 0.25em solid #dfe2e5;
+      margin: 0 0 16px 0;
+    }
+
+    blockquote > :first-child {
+      margin-top: 0;
+    }
+
+    blockquote > :last-child {
+      margin-bottom: 0;
+    }
+
+    /* Tables */
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-top: 0;
+      margin-bottom: 16px;
+      width: 100%;
+      overflow: auto;
+    }
+
+    table th {
+      font-weight: 600;
+      padding: 6px 13px;
+      border: 1px solid #dfe2e5;
+      background-color: #f6f8fa;
+    }
+
+    table td {
+      padding: 6px 13px;
+      border: 1px solid #dfe2e5;
+    }
+
+    table tr {
+      background-color: #ffffff;
+      border-top: 1px solid #c6cbd1;
+    }
+
+    table tr:nth-child(2n) {
+      background-color: #f6f8fa;
+    }
+
+    /* Horizontal rule */
+    hr {
+      height: 0.25em;
+      padding: 0;
+      margin: 24px 0;
+      background-color: #e1e4e8;
+      border: 0;
+    }
+
+    /* Images */
+    img {
+      max-width: 100%;
+      box-sizing: content-box;
+    }
+
+    /* Strong and emphasis */
+    strong {
+      font-weight: 600;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    /* Keyboard input */
+    kbd {
+      display: inline-block;
+      padding: 3px 5px;
+      font-size: 11px;
+      line-height: 10px;
+      color: #444d56;
+      vertical-align: middle;
+      background-color: #fafbfc;
+      border: 1px solid #d1d5da;
+      border-radius: 3px;
+      box-shadow: inset 0 -1px 0 #d1d5da;
+    }
+
+    /* Task lists */
+    input[type="checkbox"] {
+      margin-right: 0.5em;
+    }
+
+    /* Definition lists */
+    dl {
+      padding: 0;
+    }
+
+    dl dt {
+      padding: 0;
+      margin-top: 16px;
+      font-size: 1em;
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    dl dd {
+      padding: 0 16px;
+      margin-bottom: 16px;
+    }
+
+    /* Details/Summary */
+    details {
+      margin-bottom: 16px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* Highlight/Mark */
+    mark {
+      background-color: #fff3cd;
+      padding: 0.2em 0.4em;
+    }
+
+    /* Custom enhancements for the project document */
+    .meta {
+      font-size: 13px;
+      color: #586069;
+      margin-bottom: 32px;
+      padding: 12px 16px;
+      background-color: #f6f8fa;
+      border: 1px solid #dfe2e5;
+      border-radius: 6px;
+    }
+
+    .toc {
+      margin: 32px 0;
+      padding: 16px 20px;
+      background-color: #f6f8fa;
+      border: 1px solid #dfe2e5;
+      border-radius: 6px;
+    }
+
+    .toc strong {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #586069;
+      margin-bottom: 12px;
+    }
+
+    .toc ol {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    .section-num {
+      color: #6a737d;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      margin-right: 8px;
+      font-size: 0.95em;
+    }
+
+    .note {
+      background-color: #fff3cd;
+      border-left: 4px solid #f0b429;
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 4px;
+    }
+
+    .note strong {
+      color: #b37e00;
+    }
+
+    /* Make the main title stand out */
+    h1 {
+      font-size: 2.4em;
+      border-bottom: 3px solid #0366d6;
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+    }
+
+    /* Subtitle */
+    h2[style*="border:none"] {
+      font-size: 1.35em;
+      font-weight: 400;
+      color: #586069;
+      margin-top: 0;
+      margin-bottom: 24px;
+      border: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>E-Commerce System</h1>
+  <h2 style="border:none; margin-top:0; font-size:1.35em; font-weight:normal; color:#586069;">Course Completion Project</h2>
+
+  <div class="meta">
+    <strong>Stack:</strong> Node.js &nbsp;·&nbsp; Express &nbsp;·&nbsp; TypeORM &nbsp;·&nbsp; Angular<br>
+    <strong>Database:</strong> MySQL or PostgreSQL
+  </div>
+
+  <div class="toc">
+    <strong>Contents</strong>
+    <ol>
+      <li><a href="#overview">Project Overview</a></li>
+      <li><a href="#taxonomy">Product Taxonomy</a></li>
+      <li><a href="#roles">User Roles</a></li>
+      <li><a href="#security">Security Requirements</a></li>
+      <li><a href="#auth">Authentication &amp; Session Management</a></li>
+      <li><a href="#guest">Guest Features</a></li>
+      <li><a href="#customer">Customer Features</a></li>
+      <li><a href="#search">Search &amp; Filtering</a></li>
+      <li><a href="#cart">Cart &amp; Checkout</a></li>
+      <li><a href="#orders">Orders</a></li>
+      <li><a href="#images">Image Handling</a></li>
+      <li><a href="#admin">Admin Features</a></li>
+      <li><a href="#frontend">Frontend &amp; UI Requirements</a></li>
+      <li><a href="#serving">Build &amp; Serving</a></li>
+      <li><a href="#deliverables">Deliverables</a></li>
+      <li><a href="#rubric">Grading Rubric</a></li>
+    </ol>
+  </div>
+
+  <hr />
+
+  <h2 id="overview"><span class="section-num">1.</span> Project Overview</h2>
+
+  <p>You are required to design and build a fully functional e-commerce web application. The system must support three
+    levels of access — Guest, Customer, and Admin — and provide a complete shopping experience: browsing, searching,
+    filtering, cart management, checkout, and order history.</p>
+
+  <p>The backend must be built with Node.js and Express using TypeORM to communicate with a relational database. The
+    frontend must be built with Angular. Both must be integrated so that a single Node.js process serves the entire
+    application.</p>
+
+  <hr />
+
+  <h2 id="taxonomy"><span class="section-num">2.</span> Product Taxonomy</h2>
+
+  <p>Products are organised in a four-level hierarchy:</p>
+
+  <ul>
+    <li><strong>Type</strong> — the broadest grouping (e.g., Electronics, Stationery, Furniture)</li>
+    <li><strong>Category</strong> — belongs to a Type (e.g., Computer Peripherals)</li>
+    <li><strong>Sub-Category</strong> — belongs to a Category (e.g., Keyboards)</li>
+    <li><strong>Product</strong> — belongs to a Sub-Category (e.g., Anker Multimedia Keyboard)</li>
+  </ul>
+
+  <p>Every product must belong to exactly one Sub-Category. Every Sub-Category belongs to exactly one Category, and
+    every Category belongs to exactly one Type.</p>
+
+  <hr />
+
+  <h2 id="roles"><span class="section-num">3.</span> User Roles</h2>
+
+  <table>
+    <tr>
+      <th>Role</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td><strong>Guest</strong></td>
+      <td>Can browse the homepage, view product listings, view product detail pages, and use search and filters. Cannot
+        add to cart, checkout, or access any account feature.</td>
+    </tr>
+    <tr>
+      <td><strong>Customer</strong></td>
+      <td>All guest capabilities, plus cart, checkout, order history, profile management, and password management.</td>
+    </tr>
+    <tr>
+      <td><strong>Admin</strong></td>
+      <td>Access to an admin panel within the same application. Can manage products, view all orders, and manage
+        customer accounts.</td>
+    </tr>
+  </table>
+
+  <hr />
+
+  <h2 id="security"><span class="section-num">4.</span> Security Requirements</h2>
+
+  <div class="note">
+    <strong>Important:</strong> Implementing proper security is mandatory. The following security practices (covered during the course) must be applied throughout the project:
+  </div>
+
+  <ul>
+    <li><strong>Password Security</strong>: Use a strong, slow hashing algorithm (<code>bcrypt</code> recommended) with a proper salt. Never store passwords in plain text.</li>
+    <li><strong>SQL Injection Prevention</strong>: All database queries must use TypeORM’s query builder or parameterized queries. Raw SQL with string concatenation is not acceptable.</li>
+    <li><strong>Input Validation &amp; Sanitization</strong>: Validate and sanitize all user inputs on both backend and frontend (especially product data, registration fields, search terms, etc.).</li>
+    <li><strong>Authorization &amp; Role-Based Access Control (RBAC)</strong>: Every protected route and API endpoint must verify the user’s role and session. Admin routes must be completely inaccessible to Customers and Guests.</li>
+    <li><strong>Session &amp; Cookie Security</strong>:
+      <ul>
+        <li>Use HTTP-only and Secure cookies for the authentication token.</li>
+        <li>Implement proper session validation on every protected request using the in-memory session store.</li>
+      </ul>
+    </li>
+    <li><strong>Account Locking</strong>: When an Admin locks a customer account, the lock must take effect immediately (next request must fail and log the user out).</li>
+    <li><strong>Rate Limiting</strong> (Recommended): Implement basic rate limiting on login and registration endpoints to mitigate brute-force attacks.</li>
+    <li><strong>CORS Configuration</strong>: Properly configure CORS to allow only your Angular frontend origin.</li>
+    <li><strong>Error Handling</strong>: Never expose sensitive information (stack traces, database errors, internal paths, etc.) in error responses shown to the user.</li>
+    <li>Any other measures you can think of.</li>
+  </ul>
+
+  <p>Failure to implement these security measures will result in significant mark deductions.</p>
+
+  <hr />
+
+  <h2 id="auth"><span class="section-num">5.</span> Authentication &amp; Session Management</h2>
+
+  <h3>5.1 Registration</h3>
+  <p>Any visitor may register as a Customer by providing their name, email address, and a password. Passwords must be
+    stored securely using a hashing algorithm — plain-text storage is not acceptable.</p>
+
+  <h3>5.2 Login</h3>
+  <p>Registered users may log in with their email and password. Upon successful login, a token must be issued and stored
+    in an HTTP-only cookie. Do not store the token in localStorage or sessionStorage.</p>
+  <p>Every active login must also create an entry in a server-side session store backed by a plain Node.js
+    <code>Map</code> object held in memory. Both the cookie and the session entry must be checked on every protected
+    request.</p>
+
+  <h3>5.3 Account Locking</h3>
+  <p>An Admin may lock any Customer account. The lock must take effect immediately — if the Customer is currently logged
+    in, their next request must be rejected and they must be logged out. There must be no delay; the session store is
+    the mechanism that enforces this in real time.</p>
+
+  <h3>5.4 Logout</h3>
+  <p>Logging out must clear the cookie and remove the session entry from the in-memory store.</p>
+
+  <h3>5.5 Forgot Password</h3>
+  <p>A user who has forgotten their password may request a reset. The system must generate a temporary numeric code and
+    display it directly on the screen (no email delivery is required — this is a mock). The user enters the code and is
+    then permitted to set a new password. Codes must expire after a short time.</p>
+
+  <h3>5.6 Role Enforcement</h3>
+  <p>All routes and Angular pages must enforce role requirements. Admin pages must be inaccessible to Customers and
+    Guests. Customer-only pages must redirect unauthenticated Guests to the login page.</p>
+
+  <hr />
+
+  <h2 id="guest"><span class="section-num">6.</span> Guest Features</h2>
+
+  <ul>
+    <li>View the homepage with featured or all products displayed with images.</li>
+    <li>Browse products by Type, Category, or Sub-Category.</li>
+    <li>Search for products by keyword.</li>
+    <li>Filter search or browse results by category, price range, or any other criteria the student considers
+      appropriate.</li>
+    <li>View individual product detail pages.</li>
+    <li>Use the share button on a product detail page.</li>
+    <li>Register for an account.</li>
+    <li>Log in to an existing account.</li>
+    <li>Request a password reset via the forgot-password flow.</li>
+  </ul>
+
+  <hr />
+
+  <h2 id="customer"><span class="section-num">7.</span> Customer Features</h2>
+
+  <ul>
+    <li>All guest browsing and search features.</li>
+    <li>Add products to a persistent cart.</li>
+    <li>View, update quantities, and remove items from the cart.</li>
+    <li>Proceed through checkout and place an order.</li>
+    <li>View a payment confirmation page after a successful order.</li>
+    <li>View a list of past orders.</li>
+    <li>View the full details of any past order, including items, quantities, prices, and payment method.</li>
+    <li>Edit profile information (name, email).</li>
+    <li>Change password after login (requires current password).</li>
+    <li>Log out.</li>
+  </ul>
+
+  <hr />
+
+  <h2 id="search"><span class="section-num">8.</span> Search &amp; Filtering</h2>
+
+  <h3>8.1 Full-Text Search</h3>
+  <p>The search system must query across product names and descriptions. It must return results from any level of the
+    taxonomy — a keyword may match products in multiple Types, Categories, or Sub-Categories simultaneously, and all
+    matches must be returned.</p>
+
+  <p>For example, if a user searches for <em>table</em>, the results must include products such as a <em>Wooden
+      Table</em> listed under Furniture as well as a <em>Multiplication Table Book</em> listed under Stationery &gt;
+    Kids &gt; Textbooks. Results from different parts of the taxonomy must all appear together in the same result set.
+  </p>
+
+  <h3>8.2 Browsing by Taxonomy</h3>
+  <p>If a user selects or enters a Sub-Category name such as <em>Keyboards</em>, all products belonging to that
+    Sub-Category must be displayed. Results must be paginated — the number of results per page is the student's choice,
+    but must be consistent and configurable.</p>
+
+  <h3>8.3 Filters</h3>
+  <p>The following filters must be available on any product listing or search results page:</p>
+  <ul>
+    <li>Filter by Type, Category, or Sub-Category</li>
+    <li>Filter by price range (minimum and maximum)</li>
+    <li>Any additional filter the student considers useful (e.g., in-stock only)</li>
+  </ul>
+  <p>Filters may be combined. All filtering must happen server-side; the API must accept filter parameters and apply
+    them to the query.</p>
+
+  <hr />
+
+  <h2 id="cart"><span class="section-num">9.</span> Cart &amp; Checkout</h2>
+
+  <h3>9.1 Cart</h3>
+  <p>Only logged-in Customers may use the cart. The cart must persist — if a Customer adds items, logs out, and logs
+    back in, the cart contents must still be present.</p>
+  <p>The Customer must be able to adjust quantities and remove items before proceeding to checkout.</p>
+
+  <h3>9.2 Payment Methods</h3>
+  <p>No real payment gateway is required. During checkout the Customer must be shown a selection of payment methods and
+    must choose one before confirming the order. Examples of methods to offer: Credit Card, Debit Card, Cash on
+    Delivery, Bank Transfer. The chosen method must be stored with the order.</p>
+
+  <h3>9.3 Order Confirmation</h3>
+  <p>After a successful order is placed, the Customer must be redirected to a payment confirmation page that summarises
+    the order: items purchased, total amount, and payment method selected. The cart must be cleared after this point.
+  </p>
+
+  <hr />
+
+  <h2 id="orders"><span class="section-num">10.</span> Orders</h2>
+
+  <p>Each order must record the Customer it belongs to, the date it was placed, the payment method, the total amount,
+    and the individual items with their quantities and the price at the time of purchase (not the current price, which
+    may change later).</p>
+  <p>Customers can view a list of all their past orders and drill into any order to see its full details.</p>
+
+  <hr />
+
+  <h2 id="images"><span class="section-num">11.</span> Image Handling</h2>
+
+  <div class="note">
+    <strong>Instructor Note:</strong> Use <code>express.static</code> to serve images directly from a folder named
+    <code>ProductImages</code>. Store only the relative file path of each image in the database — do not store image
+    data in the database itself. Not all products will have images; in those cases a default placeholder image must be
+    shown automatically.
+  </div>
+
+  <ul>
+    <li>Product images are stored as files in a dedicated <code>ProductImages</code> folder on the server.</li>
+    <li>The database stores only the relative path to the image file.</li>
+    <li>Images are served directly by Express using <code>express.static</code>.</li>
+    <li>If a product has no image, a default image is displayed in its place.</li>
+    <li>The Admin can upload an image when adding or editing a product.</li>
+  </ul>
+
+  <hr />
+
+  <h2 id="admin"><span class="section-num">12.</span> Admin Features</h2>
+
+  <p>The Admin panel is part of the same Angular application, accessible under a separate route (e.g.,
+    <code>/admin</code>). It must be fully protected — no Customer or Guest may access any admin route or admin API
+    endpoint.</p>
+
+  <h3>12.1 Product Management</h3>
+  <ul>
+    <li>View a list of all products.</li>
+    <li>Add a new product, including its name, description, price, stock quantity, taxonomy placement (Type → Category →
+      Sub-Category), and an optional image.</li>
+    <li>Edit any existing product's details and image.</li>
+    <li>Delete a product.</li>
+  </ul>
+
+  <h3>12.2 Customer Management</h3>
+  <ul>
+    <li>View a list of all registered Customers.</li>
+    <li>Lock or unlock any Customer account. The lock must take effect immediately, even if the Customer is currently
+      logged in.</li>
+  </ul>
+
+  <h3>12.3 Order Management</h3>
+  <ul>
+    <li>View all orders placed by all Customers.</li>
+    <li>View the full details of any order.</li>
+  </ul>
+
+  <hr />
+
+  <h2 id="frontend"><span class="section-num">13.</span> Frontend &amp; UI Requirements</h2>
+
+  <h3>13.1 General</h3>
+  <ul>
+    <li>The application must use Angular with Angular Router for navigation.</li>
+    <li>The Admin panel must be implemented as a separate lazy-loaded Angular module.</li>
+    <li>Route guards must protect Customer and Admin routes appropriately.</li>
+    <li>The application must handle and display meaningful error messages (e.g., incorrect password, out-of-stock,
+      account locked).</li>
+  </ul>
+
+  <h3>13.2 Homepage</h3>
+  <p>The homepage must be visually appealing and display products with their images. It is the primary landing page for
+    all visitors and must make a good first impression. A default image must be shown for products without an uploaded
+    image.</p>
+
+  <h3>13.3 Product Detail Page</h3>
+  <p>Each product must have its own detail page showing all product information, its image (or default), its full
+    taxonomy path, and an Add to Cart button (visible only to logged-in Customers). A share button must be present that
+    allows the user to share the product page URL. If the server is running and the URL is pasted on another device,
+    the user should be directed to the same product page. Product details are visible to everyone; only logged-in
+    Customers can add to cart or place orders.</p>
+
+  <h3>13.4 Styling</h3>
+  <ul>
+    <li>Use plain CSS only — no CSS frameworks, no Tailwind, no Bootstrap.</li>
+    <li>The design must be clean, readable, and consistent across all pages.</li>
+    <li>The homepage must stand out with a well-structured layout and clear product imagery.</li>
+  </ul>
+
+  <hr />
+
+  <h2 id="serving"><span class="section-num">14.</span> Build &amp; Serving</h2>
+
+  <p>The Angular project must be built using <code>ng build</code>. The build output must be served by the same Express
+    server that provides the API. This means a visitor who opens the application in a browser must be hitting a single
+    Node.js server for both the frontend and all API calls.</p>
+
+  <hr />
+
+  <h2 id="deliverables"><span class="section-num">15.</span> Deliverables</h2>
+
+  <table>
+    <tr>
+      <th>#</th>
+      <th>Item</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>SQL file</td>
+      <td>Optional. Include any stored procedures, triggers, or seed data scripts that cannot be expressed in
+        application code. Not required if everything is handled through TypeORM.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Backend + Frontend source files</td>
+      <td>Submit all source files. The <code>node_modules</code> directory must be excluded.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Angular build</td>
+      <td>The Angular code without <code>node_modules</code> directory.</td> 
+    </tr>
+  </table>
+  <h3>Final Deliverable</h3>
+  <p>A single compressed zip file containing all of the above.</p>
+
+  <hr />
+
+  <h2 id="rubric"><span class="section-num">16.</span> Grading Rubric</h2>
+
+  <table>
+    <tr>
+      <th>Area</th>
+      <th>Marks</th>
+    </tr>
+    <tr>
+      <td>Database design — correct relationships, normalisation, and appropriate use of constraints</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>Security implementation — password hashing, input validation &amp; sanitization, SQL injection prevention, proper authorization/RBAC, secure cookies, CORS, error handling, etc.</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Authentication — registration, login, logout, cookie-based token, in-memory session, immediate account lock enforcement</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>Forgot password mock flow (code displayed, expiry enforced, password reset successful)</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>Product taxonomy — correct four-level hierarchy, browsing by level</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>Full-text search — cross-taxonomy results, correctness of results (e.g., "table" example)</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>Filtering and pagination on listings and search results</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>Cart — persistence, quantity management, correct clearing after order</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>Checkout — payment method selection, order creation, confirmation page</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>Order history — list and detail view, correct price snapshot</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>Image handling — static serving, default fallback, admin upload</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>Admin panel — product CRUD, customer locking, order viewing</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>Angular — routing, lazy loading, guards, share button, edit profile, change password</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>Homepage design quality and overall UI consistency (plain CSS only)</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Total</th>
+      <th>100</th>
+    </tr>
+  </table>
+
+  <p style="font-size:13px; color:#586069; margin-top:40px; border-top:1px solid #dfe2e5; padding-top:20px;">
+    This document defines the minimum requirements. Students are encouraged to think carefully about edge cases, data
+    integrity, security, and user experience beyond what is explicitly stated. Additional thoughtful features or
+    excellent security practices may be considered positively during evaluation.
+  </p>
+
+</body>
+
+</html>
