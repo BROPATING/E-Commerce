@@ -1,0 +1,17 @@
+Step 1: Project Scaffolding & Backend Structure
+The Objective
+    We're initialising the Node.js/Express backend with a clean, professional folder structure and the correct dependencies. 
+    This isn't just "running npm init" — the architectural decisions you make here (how you organise folders, how you separate 
+    concerns) directly signal your seniority to a reviewer. Every folder you create has a reason that you must be able to defend.
+
+Step 2: Database Schema Design & TypeORM Entities
+The Objective
+    We're designing the entire relational schema and translating it into TypeORM entity classes. This is the most consequential 
+    architectural decision in the project — a flawed schema cannot be patched later without painful migrations. 
+    Every column, every foreign key, and every constraint needs a reason you can articulate.
+
+
+
+
+
+

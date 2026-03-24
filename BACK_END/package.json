@@ -1,0 +1,41 @@
+{
+  "name": "back_end",
+  "version": "1.0.0",
+  "description": "Backend SetUp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BROPATING/E-Commerce.git"
+  },
+  "keywords": [
+    "express",
+    "backend",
+    "api",
+    "pagination"
+  ],
+  "author": "BROPATING",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BROPATING/E-Commerce/issues"
+  },
+  "homepage": "https://github.com/BROPATING/E-Commerce#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "mysql2": "^3.20.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.28"
+  }
+}

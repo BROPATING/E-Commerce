@@ -1,0 +1,134 @@
+backend/
+├── src/
+│   ├── config/
+│   │   └── data-source.ts        # TypeORM DataSource (Step 3)
+│   ├── entities/                  # TypeORM entity classes (Step 2)
+│   ├── middleware/
+│   │   ├── auth.middleware.ts     # Session + cookie validation (Step 9)
+│   │   └── error.middleware.ts    # Global error handler
+│   ├── routes/                    # Express routers, one per domain
+│   ├── controllers/               # Thin request/response handlers
+│   ├── services/                  # All business logic lives here
+│   ├── types/                     # Shared TypeScript types/interfaces
+│   └── app.ts                     # Express app wiring (middleware stack)
+├── index.ts                       # Entry point — starts the server
+├── ProductImages/                 # Static image storage (Step 15)
+├── package.json
+├── tsconfig.json
+└── .env
+
+C:\Users\SahilSalunke(DevIN)\Desktop\Projects\E-Commerce\BACK_END>npm init
+
+Routes — receive the HTTP request and delegate immediately. No business logic here.
+Controllers — handle request/response translation. Extract params, call a service, return a response.
+Services — contain all business logic. Know nothing about req or res.
+Entities — TypeORM class definitions that map to database tables. No logic, just structure.
+Middleware — cross-cutting concerns (auth, validation, error handling) that wrap routes.
+In the world of programming, async and `await are tools used to handle "waiting" without freezing your entire application.
+
+Async and Await
+Imagine you are at a coffee shop. If the cashier had to stand perfectly still and ignore every other customer until your latte 
+was finished, the line would never move. 
+That is Synchronous (blocking). Asynchronous (non-blocking) means the cashier takes your 
+order, gives you a buzzer, and moves to the next person.
+async (The Label)
+    When you put async before a function, you are telling the computer: 
+    "This function is going to do something that takes time (like fetching data from a database), 
+    and it will return a 'Promise' that it will eventually finish."
+await (The Pause Button)
+    You can only use await inside an async function. It tells the computer: 
+    "Stop here and wait for this specific task to finish before moving to the next line of code."
+
+MVC stands for Model-View-Controller, a widely used architectural design pattern in software development. 
+It separates an application into three interconnected components: Model, View, and Controller. 
+This separation helps in organizing code, improving maintainability, and enabling parallel development.
+
+C:\Users\SahilSalunke(DevIN)\Desktop\Projects\E-Commerce\BACK_END>
+
+npm install express typeorm reflect-metadata mysql2 bcrypt jsonwebtoken cookie-parser cors dotenv multer express-validator
+
+🛡️ Core Framework & Settings
+    express: The "Engine." It handles your routes (like /products) and listens for requests from the browser.
+    dotenv: The "Secret Vault." It allows you to hide sensitive info (like database passwords) in a 
+    .env file instead of writing them directly in your code.
+    cors: The "Security Gate." It permits your frontend website to talk to your backend API safely.
+🗄️ Database Tools (TypeORM)
+    typeorm: The "Translator." It lets you write JavaScript code to talk to your database instead of raw SQL.
+    reflect-metadata: A helper for TypeORM that allows it to read your "Entities" (class structures) correctly.
+    mysql2: The "Driver." It is the actual bridge that connects your Node.js code to a MySQL database.
+🔐 Security & Users
+    bcrypt: The "Scrambler." It turns user passwords into unreadable gibberish so that even if your database is hacked, 
+        the passwords remain safe.
+    jsonwebtoken (JWT): The "Digital ID Card." After a user logs in, this gives them a token so the server knows 
+        who they are for the rest of their session.
+    cookie-parser: The "Pocket." It helps the server store and read those ID cards (JWTs) inside the user's browser cookies.
+🛠️ Utilities & Validation
+    multer: The "File Clerk." You'll need this if you want users to upload images of products to your store.
+    express-validator: The "Checklist." It makes sure the user actually entered a real email or a strong enough password before 
+        the data reaches your Service layer.
+
+Why Multer ?
+    By default, Express (your web framework) is great at reading text (like a username or a password), 
+    but it has no idea how to handle binary data, which is what images, PDFs, and videos are made of.
+    If your project only involves text (prices, names, passwords), you don't need multer. 
+    The moment you want a user to click an "Upload" button for a file, multer becomes mandatory.
+
+npm install --save-dev typescript ts-node nodemon @types/express @types/node @types/bcrypt @types/jsonwebtoken 
+@types/cookie-parser @types/cors @types/multer
+
+typescript
+    This is the main compiler. It turns your .ts files (which have helpful "types" to prevent bugs) 
+    into regular .js files that Node.js can read.
+ts-node
+    This allows you to run TypeScript files directly in your terminal without having to manually compile them first. 
+    It's a huge time-saver during development.
+nodemon
+    Normally, every time you change a line of code, you have to stop your server and start it again. 
+    nodemon watches your files and automatically restarts the server the second you hit "Save."
+The "Translator" Files: @types/...
+    TypeScript is "strict"—it wants to know exactly what every function does. However, libraries like express 
+    or bcrypt were originally written in plain JavaScript.
+    The @types packages act as a "Translation Manual." They tell TypeScript exactly what inputs and outputs to 
+    expect from those libraries.
+    Benefit: Without these, your code editor (like VS Code) wouldn't be able to give you "Autofill" suggestions 
+    or highlight errors when you use those libraries.
+
+"Why do you have both src/app.ts and index.ts at the root? Why not just one file?"
+    index.ts is the process entry point — its only job is to import the DataSource, initialise the DB connection, 
+    then start the HTTP server. app.ts configures the Express application — middleware, routes, error handlers. 
+    Separating them means you can import app in a test file without starting a real server or opening a real DB connection. 
+    It's the standard pattern used by every production Express codebase.
+
+"Why do you need reflect-metadata and why does import order matter?"
+    The bridge that keeps your TypeScript data types alive in the JavaScript runtime.
+    TypeScript decorators like @Column() use the Reflect API to attach metadata to class properties at definition time. 
+    reflect-metadata is a polyfill that adds this API to the JavaScript runtime. 
+    It must be the first import because if any TypeORM entity class is evaluated by the JavaScript engine before the 
+    Reflect API exists, the metadata registration calls silently no-op — you get no error, but your entities have no columns, 
+    and your DB queries return empty results. 
+    It's one of the most common "it works on my machine" bugs in TypeORM projects.
+
+    The "Global Patch" Rule
+    reflect-metadata works by "patching" the global Reflect object in JavaScript.
+    If you import your Entities or Database Connection before you import reflect-metadata, those entities will try to look for 
+    the "notes" (metadata) and find nothing.
+    This usually results in a famous error: ColumnTypeUndefinedError: Column type for Product#price is undefined.
+    The Correct Sequence
+    Think of it like a loading sequence:
+        reflect-metadata: Prepare the "note-taking" system.
+        dotenv: Load your secret environment variables.
+        Entities/Services: Define your logic (now that the note-taking system is ready).
+        App/Express: Start the server.
+    
+"Why ts-node for development but tsc + node dist/ for production?"
+    ts-node transpiles TypeScript on the fly in memory — there's no compilation step, so the dev loop is fast. 
+    But it adds overhead on every file load and isn't optimised for throughput. In production you pre-compile with tsc to plain 
+    JavaScript, which Node runs natively at full speed with no transpilation cost. The build also lets you catch type errors as 
+    a CI gate before deployment — ts-node in watch mode is more forgiving about type errors that tsc --strict would reject.
+
+
+
+
+
+
+
