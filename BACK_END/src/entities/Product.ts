@@ -1,30 +1,59 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { SubCategory } from './SubCategory';
 
+/**
+ * Represents a specific item for sale in the store.
+ * Each product is linked to a SubCategory and contains inventory and pricing data.
+ */
 @Entity('product')
 export class Product {
-  @PrimaryGeneratedColumn()
-  id: number;
+    /**
+     * The unique name of the Product.
+     */
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  name: string;
+    /**
+     * Name of the product
+     */
+    @Column()
+    name: string;
 
-  @Column('text')
-  description: string;
+    /**
+     * Description of the product
+     */
+    @Column('text')
+    description: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  price: number;
+    /**
+     * Product Price
+     */
+    @Column('decimal', { precision: 10, scale: 2 })
+    price: number;
 
-  @Column({ default: 0 })
-  stock: number;
+    /**
+     * Number of Products available  
+     */
+    @Column({ default: 0 })
+    stock: number;
 
-  @Column({ nullable: true, name: 'image_path' })
-  imagePath: string | null;
+    /**
+     * Product Image
+     */
+    @Column({ nullable: true, name: 'image_path' })
+    imagePath: string | null;
 
-  @ManyToOne(() => SubCategory, (sub) => sub.products, { onDelete: 'RESTRICT' })
-  @JoinColumn({ name: 'sub_category_id' })
-  subCategory: SubCategory;
+    /**
+     * The specific sub-category this product belongs to.
+     * { onDelete: 'RESTRICT' } prevents deleting a sub-category that still has products.
+     */
+    @ManyToOne(() => SubCategory, (sub) => sub.products, { onDelete: 'RESTRICT' })
+    @JoinColumn({ name: 'sub_category_id' })
+    subCategory: SubCategory;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+    /**
+     * Define the Product creation date 
+     */
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 }

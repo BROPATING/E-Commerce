@@ -1,3 +1,4 @@
+TRY FOR THE REAL WORLD EXAMPLES
 
 "Why do you have both src/app.ts and index.ts at the root? Why not just one file?"
     index.ts is the process entry point — its only job is to import the DataSource, initialise the DB connection, 
@@ -39,6 +40,7 @@
     price increase — which is incorrect, potentially a legal issue, and a terrible user experience. 
     By copying the price at the moment the order is created and storing it as a plain decimal column, we make order history 
     immutable to future pricing changes. This is a deliberate, justified denormalisation.
+    EX. Dhurandhar movie price rise
 
 "Why use onDelete: 'RESTRICT' on OrderItem → Product instead of CASCADE?"
     If we used CASCADE, deleting a product from the admin panel would silently delete all OrderItem rows 
@@ -46,6 +48,7 @@
     RESTRICT forces the admin to face a database error if they try to delete a product with order history, which surfaces the 
     problem rather than silently corrupting data. The correct solution for the admin would be to mark the product as 
     inactive/hidden rather than hard-deleting it — which is a separate improvement we could add.
+    EX. Amazon delivery status : Pending | Delivered | Blocked
 
 "Why is there no separate Cart table — just CartItem directly linked to User?"
     A dedicated Cart entity would only add an intermediate ID with no meaningful attributes of its own. 

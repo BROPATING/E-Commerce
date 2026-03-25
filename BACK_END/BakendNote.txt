@@ -106,9 +106,17 @@ RESTRICT means "refuse to delete
     the parent if children exist" — used on Product referenced by OrderItem (you cannot delete a product that appears in a real order;
     that would corrupt order history).
 @JoinColumn({ name: 'user_id' }) — without this, TypeORM auto-generates a column name like userId (camelCase). Specifying 
-snake_case names explicitly keeps your DB columns readable in raw SQL and consistent with SQL conventions.
-price_at_purchase is a value, not a foreign key — it is a decimal column, not a reference to product.price. 
-This is the price snapshot. It is copied at checkout time and never changes afterwards.
+    snake_case names explicitly keeps your DB columns readable in raw SQL and consistent with SQL conventions.
+    price_at_purchase is a value, not a foreign key — it is a decimal column, not a reference to product.price. 
+    This is the price snapshot. It is copied at checkout time and never changes afterwards.
+    This explicitly names the foreign key column in your MySQL table as type_id. Without this, TypeORM would default to typeId.
+
+Number	Is it allowed?	Why?
+123.45	✅ YES	Total digits = 5 (Precision). Digits after dot = 2 (Scale).
+12.3	✅ YES	Total digits = 3 (Fits inside 5). Digits after dot = 1 (Fits inside 2).
+1234.56	❌ NO	Total digits = 6. This exceeds our Precision of 5.
+1.234	❌ NO	Digits after dot = 3. This exceeds our Scale of 2.
+
 
 
 
