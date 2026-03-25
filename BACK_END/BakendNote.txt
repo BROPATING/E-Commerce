@@ -99,6 +99,16 @@ about. When a customer orders a product at ₹500, and the admin later changes t
 purchase. The solution is a price_at_purchase column on OrderItem that copies the price value at the moment the order is created.
 This is called denormalisation by intent — a deliberate, justified violation of 3NF to preserve historical accuracy.
 
+onDelete: 'RESTRICT' vs onDelete: 
+'CASCADE' — these are your database-level safety nets. CASCADE means "if the parent is deleted, 
+    delete the children too" — used on CartItem and OrderItem (delete a user → their cart clears). 
+RESTRICT means "refuse to delete 
+    the parent if children exist" — used on Product referenced by OrderItem (you cannot delete a product that appears in a real order;
+    that would corrupt order history).
+@JoinColumn({ name: 'user_id' }) — without this, TypeORM auto-generates a column name like userId (camelCase). Specifying 
+snake_case names explicitly keeps your DB columns readable in raw SQL and consistent with SQL conventions.
+price_at_purchase is a value, not a foreign key — it is a decimal column, not a reference to product.price. 
+This is the price snapshot. It is copied at checkout time and never changes afterwards.
 
 
 
