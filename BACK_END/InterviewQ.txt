@@ -56,8 +56,69 @@ TRY FOR THE REAL WORLD EXAMPLES
     This avoids a pointless join and keeps the schema simpler. If requirements ever demanded multiple saved carts per user 
     (wishlists, for example), we'd introduce the Cart entity then — but we don't add tables speculatively.
 
+Why timezone: 'Z'? 
+    This tells the MySQL driver to treat all timestamps as UTC. Without it, timestamps stored in the DB get silently 
+    shifted by your server's local timezone offset — a bug that only surfaces when the server is deployed to a machine 
+    in a different timezone than your dev machine.
+    Ex. 
+        Scenario A (No Timezone set): You save an order at 10:00 AM. The MySQL driver sees your computer's clock and saves 
+            10:00:00. Later, your server in London reads it and thinks it happened at 10:00 AM London time. You just "teleported" 
+            that order 5 hours into the future.
+        Scenario B (With timezone: 'Z'): Your driver converts 10:00 AM (New York) to 3:00 PM (UTC) before saving. 
+            No matter where the server is in the world, 3:00 PM UTC is an absolute point in time that never changes.
 
+Why credentials: true in CORS? 
+    HTTP-only cookies are not sent cross-origin by default. Setting credentials: true on 
+    the server and withCredentials: true on the Angular HTTP client instructs the browser to include cookies on 
+    cross-origin requests. Without both sides set, your auth cookies will never reach the backend from Angular's dev 
+    server on port 4200.
 
+Why is the error handler last? 
+    Express identifies error-handling middleware by its four-parameter signature (err, req, res, next). 
+    It must be registered after all routes — Express processes middleware in registration order, 
+    so if the error handler is registered first, it never receives errors thrown by routes registered after it.
+
+"Why is synchronize tied to NODE_ENV rather than just hardcoded to true?"
+    Because the same codebase runs in both development and production. If synchronize were always true, deploying a 
+    schema change to production could auto-alter or drop columns the moment the server restarts — potentially destroying live data.
+    By tying it to NODE_ENV === 'development', the behaviour is safe-by-default in any non-development environment. 
+    In a real production system, we'd replace this with TypeORM migrations — versioned, reviewable SQL scripts that apply 
+    schema changes in a controlled, reversible way.
+
+"What happens if AppDataSource.initialize() is called twice?"
+    TypeORM throws an error — a DataSource can only be initialised once per process. This is intentional. 
+    It enforces the singleton pattern at the framework level. If you need to check whether the DataSource is ready before using 
+    it (in tests, for example), TypeORM exposes AppDataSource.isInitialized as a boolean you can check before calling initialize() 
+    again.
+
+"Why must dotenv/config be the very first import in index.ts, before even app?"
+    Because app.ts imports data-source.ts, and data-source.ts reads process.env.DB_HOST, process.env.DB_NAME, etc. 
+    at module evaluation time — the moment the file is imported, those expressions are evaluated. If dotenv hasn't run yet, 
+    all those process.env reads return undefined, and TypeORM connects to localhost with an empty database name, which either 
+    connects to the wrong DB or fails silently with defaults. The import order in index.ts is not a style preference — it is 
+    load-order-critical.
+
+"You chose SQLite — how would this change if this went to production?"
+    SQLite is a single-file, single-writer database. It handles reads well but serialises all writes — under concurrent 
+    write load, requests queue behind each other. For a production e-commerce system with simultaneous checkouts, 
+    you'd switch to PostgreSQL or MySQL, which support true concurrent writes via row-level locking. 
+    The TypeORM DataSource config is the only file that changes — every entity, service, and query written against 
+    TypeORM's query builder works identically across all three databases. That portability is a direct benefit of using an 
+    ORM abstraction.
+
+"Where is the SQLite database file stored and what are the backup implications?"
+    It's a single file at the path specified in DB_PATH. The entire database — schema, data, indexes — lives in that one file.
+    Backing it up is as simple as copying the file. However, you must either stop writes or use SQLite's backup API during 
+    the copy to avoid copying a file mid-transaction. In contrast, MySQL and PostgreSQL require dedicated backup 
+    tools (mysqldump, pg_dump) because data is spread across multiple system files.
+
+"Why does SQLite not need a timezone setting but MySQL does?"
+    MySQL is a server process that has its own timezone configuration independent of your application. 
+    When TypeORM sends a JavaScript Date to MySQL, the driver must negotiate how to store it relative to the server's 
+    timezone — without timezone: 'Z', you get silent offset shifts. SQLite has no server process and no timezone concept 
+    of its own. TypeORM stores dates as ISO 8601 strings in SQLite, and reads them back as strings that it parses into 
+    JavaScript Date objects — the conversion is handled entirely within the Node.js process, where the timezone is 
+    predictable and consistent.
 
 
 

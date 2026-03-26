@@ -40,7 +40,7 @@ export class User {
      * The permission level assigned to the user.
      * Defaults to 'customer'.
      */
-    @Column({ type: 'enum', enum: UserRole, default: UserRole.CUSTOMER })
+    @Column({ type: 'simple-enum', enum: UserRole, default: UserRole.CUSTOMER })
     role: UserRole;
 
     /**

@@ -117,10 +117,40 @@ Number	Is it allowed?	Why?
 1234.56	❌ NO	Total digits = 6. This exceeds our Precision of 5.
 1.234	❌ NO	Digits after dot = 3. This exceeds our Scale of 2.
 
+TypeORM's DataSource is the central object that manages everything database-related — it holds your connection configuration, 
+knows about all your entities, and owns the connection pool.
 
+What is a connection pool? 
+    Opening a raw TCP connection to a database is expensive — it involves a handshake, authentication, 
+    and memory allocation on both ends. If every HTTP request opened and closed its own connection, a server under moderate load 
+    would spend more time connecting than querying. 
+    A connection pool maintains a set of pre-opened connections and lends them to requests. 
+    When the request finishes, the connection returns to the pool rather than being closed. TypeORM handles this 
+    automatically through the underlying mysql2 driver. The default pool size is 10 connections — meaning up to 10 queries can 
+    execute simultaneously before others queue.
 
+Why a single DataSource instance? 
+    If you create a new DataSource per request, you create a new pool per request — you'd 
+    exhaust database connections almost immediately under any real load. One DataSource, initialised once at server startup, 
+    shared across all routes via import, is the correct pattern.
 
+C:\Users\SahilSalunke(DevIN)\Desktop\Projects\E-Commerce\BACK_END\src>npm i --save-dev @types/express @types/node
 
+Package             Purpose in your Code
+express             The framework creating your app and handling routes.
+cookie-parser       Allows app.use(cookieParser()) to read cookies from the browser.
+cors                Allows your Angular/React frontend (on port 4200) to talk to this API.
+reflect-metadata    Critical: Must be imported first for your TypeORM entities to work.
+path                A built-in Node module (covered by @types/node) used to find your image folder.
+
+Why `better-sqlite3` over `sqlite3`?
+    TypeORM officially supports both, but `better-sqlite3` is synchronous, faster for single-process apps, and has better 
+    TypeScript support. For a course project with no concurrency requirements it is the superior choice.
+
+@Column({ type: 'simple-enum', enum: UserRole, default: UserRole.CUSTOMER })
+role: UserRole;
+    simple-enum is TypeORM's cross-database enum that stores the value as a plain string — it works identically on SQLite, MySQL, 
+    and PostgreSQL. It's actually the safer choice if you ever want to switch databases later.
 
 
 

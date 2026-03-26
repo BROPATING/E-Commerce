@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./User";
 import { Product } from "./Product";
 
@@ -7,7 +7,7 @@ import { Product } from "./Product";
  * This acts as a junction between the User and the Product.
  * It act as a whishList / Bucket
  */
-Entity('cart_item')
+@Entity('cart_item')
 export class CartItem {
     /**
      * Unique identifier for the cart item entry.
@@ -21,7 +21,7 @@ export class CartItem {
      */
     @ManyToOne(() => User, (user) => user.cartItems, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_id' })
-    user: User
+    user: User;
 
     /**
      * The specific product added to the cart.

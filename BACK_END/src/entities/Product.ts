@@ -39,8 +39,9 @@ export class Product {
 
     /**
      * Product Image
+     * explicitly tell TypeORM the storage type is 'text'
      */
-    @Column({ nullable: true, name: 'image_path' })
+    @Column({ type: 'text', nullable: true, name: 'image_path' })
     imagePath: string | null;
 
     /**

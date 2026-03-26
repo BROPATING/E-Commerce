@@ -10,10 +10,11 @@ The Objective
     architectural decision in the project — a flawed schema cannot be patched later without painful migrations. 
     Every column, every foreign key, and every constraint needs a reason you can articulate.
 
-Step 3: TypeORM DataSource Configuration & Database ConnectionThe ObjectiveWe're wiring TypeORM to the actual database and 
-creating the single DataSource instance that the entire backend will use. This step also establishes how we handle environment 
-variables safely, and makes a critical architectural decision: synchronize vs migrations. You must be able to defend this choice 
-confidently.
+Step 3: TypeORM DataSource Configuration & Database Connection
+The Objective
+    We're wiring TypeORM to the actual database and creating the single DataSource instance that the entire backend will use. 
+    This step also establishes how we handle environment variables safely, and makes a critical architectural decision: 
+    synchronize vs migrations. You must be able to defend this choice confidently.
 
 
 

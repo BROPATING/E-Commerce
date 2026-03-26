@@ -8,7 +8,7 @@ import { OrderItem } from "./OrderItem";
  * Unlike a Cart, an Order is a permanent record of what was purchased and at what price.
  */
 @Entity('order')
-export class Order{
+export class Order {
     /**
      * Unique identifier for the Order
      */
@@ -19,8 +19,8 @@ export class Order{
      * The customer who placed the order.
      * { onDelete: 'RESTRICT' } ensures we don't delete users who have a purchase history.
      */
-    @ManyToOne(() => User, (user) => user.orders, {onDelete: 'RESTRICT'})
-    @JoinColumn({name: 'user_id'})
+    @ManyToOne(() => User, (user) => user.orders, { onDelete: 'RESTRICT' })
+    @JoinColumn({ name: 'user_id' })
     user: User
 
     /**
@@ -33,19 +33,19 @@ export class Order{
     /**
      * Represents the Payment Method (e.g., 'STRIPE', 'PAYPAL', 'COD').
      */
-    @Column({name: 'payment_method'})
+    @Column({ name: 'payment_method' })
     paymentMethod: string
 
     /**
      * The date and time the order was finalized.
      */
-    @CreateDateColumn({name: 'created_at'})
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date
 
     /**
      * The individual products tied to this specific order.
      * These are stored in OrderItem to "freeze" the price at the time of purchase.
      */
-    @OneToMany(() => OrderItem, (item) => item.order, {onDelete:'CASCADE'})
+    @OneToMany(() => OrderItem, (item) => item.order, { cascade: true })
     items: OrderItem[];
 }
