@@ -26,7 +26,7 @@ export class SubCategory{
      */
     @ManyToOne(() => Category, (category) => category.subCategories, {onDelete: 'RESTRICT'})
     @JoinColumn({name: 'category_id'})
-    category: Category[]
+    category: Category;
 
     /**
      * List of all products that fall under this specific sub-category.

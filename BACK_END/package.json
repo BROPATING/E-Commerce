@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/index.ts"
+    "start": "node dist/index.ts",
+    "seed": "ts-node -r reflect-metadata src/seed.ts"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "typeorm": "^0.3.28"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",

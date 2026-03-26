@@ -25,8 +25,10 @@ export const AppDataSource = new DataSource({
     /**
      * synchronize: Automatically creates/updates database tables to match your @Entity files.
      * WARNING: Only use this in 'development'. In production, use Migrations to avoid data loss.
+     * In Dev: You have maximum productivity and speed.
+     * In Prod: The feature is forced OFF, requiring you to use Migrations (version-controlled scripts) to update the database safely.
      */
-    synchronize: process.env.NODE_ENV === 'development',
+    synchronize: process.env.NODE_ENV === 'development', 
     /**
      * logging: Prints all SQL queries to the terminal.
      * Useful for debugging complex joins between Categories and Products.

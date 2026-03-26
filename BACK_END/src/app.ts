@@ -4,6 +4,12 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
+//Imports of Routes
+import authRoutes    from './routes/auth.routes';
+import productRoutes from './routes/product.routes';
+import cartRoutes    from './routes/cart.routes';
+import orderRoutes   from './routes/order.routes';
+import adminRoutes   from './routes/admin.routes';
 /**
  * Express Application Configuration
  * This file initializes middleware, security settings, and global route handlers.
@@ -51,6 +57,21 @@ app.use('/Images', express.static(path.join(__dirname, "..", "ProductImages")));
 app.get('/api/health', (req, res) => {
     res.json({ status: 'Ok', timeStamp: new Date().toISOString() });
 })
+
+/**
+ * API Route Dispatcher
+ * Each path follows a RESTful naming convention for predictable resource access.
+ */
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes);
+app.use("/api/admin", adminRoutes);
+
+// 404 Handler
+app.use('/api', (_req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
 
 /**
  * Global Error Handling Middleware

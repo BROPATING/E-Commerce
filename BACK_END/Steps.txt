@@ -16,6 +16,25 @@ The Objective
     This step also establishes how we handle environment variables safely, and makes a critical architectural decision: 
     synchronize vs migrations. You must be able to defend this choice confidently.
 
+Step 4: Seed Data — Taxonomy Tree & Admin Account
+The Objective
+    We're writing a script that populates the database with an initial taxonomy (Types → Categories → SubCategories), sample 
+    products, and a seeded Admin account. This serves two purposes: it gives you working data to test every feature against, 
+    and it demonstrates that you understand idempotent scripts — a script safe to run multiple times without duplicating data.
+
+Step 5: Express App Structure — Middleware Stack & Routing Skeleton
+The Objective
+    We're building the complete Express application skeleton — every route barrel file, the middleware execution order, 
+    and the global error handler. After this step, your server has a fully wired request pipeline even though most route 
+    handlers will return placeholder responses. This matters because it forces you to think about the shape of your API 
+    before writing any business logic.
+
+Step 6: In-Memory Session Store & Session Middleware
+The Objective
+    We're building the custom session store — a plain Node.js Map object that tracks every active login. 
+    This is the security mechanism that makes immediate account lock enforcement possible. 
+    It is also the most architecturally interesting piece of the auth system and the one your manager will probe hardest, 
+    because it's a deliberate, justified choice that deviates from the standard express-session library approach.
 
 
 

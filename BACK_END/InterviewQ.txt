@@ -120,5 +120,65 @@ Why is the error handler last?
     JavaScript Date objects — the conversion is handled entirely within the Node.js process, where the timezone is 
     predictable and consistent.
 
+Why bcrypt.hash('Admin@1234', 12)? 
+    The second argument is the salt rounds — the cost factor that controls how slow the hash computation is. 
+    Each increment doubles the computation time. At 12 rounds, hashing takes ~250ms on modern hardware — fast enough 
+    to be imperceptible to a human logging in, but slow enough to make brute-force attacks computationally expensive. 
+    Never use fewer than 10 in any real system.
+
+Why is the seed script a separate file rather than running on server startup?
+    The Seed Script is like the moving truck. You only need it once to bring in the furniture (data).
+    The Server Startup is like opening the door for guests (users).
+    Feature                 Seed on Every Startup                   Separate Seed Script (Your Way)
+    Speed               Slows down every restart.               Server starts instantly.
+    Reliability         A seed error kills the whole app.       App runs even if seeding is skipped.
+    Control             Runs automatically (risky).             Runs only when you say so.
+    Database Stress     "Constant ""Checks"" on the DB."        One-time setup.
+
+Why bcrypt over SHA-256 or MD5 for password hashing?
+    MD5 and SHA-256 are general-purpose cryptographic hash functions designed to be fast — a modern GPU can compute 
+    billions of SHA-256 hashes per second, making brute-force and rainbow table attacks trivial. bcrypt is specifically 
+    designed to be slow and to scale with hardware improvements via the cost factor. It also automatically generates and 
+    embeds a random salt in the output hash, making rainbow table attacks impossible. The output $2b$12$... encodes the 
+    algorithm version, cost factor, salt, and hash together — everything needed to verify a password is in that single string.
+    Simpler Terms
+        Features    MD5 / SHA-256                       Bcrypt
+        Speed	🏎️ Instant (Bad for security)	        🐢 Slow (Good for security)
+        Cracking	Very Easy	                        Very Hard
+        Salt	    You have to add it manually	        Built-in automatically
+
+What is the risk of using synchronize: true when you run the seed script?
+    Every time AppDataSource.initialize() is called with synchronize: true, TypeORM compares your entity definitions against 
+    the live schema and issues ALTER TABLE statements if they differ. In development this is convenient, 
+    but if an entity has a typo or a column type mismatch, TypeORM might try to drop and recreate a 
+    column — destroying existing seed data. For this project the risk is low since we control the schema, 
+    but it's why production systems use migrations: a migration runs once, is version-controlled, and is 
+    never re-run automatically.
+    synchronize: true ---> synchronize: 'development'
+
+Why do you return 501 Not Implemented in placeholder controllers instead of just leaving the route undefined?
+    501 Not Implemented is the semantically correct HTTP status code for "this endpoint is planned but not yet built." 
+    It also means frontend developers can start building against the API surface immediately — they'll get a clear 501 
+    instead of a confusing 404, and they know to wait for the implementation rather than questioning whether the route exists.
+
+Why is /api/admin just another route prefix rather than a completely separate Express app?
+    The spec requires one Node.js process serving both frontend and API. 
+    A separate Express app would require a separate port, which breaks the single-process requirement and 
+    introduces CORS complexity between the admin frontend and the admin API. Keeping admin as a prefix under 
+    the same app means the same CORS config, the same cookie, and the same error handler apply. The security 
+    separation comes from the RBAC middleware applied to the admin router — not from network-level isolation.
+
+What is the difference between app.use() and app.get() / app.post() when registering routes?
+    Feature	            app.use()	                            app.get() / app.post()
+    HTTP Verb	    Any (GET, POST, etc.)	                Only the one specified.
+    Path	        Starts with the path.	                Must match the path exactly.
+    Analogy	        The Front Door of the building.	        A Specific Office inside.
+    Common Use	    Checking tokens, CORS, JSON parsing.	Registering, Login, Getting Products.
+
+Why deleteAllForUser()? 
+    A single user might be logged in on multiple devices simultaneously — their phone, laptop, and work computer. 
+    When an admin locks their account, all three sessions must be invalidated immediately. Iterating the Map and 
+    deleting every entry matching the userId achieves this in O(n) time where n is the total number of active sessions. 
+    For a course project this is perfectly acceptable.
 
 

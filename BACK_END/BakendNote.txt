@@ -152,5 +152,13 @@ role: UserRole;
     simple-enum is TypeORM's cross-database enum that stores the value as a plain string — it works identically on SQLite, MySQL, 
     and PostgreSQL. It's actually the safer choice if you ever want to switch databases later.
 
+In-Memory Session Store & Session Middleware
+Our solution uses two layers working together:
+Layer 1 — JWT in an HTTP-only cookie. Proves the user authenticated at some point. Tamper-proof due to cryptographic signature. 
+    Sent automatically on every request by the browser.
+Layer 2 — In-memory session Map. Proves the session is currently active. Can be deleted instantly. 
+    Checked on every protected request.
+
+
 
 
