@@ -159,6 +159,48 @@ Layer 1 — JWT in an HTTP-only cookie. Proves the user authenticated at some po
 Layer 2 — In-memory session Map. Proves the session is currently active. Can be deleted instantly. 
     Checked on every protected request.
 
+Salt_Rounds
+    Salt Rounds is a number that tells the bcrypt hashing algorithm how hard it has to work.
+    Why do we need it?
+        If you just hash a password once, a modern computer can guess millions of combinations per second. 
+        This is called a Brute Force attack.
+        By adding salt rounds, you are intentionally making your server "slow down" for a split second.
+            For a real user: Waiting 0.1 seconds to log in is invisible.
+            For a hacker: If every guess takes 0.1 seconds, trying a billion combinations would take years.
+        Without Salt: Two users with the password "123456" would have the exact same hash in your database.
+        With Salt: Even if 100 users use "123456", every single hash in your database will look completely different. 
+            This prevents Rainbow Table attacks (pre-computed lists of common passwords).
+
+Omit 
+    In simple terms, Omit is a TypeScript "Utility Type" that acts like a filter for your objects. 
+    It tells TypeScript: "Take the User type, but remove the passwordHash property from it."
+        Why do we use it?
+            When you define your User entity, it includes the passwordHash. However, in your AuthService.register, 
+            you are returning the user data to the frontend.
+            You never, ever want to send a password hash to the frontend, even if it's hashed. By using Omit, 
+            you are creating a "Safe User" type for your return value.
+
+Promise
+    What ?
+        In simple terms, a Promise is a placeholder for a value that you don't have yet, but expect to receive in the future.
+        Think of it like ordering food at a restaurant:
+            You place your order (this is the Promise).
+            The waiter gives you a "buzzer" (the Pending state).
+            You go back to your table and keep talking to your friends (the code keeps running, it doesn't stop).  
+    Why?
+        In JavaScript, some tasks take time (like fetching a user from a database or hashing a password). 
+        If JavaScript stopped and waited for these tasks, your whole app would "freeze" until the task finished.
+        Promises allow JavaScript to say: "Go do that heavy work in the background. 
+        Tell me when you're done, and I'll handle the result then."
+
+what is this "process.env.JWT_SECRET!" 
+    It is you telling TypeScript: "I promise you, I have defined this variable in my .env file. 
+    Stop worrying that it might be undefined."
+    By adding the !, you are manually silencing that warning. You are essentially saying:
+        "Trust me, I'm the boss. I know this exists. Treat it as a string, not string | undefined."
+    
+
+
 
 
 

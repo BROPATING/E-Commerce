@@ -181,4 +181,73 @@ Why deleteAllForUser()?
     deleting every entry matching the userId achieves this in O(n) time where n is the total number of active sessions. 
     For a course project this is perfectly acceptable.
 
+Why optionalAuth? 
+    The product detail page must show an "Add to Cart" button to logged-in customers but not to guests — without blocking 
+    guests from viewing the page. optionalAuth tries to identify the user but never rejects the request.
+    The controller then checks if (req.user) to decide what to include in the response.
+
+Your session store is in memory — what happens when the server restarts?
+    All active sessions are lost — every logged-in user gets silently logged out on the next request. 
+    For a course project this is acceptable. In production, the session store would be backed by 
+    Redis — an in-memory data store that is external to the Node process, survives restarts, and can be shared across 
+    multiple server instances in a horizontally scaled deployment. 
+    The interface we've built (set, get, delete, deleteAllForUser) (sessionStore) is intentionally simple enough that swapping the Map for a Redis client would only require changing the implementation inside sessionStore.ts — none of the middleware or route code would need to change.
+
+Why do you query the database on every authenticated request to check isLocked? Isn't that expensive?
+    It is one extra DB query per protected request. 
+    The alternative — trusting only the JWT payload which contains no isLocked field — means a locked user can 
+    continue making requests until their token expires. Given the spec explicitly requires immediate lock enforcement, 
+    the DB query is mandatory. In a high-traffic production system you'd mitigate the cost with a short-lived cache — store 
+    the user object in the session Map entry with a TTL of 30 seconds, and only re-query the DB when the cached entry is stale.
+    For this project the direct query is the honest, correct implementation.
+
+Why is requireRole a factory function that returns middleware rather than just a middleware function itself?
+    Because different routes require different roles, and we need to express that requirement at route registration time without
+    duplicating the role-checking logic. requireRole(UserRole.ADMIN) and requireRole(UserRole.CUSTOMER) are both calls 
+    to the same function with different arguments — the factory pattern lets us parameterise the middleware. 
+    If requireRole were just a fixed middleware, it could only ever check one hardcoded role. 
+    The factory also supports multiple roles — requireRole(UserRole.ADMIN, UserRole.CUSTOMER) would allow either 
+    role through, useful if some routes are shared between roles.
+
+Why 409 Conflict and not 400 Bad Request? 
+    HTTP status codes carry semantic meaning. 400 means the request itself is malformed. 409 means the 
+    request is well-formed but conflicts with existing state — a duplicate email is a conflict, not a malformed request. 
+    Using the precise status code makes your API self-documenting and helps the frontend display the right error message 
+    without parsing the error string.
+
+
+Why strip passwordHash before returning? 
+    Defence in depth. Even if a future developer accidentally logs the response or sends it somewhere unexpected, 
+    the hash is never in the outbound payload. We use destructuring — 
+    const { passwordHash: _, ...safeUser } = saved — to create a new object without the field rather than deleting it from 
+    the entity instance.
+
+A user registers with 'USER@EMAIL.COM' and later tries to register with 'user@email.com' — what happens?
+    We normalise the email to lowercase with .toLowerCase().trim() before both the uniqueness check and the save() call. 
+    So both inputs resolve to user@email.com — the second registration hits the duplicate check and returns a 409. 
+    We also use express-validator's normalizeEmail() in the validation middleware, which handles edge cases like 
+    Gmail's dot-insensitivity. Storing emails in a canonical form prevents ghost duplicate accounts that cause login failures.
+    Input                     Normalization Step         Final Result       Result in DB
+    USER@Email.com           .trim().toLowerCase()       user@email.com     Success (Saved)
+    user@email.com           .trim().toLowerCase()       user@email.com     409 Conflict (Already exists)
+    u.s.e.r@gmail.com        normalizeEmail()            user@gmail.com     409 Conflict (Smart match)
+
+Why do you call next(err) in the catch block instead of res.status(500).json(...)?
+    Calling res.json() directly in the catch block would bypass the global error handler entirely. 
+    The global error handler in app.ts has the important job of sanitising error messages before they reach 
+    the client — in production it returns a generic message instead of exposing stack traces or database errors. 
+    By calling next(err), we let that centralised logic run. It also means the error is logged in one consistent place. 
+    The service layer throws errors with a .status property set (like 409 for duplicates) — 
+    the global error handler reads err.status to set the correct HTTP status code.
+
+What does express-validator actually do that manual if (!req.body.email) checks don't?
+    express-validator provides a declarative, chainable validation API that handles sanitisation, type coercion, 
+    and error collection in one pass. Manual checks would require nested if-statements, manual error array building, 
+    and separate sanitisation calls. More importantly, express-validator runs as middleware — the validation rules 
+    execute before the controller, and the controller calls validationResult(req) to collect all failures at once. 
+    This means a user submitting a form with five invalid fields gets all five error messages in one response, 
+    not just the first one encountered. Manual checks typically fail-fast on the first error, 
+    leading to a frustrating "whack-a-mole" UX for users.
+
+    
 

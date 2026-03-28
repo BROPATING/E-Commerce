@@ -36,6 +36,20 @@ The Objective
     It is also the most architecturally interesting piece of the auth system and the one your manager will probe hardest, 
     because it's a deliberate, justified choice that deviates from the standard express-session library approach.
 
+Step 7: Registration Endpoint & bcrypt Password Hashing
+The Objective
+    We're implementing the first real business logic — customer registration. This step covers input validation, 
+    duplicate email detection, secure password hashing, and a clean JSON response. 
+    By the end, POST /api/auth/register will fully work and you'll be able to create customer accounts that persist 
+    in the database.
+
+Step 8: Login, Token Issuance & HTTP-only Cookie
+The Objective
+    We're implementing login — the most security-critical endpoint in the entire application. 
+    A successful login does three things atomically: verifies the password with bcrypt, issues a signed JWT, and 
+    registers the session in the Map store. All three must succeed together or the login fails cleanly. 
+    By the end of this step, POST /api/auth/login will work, set an HTTP-only cookie, and GET /api/auth/me will 
+    return the authenticated user's profile.
 
 
 

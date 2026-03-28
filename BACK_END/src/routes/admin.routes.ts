@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import * as AdminController from '../controllers/admin.controller';
+import { authenticate, requireRole } from '../middleware/auth.middleware';
+import { UserRole } from '../entities/User';
 
 const router = Router();
+
+router.use(authenticate, requireRole(UserRole.ADMIN));
 
 // Product management
 router.get('/products', AdminController.getAllProducts);
