@@ -4,6 +4,9 @@ import { User, UserRole } from "../entities/User";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import { SessionStore } from "../middleware/sessionStore";
+import { forgotPassword, resetPassword } from "../controllers/auth.controller";
+import { ResetCode } from "../entities/ResetCode";
+import { Code } from "typeorm";
 
 const SALT_ROUND = 12;
 const JWT_EXPIRES_IN = '7d';
@@ -48,19 +51,19 @@ export const AuthService = {
         return safeUser as Omit<User, 'passwordHash'>;
     },
 
-    async login(email: string, password: string): Promise<{token: string; user: Omit<User, 'passwordHash'>}>{
+    async login(email: string, password: string): Promise<{ token: string; user: Omit<User, 'passwordHash'> }> {
         const userRepo = await AppDataSource.getRepository(User);
         const normalisedEmail = email.toLowerCase().trim();
-        const user = await userRepo.findOne({where: {email: normalisedEmail}});
-        const isMatch = await bcrypt.compare(password, user?.passwordHash!); 
+        const user = await userRepo.findOne({ where: { email: normalisedEmail } });
+        const isMatch = await bcrypt.compare(password, user?.passwordHash!);
 
-        if(!user || !isMatch){
+        if (!user || !isMatch) {
             const error: any = new Error("Invalid Credential");
             error.status = 403;
             throw error;
         }
-    
-        if(user.isLocked){
+
+        if (user.isLocked) {
             const error: any = new Error("Your Account is Locked");
             error.status = 403;
             throw error;
@@ -68,7 +71,7 @@ export const AuthService = {
 
         const token = jwt.sign(
             {
-                useeId: user.id,
+                userId: user.id,
                 role: user.role,
                 email: user.email
             },
@@ -84,26 +87,90 @@ export const AuthService = {
             email: user.email
         })
 
-        const {passwordHash: _, ...safeUser} = user;
-        return {token, user: safeUser as Omit<User, 'passwordHash'>};
+        const { passwordHash: _, ...safeUser } = user;
+        return { token, user: safeUser as Omit<User, 'passwordHash'> };
     },
 
-    logout(token: string): void{
+    logout(token: string): void {
         SessionStore.deleteToken(token);
     },
 
-    async getMe(userId: number): Promise<Omit<User, 'passwordHash'>>{
-        const userRepo = await AppDataSource.getRepository(User);
-        const user = await userRepo.findOne({where: {id: userId}});
+    async getMe(userId: number): Promise<Omit<User, 'passwordHash'>> {
+        const userRepo = AppDataSource.getRepository(User);
+        const user = await userRepo.findOne({ where: { id: userId } });
 
-        if(!user){
+        if (!user) {
             const error: any = new Error("User not found");
             error.status = 404;
             throw error;
         }
 
-        const {passwordHash: _, ...safeUser} = user;
+        const { passwordHash: _, ...safeUser } = user;
         return safeUser as Omit<User, 'passwordHash'>;
+    },
+
+    async forgotPassword(email: string): Promise<string> {
+        const userRepo = await AppDataSource.getRepository(User);
+        const resetRepo = await AppDataSource.getRepository(ResetCode);
+        const normalisedEmail = email.toLowerCase().trim();
+        const user = await userRepo.findOne({ where: { email: normalisedEmail } });
+
+        if (!user) {
+            return '0000';
+        }
+
+        const existingCode = await resetRepo.find({ where: { user: { id: user.id }, used: false } });
+        for (const code of existingCode) {
+            code.used = true,
+                await resetRepo.save(code);
+        }
+
+        // Generate 6 digit code
+        const code = Math.floor(1000000 * Math.random() * 900000).toString();
+
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + RESET_CODE_EXPIRY_MINUTES);
+        const resetCode = resetRepo.create({ user, code, expiresAt, used: false });
+        await resetRepo.save(resetCode);
+
+        return code;
+
+    },
+
+    async resetPassword(email: string, code: string, newPassword: string): Promise<void> {
+        const userRepo = await AppDataSource.getRepository(User);
+        const resetRepo = await AppDataSource.getRepository(ResetCode);
+
+        const normalisedEmail = email.toLowerCase().trim();
+        const user = await userRepo.findOne({ where: { email: normalisedEmail } });
+
+        if (!user) {
+            const error: any = new Error("User Not Found");
+            error.status = 400;
+            throw error;
+        }
+
+        const resetCode = await resetRepo.findOne({ where: { user: { id: user.id }, code, used: false } });
+
+        if (!resetCode) {
+            const error: any = new Error('Invalid or already used reset code');
+            error.status = 400;
+            throw error;
+        }
+
+        if (new Date() > resetCode.expiresAt) {
+            const error: any = new Error("Reset code is expired. Please request a new one");
+            error.status = 400;
+            throw error;
+        }
+
+        user.passwordHash = await bcrypt.hash(newPassword, SALT_ROUND);
+
+        resetCode.used = true;
+        await userRepo.save(resetCode);
+        await userRepo.save(user);
+
+        SessionStore.deleteAllForUser(user.id);
     }
 }
 

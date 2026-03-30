@@ -68,7 +68,8 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         next();
 
     } catch (err) {
-        next();
+        next(err);
+        // res.status(500).json({ error: "Internal server error during authentication" });
     }
 }
 

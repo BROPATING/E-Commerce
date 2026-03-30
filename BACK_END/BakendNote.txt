@@ -198,7 +198,25 @@ what is this "process.env.JWT_SECRET!"
     Stop worrying that it might be undefined."
     By adding the !, you are manually silencing that warning. You are essentially saying:
         "Trust me, I'm the boss. I know this exists. Treat it as a string, not string | undefined."
-    
+
+any vs undefined
+In TypeScript, any and undefined serve completely different purposes. One is about what we know (type safety), 
+and the other is about what exists (value).
+
+any: The "Anything Goes" Type
+    any is a Type. 
+    It tells TypeScript to turn off type-checking for that variable. It is a way of saying, "I don't know what this is, and 
+    I don't want you to check it."
+
+undefined: The "Nothing is Here" Value
+    undefined is both a Type and a Value. It means a variable has been declared but has not yet been assigned a value.
+Feature	           any	                                 undefined
+Category	      A "Escape Hatch" Type	                A primitive Type and Value
+Type Safety	      Disables all safety checks	        Enforces strict safety checks
+Runtime	          Could be an object, string, etc.	    Is literally the value undefined
+Analogy     	  A box that could contain anything.	An empty spot where a box should be.
+
+
 
 
 

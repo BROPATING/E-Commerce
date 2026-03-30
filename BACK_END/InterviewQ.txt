@@ -249,5 +249,32 @@ What does express-validator actually do that manual if (!req.body.email) checks 
     not just the first one encountered. Manual checks typically fail-fast on the first error, 
     leading to a frustrating "whack-a-mole" UX for users.
 
-    
+Why run bcrypt.compare even when the user isn't found? 
+    If you return immediately when the user doesn't exist, the endpoint responds in ~1ms. 
+    When the user exists but the password is wrong, bcrypt.compare takes ~250ms. An attacker can measure response times 
+    to determine whether an email address is registered — a timing attack. Running bcrypt on a dummy hash regardless 
+    ensures the endpoint always takes ~250ms, making timing attacks infeasible.
+
+Why do you return the same error message for both 'user not found' and 'wrong password' instead of being specific?
+    Returning "Email not found" vs "Wrong password" is called user enumeration — it tells an attacker which 
+    email addresses are registered in your system. With that information they can target specific accounts for 
+    phishing or credential stuffing. The generic message "Invalid email or password" gives the attacker no information 
+    about which part failed. Combined with our timing attack mitigation — always running bcrypt regardless — 
+    the login endpoint reveals nothing about internal state.
+
+What is sameSite: 'lax' protecting against and why not 'strict'?
+    sameSite controls when the browser sends the cookie on cross-origin requests. 
+    'strict' never sends the cookie when navigating from an external site — so if a user clicks a link to your 
+    site from Google, their cookie isn't sent and they appear logged out. 'lax' sends the cookie on top-level 
+    navigations (clicking a link) but not on sub-resource requests (images, iframes, AJAX) from third-party sites. 
+    This blocks CSRF attacks — a malicious site cannot make authenticated AJAX calls to your API — while preserving normal 
+    navigation behaviour. 'strict' would break the "share a product URL" feature since clicking a shared link from another 
+    site would not recognise the user as logged in.
+
+After a password reset, why do you invalidate all active sessions?
+    If someone's account was compromised and an attacker changed the password, we want to immediately log out the 
+    attacker's session. But we also want to log out any other sessions the legitimate user had — they should re-authenticate 
+    with the new password to confirm they have control of the account. SessionStore.deleteAllForUser() ensures every device is
+    logged out simultaneously. Without this step, an attacker who changed the password via a stolen reset code could 
+    remain logged in on their device even after the legitimate user resets it again.
 
