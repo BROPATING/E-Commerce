@@ -278,3 +278,56 @@ After a password reset, why do you invalidate all active sessions?
     logged out simultaneously. Without this step, an attacker who changed the password via a stolen reset code could 
     remain logged in on their device even after the legitimate user resets it again.
 
+why not passport ?
+    "I chose not to use Passport.js because it abstracts away the exact security mechanisms the project is being evaluated 
+    on — password hashing, session management, token issuance, and role enforcement. 
+    Using Passport would mean I'm configuring 
+    a library rather than implementing and understanding the security layer. 
+    Our custom authenticate middleware and 
+    SessionStore achieve the same result with full transparency — I can explain every line of both files, which I cannot do 
+    if Passport is doing the work internally."
+
+Why andWhere() instead of where()? 
+    Each call to .where() overwrites any previous condition. 
+    .andWhere() appends with AND — so all active filters combine correctly. 
+    This is the most common TypeORM query builder mistake.
+    Ex.
+        .where
+        qb.where('product.categoryId = :catId', { catId: 5 });
+        // This line DELETES the category filter and replaces it!
+        qb.where('product.inStock = :stock', { stock: true }); 
+        // Resulting SQL: SELECT * FROM product WHERE inStock = true;
+        // (You lost the Electronics filter!)
+
+        .andWhere
+        qb.where('product.categoryId = :catId', { catId: 5 });
+        // This line KEEPS the category and adds a new condition
+        qb.andWhere('product.inStock = :stock', { stock: true });
+        // Resulting SQL: SELECT * FROM product WHERE categoryId = 5 AND inStock = true;
+
+Why LOWER() on both sides of the LIKE? 
+    SQLite's LIKE is case-insensitive for ASCII by default, but wrapping both sides in LOWER() makes the intent explicit and
+    ensures correctness on any database engine you might migrate to.
+    Ex.                LIKE                     LOWER(name) LIKE LOWER(:search)
+        "iPhOnE"	❌ No Match (PostgreSQL)	✅ Match ("iphone" = "iphone")
+
+Why does the taxonomy filter hierarchy matter — why not just accept all three IDs simultaneously?
+    If a user selects a typeId of Electronics and a subCategoryId of Keyboards, the subCategoryId filter already implicitly
+    scopes to Electronics — applying both would be redundant at best and contradictory at worst if they belong to different 
+    branches. We apply the most specific filter provided — SubCategory takes precedence over Category which takes precedence 
+    over Type. This matches how real browsing works: a user drilling into a subcategory wants only that subcategory's products,
+    not the entire type.
+    Ex. Think of it like a GPS Navigation system. If you tell the GPS you are in London, but also in California, the system
+     crashes because those two things can't happen at the same time.
+        Filter 1 (Type): Show me all Electronics.
+        Filter 2 (Category): Now, show me only Computers within Electronics.
+        Filter 3 (Subcategory): Finally, show me only Laptops within those Computers.
+    hierarchy (Type → Category → Subcategory) prevents "impossible" or "dirty" data from breaking your store's logic.
+
+Why cap limit at 50 server-side rather than trusting the client's value?
+    A client could send ?limit=100000, causing the server to load every product into memory in one query — a denial-of-service
+    vulnerability requiring no authentication. Server-side capping with Math.min(limit, 50) ensures the server never materialises 
+    more than 50 rows regardless of what the client requests. The frontend can request any page size up to 50 — the cap is 
+    invisible to legitimate users but blocks abuse.
+
+

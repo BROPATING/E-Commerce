@@ -8,7 +8,8 @@ import { CartItem } from '../entities/CartItem';
 import { Order } from '../entities/Order';
 import { OrderItem } from '../entities/OrderItem';
 import { ResetCode } from '../entities/ResetCode';
-
+import dotenv from "dotenv";
+dotenv.config();
 /**
  * The Central Database Connection configuration for the E-Commerce Application.
  * This object manages the connection pool and maps your TypeScript entities to MySQL tables.

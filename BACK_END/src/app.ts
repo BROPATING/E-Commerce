@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import dotenv from "dotenv";
 
 //Imports of Routes
 import authRoutes    from './routes/auth.routes';
@@ -14,6 +15,7 @@ import adminRoutes   from './routes/admin.routes';
  * Express Application Configuration
  * This file initializes middleware, security settings, and global route handlers.
  */
+dotenv.config();
 const app = express();
 
 /**

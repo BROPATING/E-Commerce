@@ -51,6 +51,24 @@ The Objective
     By the end of this step, POST /api/auth/login will work, set an HTTP-only cookie, and GET /api/auth/me will 
     return the authenticated user's profile.
 
+Step 9: RBAC Middleware — already built in Step 6
+
+Step 10: Product APIs — Taxonomy, Listing, Search & Filtering
+The Objective
+    We're implementing the three product endpoints that power the entire shopping experience. 
+    This is where 8 marks for search and 8 marks for filtering/pagination are earned. 
+    The spec has a specific, testable requirement: searching "table" must return both "Wooden Table" (Furniture) and
+    "Multiplication Table Book" (Stationery) — cross-taxonomy results in one response.
+
+Step 11: Image Upload with Multer & express.static Serving
+The Objective
+    We're implementing product image uploads and static file serving. The spec is very explicit about this: images live in a 
+    ProductImages folder on disk, the database stores only the relative file path, and express.static serves them directly — no 
+    controller involved in serving the image itself. This is worth 5 marks and has three distinct testable requirements: upload works, 
+    default fallback works, and the path stored in the DB resolves correctly via the static URL.
+
+
+
 
 
 

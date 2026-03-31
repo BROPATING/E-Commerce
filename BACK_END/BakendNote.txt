@@ -216,9 +216,14 @@ Type Safety	      Disables all safety checks	        Enforces strict safety chec
 Runtime	          Could be an object, string, etc.	    Is literally the value undefined
 Analogy     	  A box that could contain anything.	An empty spot where a box should be.
 
+next(err) in auth.controllers
+    It passes the global error i.e declare in 
 
-
-
+getManyAndCount() in product.service
+    This is a powerful TypeORM method that executes two SQL queries at once:
+    Query 1: Fetches the actual rows (e.g., the 10 products for the current page).
+    Query 2: Counts every single product in the database that matches your filters (ignoring skip and take).
+    Result: It returns an array: [data, count]. You are using destructuring to assign them to products and total.
 
 
 

@@ -26,6 +26,13 @@ const RESET_CODE_EXPIRY_MINUTES = 10;
    * You never, ever want to send a password hash to the frontend, even if it's hashed. By using Omit, you are creating a "Safe
    * User" type for your return value.* */
 export const AuthService = {
+    /**
+     * Creates a new user record in the database.
+     * @param name - Raw display name
+     * @param email - User email (will be normalized)
+     * @param password - Plain text password (will be hashed)
+     * @throws {Error} 409 if email is already registered
+     */
     async register(name: string, email: string, password: string): Promise<Omit<User, 'passwordHash'>> {
         const normalisedEmail = email.toLowerCase().trim();
         const userRepo = await AppDataSource.getRepository(User);
@@ -51,6 +58,11 @@ export const AuthService = {
         return safeUser as Omit<User, 'passwordHash'>;
     },
 
+    /**
+     * Authenticates a user and generates a JWT session.
+     * @returns Object containing the JWT token and safe User data
+     * @throws {Error} 403 if credentials invalid or account locked
+     */
     async login(email: string, password: string): Promise<{ token: string; user: Omit<User, 'passwordHash'> }> {
         const userRepo = await AppDataSource.getRepository(User);
         const normalisedEmail = email.toLowerCase().trim();
@@ -91,10 +103,17 @@ export const AuthService = {
         return { token, user: safeUser as Omit<User, 'passwordHash'> };
     },
 
+    /**
+     * Invalidates a session token in the SessionStore.
+     */
     logout(token: string): void {
         SessionStore.deleteToken(token);
     },
 
+    /**
+     * Fetches a safe user profile by ID.
+     * @throws {Error} 404 if user does not exist
+     */
     async getMe(userId: number): Promise<Omit<User, 'passwordHash'>> {
         const userRepo = AppDataSource.getRepository(User);
         const user = await userRepo.findOne({ where: { id: userId } });
@@ -109,6 +128,10 @@ export const AuthService = {
         return safeUser as Omit<User, 'passwordHash'>;
     },
 
+    /**
+     * Generates a 6-digit verification code for password resets.
+     * Invalidates any previous pending codes for the user.
+     */
     async forgotPassword(email: string): Promise<string> {
         const userRepo = await AppDataSource.getRepository(User);
         const resetRepo = await AppDataSource.getRepository(ResetCode);
@@ -137,6 +160,11 @@ export const AuthService = {
 
     },
 
+    /**
+     * Validates reset code and updates user password.
+     * Clears all active sessions for the user upon success.
+     * @throws {Error} 400 if code is invalid, used, or expired
+     */
     async resetPassword(email: string, code: string, newPassword: string): Promise<void> {
         const userRepo = await AppDataSource.getRepository(User);
         const resetRepo = await AppDataSource.getRepository(ResetCode);

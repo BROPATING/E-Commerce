@@ -32,6 +32,10 @@ export const registerValidation = [
         .matches(/[0-9]/).withMessage('Password must contain at least one number'),
 ];
 
+/**
+ * Validation rules for login.
+ * These run as middleware before the controller function.
+ */
 export const loginValidation = [
     body('email')
         .trim()
@@ -44,6 +48,10 @@ export const loginValidation = [
         .withMessage("Password is required")
 ]
 
+/**
+ * Sets the authentication cookie on the response and returns the user object.
+ * @private
+ */
 function setCookieAndRespond(res: Response, token: string, user: any): void {
     res.cookie(COOKIE_NAME, token, {
         httpOnly: true,                                          // JS cannot read this cookie
@@ -54,7 +62,10 @@ function setCookieAndRespond(res: Response, token: string, user: any): void {
     res.json({ message: 'Login successful', user });
 }
 
-
+/**
+ * Handles new user registration.
+ * @route POST /api/auth/register
+ */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         // Check validation results from express-validator middleware
@@ -76,6 +87,10 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     }
 };
 
+/**
+ * Handles user authentication and session creation.
+ * @route POST /api/auth/login
+ */
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const error = validationResult(req);
@@ -94,19 +109,35 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     }
 }
 
-export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+/**
+ * Deletes a user account from the system by ID.
+ * This is an administrative action that permanently removes the user record.
+ * * @route DELETE /api/auth/users/:id
+ * @param req.params.id - The unique numeric ID of the user to delete.
+ * @returns 200 - Success message with deleted user details.
+ * @returns 404 - If no user matches the provided ID.
+ * @returns 500 - If a database or server error occurs.
+ */
+export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
         let user = await userRepo.findOne({ where: { id: parseInt(id as string) } });
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            res.status(404).json({ message: "User not found" });
+            return;
         }
         await userRepo.remove(user);
-        return res.status(200).json({ message: "User deleted successfully", userId: id, name: user.name });
+        res.status(200).json({ message: "User deleted successfully", userId: id, name: user.name });
+        return;
     } catch (err) {
-        return res.status(500).json({ message: "Delete failed", error: err });
+        next(err);  // Passes the global error i.e declare in app.ts
     }
 }
+
+/**
+ * Revokes the current session and clears the auth cookie.
+ * @route POST /api/auth/logout
+ */
 export const logout = (req: Request, res: Response, next: NextFunction): void => {
     const token = req.cookies?.[COOKIE_NAME];
     if (token) AuthService.logout(token);
@@ -114,6 +145,10 @@ export const logout = (req: Request, res: Response, next: NextFunction): void =>
     res.json({ message: "Logout successfully" });
 };
 
+/**
+ * Returns the currently authenticated user's profile.
+ * @route GET /api/auth/me
+ */
 export const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const user = await AuthService.getMe(req.user!.id);
@@ -123,6 +158,10 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     }
 };
 
+/**
+ * Initiates the password recovery process by generating a reset code.
+ * @route POST /api/auth/forgot-password
+ */
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { email } = req.body;
@@ -137,19 +176,23 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     }
 };
 
+/**
+ * Resets a user's password using a valid reset code.
+ * @route POST /api/auth/reset-password
+ */
 export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const {email, code, newPassword} = req.body;
-        if(!email || !code || !newPassword){
-            res.status(400).json({Error: "Email, Code, newPassword are required"});
+        const { email, code, newPassword } = req.body;
+        if (!email || !code || !newPassword) {
+            res.status(400).json({ Error: "Email, Code, newPassword are required" });
             return;
         }
-        if(newPassword < 8){
-            res.status(401).json({Error: "Password must be at least 8 digit"});
+        if (newPassword < 8) {
+            res.status(401).json({ Error: "Password must be at least 8 digit" });
             return;
         }
         await AuthService.resetPassword(email, code, newPassword);
-        res.json({message: "Password reset successfully"})
+        res.json({ message: "Password reset successfully" })
 
     } catch (err) {
         next(err);
