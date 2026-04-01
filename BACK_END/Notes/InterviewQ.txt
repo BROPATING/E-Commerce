@@ -330,4 +330,41 @@ Why cap limit at 50 server-side rather than trusting the client's value?
     more than 50 rows regardless of what the client requests. The frontend can request any page size up to 50 — the cap is 
     invisible to legitimate users but blocks abuse.
 
+Why generate a unique filename instead of using the original? (multer.ts)
+    Two reasons. First, collisions — two products both uploading photo.jpg would overwrite each other. 
+    Second, security — a user could upload a file named ../../../index.js and with naive filename handling, 
+    overwrite your server files. Sanitising the name and prepending a timestamp eliminates both risks.
 
+Why check MIME type in fileFilter? 
+    File extensions are trivially spoofable — a user can rename malware.exe to product.jpg. 
+    Checking file.mimetype verifies what the HTTP client claims the file type is. For a 
+    production system you'd also verify the file's magic bytes (the first few bytes of the 
+    actual file content) using a library like file-type. For this project, MIME type checking is sufficient.
+
+Why store only the filename in the database rather than the full URL like 
+http://localhost:3000/images/keyboard.jpg ?
+    Storing the full URL couples your database to your deployment environment. 
+    If the domain changes from localhost:3000 to shop.example.com, or from HTTP to HTTPS,
+    every image URL in the database is wrong. 
+    Storing only the filename — keyboard.jpg — means the URL is constructed at query 
+    time by the application layer, which knows the current base URL 
+    from environment variables. One environment variable change updates every image 
+    URL instantly with no database migration needed.
+
+What happens to the image file on disk when a product is deleted?
+    We call fs.unlinkSync() to delete the file from ProductImages/ before removing 
+    the database row. Without this, deleted products leave orphaned files accumulating 
+    on disk indefinitely — a storage leak. 
+    The delete is synchronous (unlinkSync) rather than async because we want the file deletion to complete before the database row is removed. 
+    If they were async and the process crashed between the two operations, 
+    we'd have a deleted DB row but an orphaned file — or worse, a deleted file but an intact DB row pointing to a missing image.
+
+How does upload.single('image') know where to save the file and what to name it?
+    upload is the multer instance configured with our diskStorage engine. 
+    The diskStorage engine has two functions — destination (which directory to write to)
+    and filename (what to name the file). Both are defined in multer.config.ts. 
+    When the request arrives, multer reads the image field from the multipart/form-data 
+    body, runs the file through fileFilter to validate the MIME type, then calls 
+    destination and filename to determine where to write it. After writing, multer 
+    populates req.file with metadata including filename — which our controller reads to
+    store in the database.

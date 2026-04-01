@@ -225,5 +225,56 @@ getManyAndCount() in product.service
     Query 2: Counts every single product in the database that matches your filters (ignoring skip and take).
     Result: It returns an array: [data, count]. You are using destructuring to assign them to products and total.
 
+Why Multer ?
+    Feature             Without Multer (Manual)                 With Multer
+    Complexity          50+ lines of complex Buffer logic.      5–10 lines of clear config.
+    Security            You must manually limit file size.      limits: { fileSize: 5000000 }
+    Parsing             You have to separate text from images.  Automatically puts text in req.body.
+    File Naming         Files will overwrite each other.        Custom filename function included.
+    Reliability         "High chance of ""broken"" images."     Battle-tested by millions of apps.
+    Using Multer gives you a "Good Format" because it transforms a chaotic stream of binary data into a clean, 
+    easy-to-use JavaScript object. Trying to do it without Multer is like trying to build your own engine just to 
+    drive to the grocery store—it’s possible, but not very efficient!
+
+npm install --save-dev @types/multer
+
+Why path.join(__dirname, '..', 'ProductImages')?
+    __dirname in a TypeScript project compiled to dist/ would resolve to dist/src/ at runtime. 
+    We go up two levels (..) to reach the project root where ProductImages/ lives. Using path.join 
+    instead of string concatenation handles OS-specific path separators 
+    (backslash on Windows, forward slash on Unix) automatically.
+
+Utils ---> ApiError.ts
+Why not just a function?	 
+    A function just returns an object; 
+    a Class creates a unique instance we can track.
 
 
+Why Class?
+    It makes your debugging life much easier because you can tell the difference between a 
+    "User Error" (404/400) and a "Developer Error" (500).
+    I prefer the Class approach because it turns a generic error into a structured, 
+    typed object that our Global Error Handler can recognize and process consistently 
+    across the entire application.
+
+Why not use JSON?
+    You cannot send a "true" image file inside a standard application/json body. 
+    JSON only supports text. To send an image in JSON, you would have to convert the
+    image to a massive Base64 string, which is much slower and harder for your server
+    (Multer) to process. Form-data is the industry standard for file uploads.
+    For this we use form-data in POSTMAN
+
+201 Created is specifically for when you add something to the database.
+200 OK is for a successful request that returns data.
+204 No Content is the most "Pro" choice for a deletion because there is no object left to 
+show.
+Recommendation: Use 200 if you want to send a "Deleted successfully" message, or 204 if 
+    you send nothing back.
+
+Most tutorial carts store items in localStorage or a server-side session. Both fail the spec's requirement:
+    localStorage cart — tied to the browser. Log out, switch device, or clear browser 
+        data and the cart is gone.
+    Session cart — tied to the server session. Our session store is an in-memory Map that 
+        doesn't survive server restarts.
+
+By default, if you do not explicitly call .status(), Express sends a status code of 200 OK.

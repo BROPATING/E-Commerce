@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import * as CartController from '../controllers/cart.controller';
-import { authenticate, requireRole } from '../middleware/auth.middleware';
+import { authenticate } from '../middleware/auth.middleware';
 import { UserRole } from '../entities/User';
+import { requireRole } from '../middleware/rbac.middleware';
 
 const router = Router();
 

@@ -67,6 +67,13 @@ The Objective
     controller involved in serving the image itself. This is worth 5 marks and has three distinct testable requirements: upload works, 
     default fallback works, and the path stored in the DB resolves correctly via the static URL.
 
+Step 12: Cart API — Persistent Cart with Quantity Management
+    We're implementing the persistent cart — the feature that earns 8 marks and has three specific, testable 
+    requirements from the spec: items persist across logout/login, quantity management works correctly, and the cart 
+    clears completely after a successful order. The persistence requirement is what makes this architecturally 
+    interesting — the cart lives in the database tied to the user's ID, not in a browser session or localStorage.
+
+
 
 
 

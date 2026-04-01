@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express"
 import { SessionStore } from "./sessionStore";
 import { AppDataSource } from "../config/data-source";
-import { User, UserRole } from "../entities/User";
+import { User } from "../entities/User";
 import jwt from "jsonwebtoken";
+import rateLimit from 'express-rate-limit';
 
 /**
  * Extends Express's Request interface to carry the authenticated user
@@ -74,21 +75,6 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 }
 
 /**
- * Middleware that restrict the access as per the role
- * @param roles - One or more UserRoles allowed to access the route.
- * @returns An Express middleware function.
- */
-export const requireRole = (...roles: UserRole[]) => {
-    return (req: Request, res: Response, next: NextFunction): void => {
-        if(!req.user || !roles.includes(req.user.role as UserRole)){
-            res.status(401).json({error: "Permission denied to access this resource"});
-            return;
-        }
-        next();
-    }
-}
-
-/**
  * OPTIONAL AUTH MIDDLEWARE (Basically for the Guest)
  * Tries to authenticate but does not block the request if no token exists. 
  * Used on public routes where logged-in users get extra capabilities
@@ -97,16 +83,16 @@ export const requireRole = (...roles: UserRole[]) => {
 export const optionalAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.authToken;
-        if(!token) return next();
+        if (!token) return next();
 
         const payLoad = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayLoad;
 
         const session = SessionStore.get(token);
-        if(!session) return next();
+        if (!session) return next();
 
         const userRepo = await AppDataSource.getRepository(User);
-        const user = await userRepo.findOne({where: {id: payLoad.userId}});
-        if(user && !user.isLocked) req.user = user;
+        const user = await userRepo.findOne({ where: { id: payLoad.userId } });
+        if (user && !user.isLocked) req.user = user;
 
         next();
     } catch (error) {
@@ -115,6 +101,23 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
+/**
+ * /**
+ * Authentication rate limiter middleware.
+ * Limits repeated requests to authentication endpoints
+ * to help protect against brute-force attacks.
+ */
+export const authLimiter = rateLimit({
+    // Time window in milliseconds (15 minutes here)
+    windowMs: 15 * 60 * 1000,
+    // Maximum number of requests allowed per IP within the window
+    max: 50,
+    message: { Error: "To many attempts. Please try again later" },
+    // Sends modern 'RateLimit-*' headers with limit/remaining info
+    standardHeaders: true, 
+    // Disables older 'X-RateLimit-*' headers to keep response clean
+    legacyHeaders: false
+});
 
 /**
  * declare global
