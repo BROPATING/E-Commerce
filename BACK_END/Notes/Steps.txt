@@ -68,12 +68,19 @@ The Objective
     default fallback works, and the path stored in the DB resolves correctly via the static URL.
 
 Step 12: Cart API — Persistent Cart with Quantity Management
+The Objective
     We're implementing the persistent cart — the feature that earns 8 marks and has three specific, testable 
     requirements from the spec: items persist across logout/login, quantity management works correctly, and the cart 
     clears completely after a successful order. The persistence requirement is what makes this architecturally 
     interesting — the cart lives in the database tied to the user's ID, not in a browser session or localStorage.
 
-
+Step 13: Checkout & Order Creation — The Price Snapshot Pattern
+The Objective
+    We're implementing checkout — the most data-integrity-critical endpoint in the entire application. 
+    This is where the price snapshot pattern from Step 2 pays off. A successful checkout must do five things
+    atomically: validate stock for every item, create the Order record, create individual OrderItem records 
+    with prices frozen at the current moment, decrement stock, and clear the cart. If any step fails, none 
+    of them should commit. This is where database transactions become mandatory.
 
 
 

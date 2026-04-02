@@ -368,3 +368,43 @@ How does upload.single('image') know where to save the file and what to name it?
     destination and filename to determine where to write it. After writing, multer 
     populates req.file with metadata including filename — which our controller reads to
     store in the database.
+
+What happens if two users add the last unit of a product to their carts simultaneously?
+    Solution: For this project the soft reservation approach is acceptable — the checkout service 
+        validates stock again before confirming the order, which is where we'll handle the final guard.
+    Key Talks: 
+        The Problem: Race Condition (two users passing the check at the same millisecond).
+        The Strategy: Soft Reservation (checking at add-to-cart, but validating at checkout).
+        The Solution: Database Transactions and Row Locking.
+    For a high-scale production app, I would upgrade this to Pessimistic Locking using SELECT FOR UPDATE to lock the
+    database row during the transaction.
+
+Why does updateCartItem with quantity 0 remove the item rather than returning an error?
+    It's a UX design decision. The frontend's quantity input will have a minus button — when the user decrements 
+    from 1 to 0, it's semantically equivalent to removing the item. Treating 0 as a remove-intent rather than 
+    an error means the frontend can use a single PATCH /cart/update endpoint for both "change quantity" and 
+    "remove item" without needing special-case logic. The user's mental model is "I want zero of this" which means 
+    "remove it". Requiring a separate DELETE call for that specific case adds unnecessary complexity on the client side.
+    Key Talking Points for the Interview:
+        User Mental Model: "Zero" naturally means "remove."
+        API Simplicity: One endpoint (PATCH) handles two actions (Update & Delete).
+        Frontend Efficiency: No extra conditional logic needed on the client side to switch between different API methods.
+
+How does the cart persist across server restarts while the session store does not?
+    The cart is stored in the SQLite database — a file on disk. It persists across any 
+    process lifecycle event including crashes and restarts because SQLite writes to disk
+    synchronously. 
+    The session store is a JavaScript Map object in the Node.js process 
+    heap — it is allocated in RAM and lost the moment the process exits. 
+    These are two fundamentally different storage mechanisms with different persistence
+    guarantees. The session store is intentionally ephemeral — losing sessions on restart
+    is acceptable because users simply log in again, and their cart is still waiting 
+    for them in the database.
+Feature             Cart (Database)                     Session (Memory)
+Storage Location    Disk (Hard Drive)                   RAM (Memory)
+Survivor Status     Restarts don't matter               Wiped on restart
+Speed               Fast                                Extremely Fast
+Analogy             A Notebook (Written in ink)         A Whiteboard (Erased at night)
+
+
+

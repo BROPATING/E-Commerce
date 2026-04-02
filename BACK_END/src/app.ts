@@ -6,11 +6,11 @@ import path from 'path';
 import dotenv from "dotenv";
 
 //Imports of Routes
-import authRoutes    from './routes/auth.routes';
+import authRoutes from './routes/auth.routes';
 import productRoutes from './routes/product.routes';
-import cartRoutes    from './routes/cart.routes';
-import orderRoutes   from './routes/order.routes';
-import adminRoutes   from './routes/admin.routes';
+import cartRoutes from './routes/cart.routes';
+import orderRoutes from './routes/order.routes';
+import adminRoutes from './routes/admin.routes';
 /**
  * Express Application Configuration
  * This file initializes middleware, security settings, and global route handlers.
@@ -72,7 +72,7 @@ app.use("/api/admin", adminRoutes);
 
 // 404 Handler
 app.use('/api', (_req, res) => {
-  res.status(404).json({ error: 'Endpoint not found' });
+    res.status(404).json({ error: 'Endpoint not found' });
 });
 
 /**
@@ -81,6 +81,9 @@ app.use('/api', (_req, res) => {
  * Prevents the server from crashing and returns a clean JSON error to the client.
  */
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err.message === 'Only image files are allowed (JPEG, PNG, WebP, GIF)') {
+        return res.status(400).json({ error: err.message });
+    }
     console.error("Error");
     const status = err.status || 500;
     const message = process.env.NODE_ENV === 'production'

@@ -278,3 +278,61 @@ Most tutorial carts store items in localStorage or a server-side session. Both f
         doesn't survive server restarts.
 
 By default, if you do not explicitly call .status(), Express sends a status code of 200 OK.
+
+In admin.Service
+Feature         .delete()                           .remove()
+Input           "ID array of IDs                    or criteria",Full Entity Object (or array of objects)
+Performance     Very High (Direct SQL)              Moderate (Requires a fetch first)
+Triggers Hooks? No                                  Yes
+Use Case        "Bulk deletes, simple ID removal"   When you need to run logic before/after delete
+
+What if you don't write return then what happen ?
+    if (!productId) {
+        res.status(400).json({ error: 'productId is required' });
+        return;
+        }
+    In Express, the res methods like json() or send() do not automatically terminate the function execution. 
+    If we don't include a return statement after sending an error response, the execution will continue to the
+    'success' logic below. This leads to a 'Headers Already Sent' error and potential side effects, such as 
+    unnecessary database queries or server crashes
+
+Feature	                    findOneBy / find	        SelectQueryBuilder
+Complexity	                Low (Easy)	                High (Steep learning curve)
+Joins	                    Basic (via relations)	    Advanced (Inner/Left Joins)
+Execution Speed	            Fast for single rows	    Fastest for complex datasets
+Select Specific Columns	    Possible but limited	    Extremely precise (.select())
+SQL Injection Protection	Built-in	                Built-in (if using parameters)
+
+Update Logic in cart.service
+    Imagine a user has 2 Gaming Mice in their cart. The warehouse (Stock) has 10 left. 
+    The user changes their cart to 5.
+    Old Quantity: 2
+    New Quantity: 5
+    The Delta (diff): 5 - 2 = 3
+    The Logic: Is $3 <= 10? Yes.
+    The Result: Stock becomes 10 - 3 = 7. Cart becomes 5.
+
+Terms                   What it tells the Interviewer
+Race Condition	    You understand that code runs asynchronously and can overlap.
+Soft Reservation	You know the difference between "putting it in a cart" and "owning it."
+Pessimistic Locking	You know how to use Database features to prevent data corruption.
+Source of Truth	    You understand that the final database update is the only one that matters.
+Atomic Operation	You know that some actions must happen as one single, unbreakable unit.
+
+Feature         Soft Reservation (Your Current Way)     Hard Reservation (Locking)
+Performance     Very High (No DB waiting)               Lower (Users must wait for locks)
+UX              "Item might ""disappear"" at checkout"  Item is guaranteed once in cart
+Complexity      Simple code                             Requires Transactions/Locking
+Best For        General E-commerce (Amazon/eBay)        Ticket Sales (Concerts/Airlines)
+Conclusion: That we are designing the e-commerce and taking the reference from amazon/e-bay 
+            soft-reservation is optimal to use as per the user requirement
+
+Why didn't you just use locking now? ---> Refer Line 372 in InterviewQ.txt or search (Soft Reservation)
+    For this MVP (Minimum Viable Product), a soft reservation is more performant and easier to maintain. 
+    It prevents the database from becoming a bottleneck. As the app scales, we can easily wrap the 
+    checkout logic in a Database Transaction to provide stricter guarantees.    
+
+
+
+
+
