@@ -54,8 +54,8 @@ export const CartSerice = {
                     , 400);
             }
             existing.quantity = newQty;
-            product.stock -= quantity; // Deduct newly added quantity
-            await prodRepo.save(product);
+            // product.stock -= quantity; // Deduct newly added quantity
+            // await prodRepo.save(product);
             return cartRepo.save(existing);
         }
 
@@ -63,9 +63,9 @@ export const CartSerice = {
             throw new ApiError(`Only ${product.stock} units available`, 400);
         }
 
-        // Deduct stock for new cart item
-        product.stock -= quantity;
-        await prodRepo.save(product);
+        // // Deduct stock for new cart item
+        // product.stock -= quantity;
+        // await prodRepo.save(product);
 
         const user = { id: userId } as User;
         const cartItem = cartRepo.create({ user, product, quantity });
@@ -96,25 +96,25 @@ export const CartSerice = {
 
         // Quantity 0 means remove
         if (quantity <= 0) {
-            product.stock += item.quantity; // Restore the Product Stock
-            await productRepo.save(product);
+            // product.stock += item.quantity; // Restore the Product Stock
+            // await productRepo.save(product);
             await cartItemRepo.remove(item);
             return { message: 'Item removed from cart and stock restored' };
         }
 
         // Calculate the difference (Delta)
-        const diff = quantity - item.quantity;
+        // const diff = quantity - item.quantity;
 
         // Validate against current stock
-        if (diff > product.stock) {
-            const error: any = new Error(`Only ${item.product.stock} units available`);
-            error.status = 400;
-            throw error;
-        }
+        // if (diff > product.stock) {
+        //     const error: any = new Error(`Only ${item.product.stock} units available`);
+        //     error.status = 400;
+        //     throw error;
+        // }
 
-        product.stock -= diff;
+        // product.stock -= diff;
         item.quantity = quantity;
-        await productRepo.save(product);
+        // await productRepo.save(product);
         return cartItemRepo.save(item);
     },
 
@@ -133,11 +133,11 @@ export const CartSerice = {
         });
         if (!item) throw new ApiError('Item not found', 404);
 
-        // Restore the product stock
-        const product = item.product;
-        product.stock += item.quantity;
+        // // Restore the product stock
+        // const product = item.product;
+        // product.stock += item.quantity;
 
-        await productRepo.save(product);
+        // await productRepo.save(product);
 
         await cartItemRepo.remove(item);
         return { message: "Item Removed From Cart", item };
@@ -160,11 +160,11 @@ export const CartSerice = {
         if (items.length === 0) {
             throw new ApiError('Cart Is already empty', 400);
         }
-        //Restore stock for each product
-        for (const item of items) {
-            item.product.stock += item.quantity;
-            await productRepo.save(item.product);
-        }
+        // //Restore stock for each product
+        // for (const item of items) {
+        //     item.product.stock += item.quantity;
+        //     await productRepo.save(item.product);
+        // }
 
         await cartItemRepo.delete({ user: { id: userId } });
 

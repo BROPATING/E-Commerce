@@ -82,6 +82,12 @@ The Objective
     with prices frozen at the current moment, decrement stock, and clear the cart. If any step fails, none 
     of them should commit. This is where database transactions become mandatory.
 
+Step 14: Angular Project Setup, Routing Architecture & Route Guards
+    The ObjectiveWe're initialising the Angular frontend and establishing the complete routing architecture 
+    before writing a single component. This is the equivalent of what we did in Step 5 for Express — define 
+    the shape of the entire application first. The spec awards 6 marks specifically for routing, lazy loading, 
+    and route guards. Getting the architecture right here means every subsequent Angular step slots in cleanly.
+
 
 
 

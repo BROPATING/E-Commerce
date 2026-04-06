@@ -29,25 +29,32 @@ export const AppDataSource = new DataSource({
      * In Dev: You have maximum productivity and speed.
      * In Prod: The feature is forced OFF, requiring you to use Migrations (version-controlled scripts) to update the database safely.
      */
-    synchronize: process.env.NODE_ENV === 'development', 
+    synchronize: process.env.NODE_ENV === "true",  // For Migration === 'Production'
+    // synchronize: process.env.NODE_ENV === 'development', // Without Migration
     /**
      * logging: Prints all SQL queries to the terminal.
      * Useful for debugging complex joins between Categories and Products.
      */
-    logging: process.env.NODE_ENV === 'development',
+    logging: process.env.NODE_ENV === 'true',
+    // logging: process.env.NODE_ENV === 'development',
     /**
      * entities: The list of classes that TypeORM should track.
      * All hierarchy levels (Type -> Cat -> SubCat -> Product) must be listed here.
      */
     entities: [
         ProductType, Category, SubCategory, Product,
-        User, CartItem, Order, OrderItem, ResetCode,
+        User, CartItem, Order, OrderItem, ResetCode
     ],
     /**
+     * Commented because we are not using sql server we are using SQLIte
      * timezone: 'Z' (Zulu/UTC).
      * Ensures that all 'created_at' and 'expires_at' timestamps are stored in UTC format.
      * Prevents time-shift bugs when the server and database are in different regions.
      */
     // timezone: 'Z',
+
+    // Specify migration files location and history table
+    migrations: ["src/migrations/**/*.ts"],    // Path to all migration scripts
+    migrationsTableName: 'migrations_history', // Table to track applied migrations
 });
 

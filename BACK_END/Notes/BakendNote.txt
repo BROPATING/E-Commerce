@@ -326,13 +326,106 @@ Complexity      Simple code                             Requires Transactions/Lo
 Best For        General E-commerce (Amazon/eBay)        Ticket Sales (Concerts/Airlines)
 Conclusion: That we are designing the e-commerce and taking the reference from amazon/e-bay 
             soft-reservation is optimal to use as per the user requirement
+Applied to the order.serivice.ts in CheckOut
 
 Why didn't you just use locking now? ---> Refer Line 372 in InterviewQ.txt or search (Soft Reservation)
     For this MVP (Minimum Viable Product), a soft reservation is more performant and easier to maintain. 
     It prevents the database from becoming a bottleneck. As the app scales, we can easily wrap the 
     checkout logic in a Database Transaction to provide stricter guarantees.    
 
+req
+    An active variable. You are using it in your code (e.g., req.body or req.params).
+    Used "I am reading data from the request."
+_req
+    An ignored variable. The underscore tells TypeScript: "I know this parameter is here because the function signature requires it, but I am not actually going to use it."
+    Unused	"I am skipping this to get to the next argument."
+
+In auth.controller.ts > setCookieAndRespond what is sameSite: lax ?
+Value       Strictness         Behavior
+None        Low                Cookie is sent everywhere (Requires Secure: true). Dangerous.
+Lax         Medium             Default in modern browsers. Balance between security and convenience.
+Strict      High               Cookie is never sent if you come from an external link. (You'd have to  log in again even if you just clicked a Google link).
+
+lax
+    sameSite: 'lax' is a browser-level security mechanism used to mitigate Cross-Site 
+    Request Forgery (CSRF). It ensures that sensitive session cookies are only sent 
+    during 'safe' top-level navigations (like clicking a link) but are withheld during 
+    cross-site sub-requests (like images or script-based POST calls). This prevents 
+    malicious third-party sites from executing unauthorized actions on behalf of a 
+    logged-in user while still maintaining a smooth user experience when navigating from 
+    search engines.
+
+why lax over strict ?
+    I chose sameSite: 'lax' to strike a balance between security and user experience. 
+    While Strict offers maximum CSRF(Cross-Site Request Forgery) protection, 
+    it prevents session persistence when a user navigates to our store from an external link, 
+    like a search engine or a marketing email. 
+    For an e-commerce platform, maintaining the 'logged-in' state during navigation is critical for conversion rates. 
+    Lax provides robust protection against cross-site state-changing requests 
+    (like POST and DELETE) while allowing seamless 'GET' transitions.
+
+    Own
+        Suitable for e-commerce
+        Provides Good Balance
+        Ex. Entry of 3rd party from email or by search for advertising and marketing for expansion
+
+    Keep it as Lax. It is the industry standard for 90% of the internet. 
+    If you change it to Strict, you will find yourself constantly re-logging in during development 
+    every time you click a link from your documentation or email.
 
 
+In order.service AppDataSource.transaction
+    Transaction => Provides Atomicity ---> All or Nothing
+    I used AppDataSource.transaction because checkout is a multi-step atomic operation. 
+    We are doing four critical things: creating an order, snapshotting prices, 
+    decrementing inventory, and clearing the cart. If the server crashed after decrementing 
+    stock but before creating the order, the customer would lose their items and we would lose 
+    the { --- sale record --- BigBillionDays}. 
+    The transaction ensures that if any step fails, 
+    the database { --- rolls back --- }to its original state, keeping our inventory and 
+    financial data 100% accurate.
+    Conclusion: It prevents the 'Ghost Order' problem where stock is deducted but no order exists, and 
+        it ensures that the user's cart is only cleared once the payment and order logic are successfully 
+        committed to the disk
+
+map in order.service in checkout 3.b create orderItem
+Why Map ?
+    - best tool for transformation
+    - declarative: It says "I want to turn every A into a B."
+    - concise: You can do the whole transformation in one block.
+
+Feature         map (Your current way)          for...of (Alternative)
+Readability     Clean, modern Functional        Traditional, Imperative
+Boilerplate     Very little                     Needs manual array creation & .push()
+Use Case        Best for converting data        Best for performing actions (like the decrement loop)
+
+I used .map() to prepare the OrderItems because it is the most idiomatic way in JavaScript to transform one 
+data structure into another. Since I needed to create an array of OrderItem entities based on the cartItems, 
+map allows me to do this in a single, readable expression.
+
+I chose a for...of loop earlier for the stock decrement because that involves an asynchronous 
+side effect (await manager.decrement). Using map for asynchronous operations can be messy, 
+whereas map is the perfect tool for the synchronous creation of entity instances
+
+Migrations
+    migration means moving data or structure from one place to another.
+    - In databases, migration usually refers to changing the database structure 
+        (like adding a new column, renaming a table, or updating relationships) in a controlled way.
+    - It’s like keeping a “history of changes” so developers can update the database step 
+        by step without breaking things.
+
+Why Migrations Matter Here
+    Right now synchronize: true is creating your tables automatically. This is fine during 
+    active development, but there are two problems:
+    Problem 1 — You have no record of your schema. If you delete ecommerce.db or submit your project on 
+        a different machine, synchronize recreates the tables but you have no SQL file documenting what 
+        the schema looks like. The deliverables checklist in the spec mentions an optional SQL file — having 
+        one demonstrates professionalism.  
+    Problem 2 — synchronize can destroy data. The moment you rename a column in an entity, 
+        TypeORM drops the old column and creates a new one — silently destroying all data in that column. 
+        Migrations give you explicit control.
+
+npm run schema:export
+This produces schema.sql in your project root. 
 
 

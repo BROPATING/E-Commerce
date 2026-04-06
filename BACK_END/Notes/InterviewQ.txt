@@ -406,5 +406,51 @@ Survivor Status     Restarts don't matter               Wiped on restart
 Speed               Fast                                Extremely Fast
 Analogy             A Notebook (Written in ink)         A Whiteboard (Erased at night)
 
+Why manager.decrement() instead of loading the product and saving?
+    manager.decrement(Product, { id }, 'stock', qty) translates to a single atomic SQL statement: 
+        UPDATE product 
+        SET stock = stock - qty 
+        WHERE id = id 
+    Loading the product, subtracting in JavaScript, and saving back is a
+    read-modify-write pattern — two database round-trips with a window for a race condition between them. 
+    The decrement approach is atomic at the SQL level, eliminating the race condition entirely.
+
+Why validate payment method before opening the transaction? 
+    Opening a transaction acquires a database lock. Doing unnecessary work inside that 
+    lock window — like validating a string that could be checked before — holds the lock longer than needed. 
+    We validate everything we can before AppDataSource.transaction() and keep the transaction body 
+    as short as possible.
+
+Why use AppDataSource.transaction() instead of TypeORM's cascade: true option on the Order entity?
+    cascade: true on a TypeORM relation automatically saves child entities when the parent is saved — 
+        it handles steps 3 and 3b (creating Order and OrderItems) automatically. 
+        But it cannot handle steps 4 (stock decrement) and 5 (cart clear) — those are operations on entirely 
+        different entities. cascade only covers the parent-child relationship it's defined on. 
+    A transaction wraps all five steps including the unrelated operations, giving us a true 
+        all-or-nothing guarantee across the entire checkout flow. Using cascade alone would give 
+        partial atomicity — OrderItems would be consistent with their Order, but stock and cart 
+        could still be left in an incorrect state if an error occurred mid-flow.
+
+What is the exact SQL that manager.decrement() produces and why does it matter?
+    It produces 
+        UPDATE product 
+        SET stock = stock - 1 
+        WHERE id = 2
+    The critical word is stock = stock - $1 — the subtraction happens inside the database, not in JavaScript. 
+    If you loaded product.stock, subtracted in JavaScript, and saved, you'd have: read (stock=10) → subtract → write (stock=8). 
+    A concurrent request could read the same stock=10 between your read and your write, also subtract, 
+    and also write stock=8 — you've now decremented by the same quantity twice. With stock = stock - qty 
+    in the database, each decrement is atomic — the database serialises them automatically.  
+
+The checkout clears the cart in the same transaction as the order creation. What would happen if 
+the cart clear failed?"
+    If manager.delete(CartItem, ...) throws — for example due to a constraint violation or a 
+    disk error — TypeORM catches the exception and issues an automatic ROLLBACK. 
+    The entire transaction is undone: the Order row is deleted, the OrderItem rows are deleted, 
+    and the stock decrements are reversed. The database returns to exactly the state it was in 
+    before checkout began. The user's cart is still intact and they can retry. Without the transaction, 
+    the order would exist in the database but the cart would still have items — leading to potential double-ordering.
+
+
 
 

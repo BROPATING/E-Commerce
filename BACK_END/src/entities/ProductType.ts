@@ -24,5 +24,5 @@ export class ProductType {
      * This is the inverse side of the ManyToOne relationship in the Category entity.
      */
     @OneToMany(() => Category, (cat) => cat.type)
-    categories : Category[];
+    categories: Category[];
 }

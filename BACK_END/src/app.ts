@@ -7,10 +7,12 @@ import dotenv from "dotenv";
 
 //Imports of Routes
 import authRoutes from './routes/auth.routes';
+import profileRoutes from './routes/profile.routes';
 import productRoutes from './routes/product.routes';
 import cartRoutes from './routes/cart.routes';
 import orderRoutes from './routes/order.routes';
 import adminRoutes from './routes/admin.routes';
+import { profile } from 'console';
 /**
  * Express Application Configuration
  * This file initializes middleware, security settings, and global route handlers.
@@ -65,6 +67,7 @@ app.get('/api/health', (req, res) => {
  * Each path follows a RESTful naming convention for predictable resource access.
  */
 app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
