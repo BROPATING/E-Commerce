@@ -1,0 +1,82 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Create account</h1>
+    <p class="auth-subtitle">Join us today</p>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="name">Full name</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Jane Doe"
+          [class.input-error]="name.invalid && name.touched"
+        />
+        <span class="error-msg" *ngIf="name.invalid && name.touched">
+          Name must be between 2 and 50 characters
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          [class.input-error]="email.invalid && email.touched"
+        />
+        <span class="error-msg" *ngIf="email.invalid && email.touched">
+          Please enter a valid email address
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Min 8 chars, 1 uppercase, 1 number"
+          [class.input-error]="password.invalid && password.touched"
+        />
+        <span class="error-msg" *ngIf="password.invalid && password.touched">
+          Password must be at least 8 characters with one uppercase letter and one number
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          placeholder="Repeat your password"
+          [class.input-error]="confirmPassword.touched && form.hasError('passwordMismatch')"
+        />
+        <span class="error-msg" *ngIf="confirmPassword.touched && form.hasError('passwordMismatch')">
+          Passwords do not match
+        </span>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        {{ loading ? 'Creating account...' : 'Create account' }}
+      </button>
+
+    </form>
+
+    <div class="auth-links">
+      Already have an account? <a routerLink="/auth/login">Sign in</a>
+    </div>
+  </div>
+</div>
