@@ -1,0 +1,129 @@
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── app.component.ts       ← root component, holds <router-outlet>
+│   │   ├── app.module.ts          ← root module
+│   │   ├── app-routing.module.ts  ← root routing
+│   │   ├── core/                  ← create this
+│   │   │   ├── guards/            ← route guards
+│   │   │   ├── interceptors/      ← HTTP interceptor
+│   │   │   └── services/          ← auth service, shared services
+│   │   ├── shared/                ← create this
+│   │   │   └── components/        ← navbar, footer, product-card
+│   │   ├── features/              ← create this
+│   │   │   ├── auth/              ← login, register, forgot-password
+│   │   │   ├── products/          ← homepage, listing, detail
+│   │   │   ├── cart/              ← cart page
+│   │   │   ├── orders/            ← order history, confirmation
+│   │   │   └── profile/           ← edit profile, change password
+│   │   └── admin/                 ← lazy-loaded admin module
+│   │       ├── admin.module.ts
+│   │       ├── admin-routing.module.ts
+│   │       └── components/
+│   ├── environments/
+│   │   ├── environment.ts
+│   │   └── environment.prod.ts
+│   └── styles.css                 ← global styles
+
+Feature             SSR (Server-Side)           SSG (Static/Prerender)      CSR (Client-Side - Default)
+When is HTML made?  On every request.           During the Build process    In the user's Browser.
+Speed               Fast                        Fastest                     "Slow start, fast later."
+SEO                 Excellent                   Excellent                   Fair/Poor
+Server Load         High                        Very Low                    Low
+
+Feature         Development                         Production
+Speed           "Fast to build, slow to run."       "Slow to build, fast to run."
+Logging         High (Console is full of messages)  Low (Only critical errors to a file).
+Data            Fake/Mock data (Seeders)            Real User Data (Sensitive).
+Database        synchronize: true (Auto-updates)    synchronize: false (Uses Migrations).
+Security        Low (Open ports for debugging)      "Maximum (Firewalls, HTTPS)."
+
+Ex. Think of Development as the kitchen where the chefs are messy and experimenting, and 
+    Production as the dining room where the customers see only the finished, perfect plate.
+
+BehaviorSubject holds the current user state.
+BehaviorSubject vs Subject:
+BehaviorSubject always has a current value and replays it
+to any new subscriber immediately — so a component that
+subscribes after login still gets the current user.
+
+Which one should you use?
+    Use Subject for Events: Like a button click or a "Delete" action. 
+        You only care about the moment it happens.
+    Use BehaviorSubject for State: Like the currentUser, isLoggedIn, or cartItems. 
+        You want any new component to know the status immediately upon loading.
+
+Feature                 Subject                                         BehaviorSubject
+Initial Value           No initial value                                Requires an initial value.
+Late Subscribers        They get nothing until a new value is sent      They immediately get the last emitted value.
+Current Value           Cannot ask for the current value easily         Can check the current value anytime with .value.
+Analogy                 A Live Radio                                    A Netflix Movie
+
+private currentUserSubject = new BehaviorSubject<User | null>(null);
+why null => If you only wrote <User>, TypeScript would complain the moment 
+   * you tried to start the app without a user already logged in. Since a user has to 
+   * log in after the app starts, you must allow it to be null at the beginning.
+   * (null)	Initial State	"Right now, the box is empty."
+
+ReplaySubject (The "History Tape")
+    This stores a specific number of previous values (a buffer) and "replays" them to any new subscriber.
+    Analogy: A "Recent Calls" list on your phone. When you open the app, it shows you the last 5 calls 
+        that happened while you weren't looking.
+    Best for: Recording a sequence of actions or a "command history."
+
+AsyncSubject (The "Final Result")
+    This only emits the very last value, and only after the stream is completed (closed).
+    Analogy: A final exam. You don't get any feedback while writing; you only get the final grade once 
+        the clock stops and the  papers are collected.
+    Best for: Long-running calculations or AJAX requests where you only care about the final response.
+
+Subject Type        Stores Value?           Needs Initial Value?    What does a new Subscriber get?
+Subject             No                      No                      Only future values.
+BehaviorSubject     Yes (Last 1)            Yes                     The current (last) value immediately.
+ReplaySubject       Yes (Many)              No                      The last X values defined in the buffer.
+AsyncSubject        Yes (Last 1)            No                      Only the final value after complete().
+
+tap	
+    Observes the data.	
+    A Security Camera watching people enter a building. It doesn't stop them or change them.
+map	
+    Transforms the data.	
+    A Security Gate where everyone has to put on a visitor badge. 
+    They are different when they come out.
+
+The .pipe() allows you to plug in different "tools" (operators like tap, map, or catchError) to process that data before it reaches your component.
+
+
+Feature         Promise                     Observable
+Values          Emits only one value        Emits multiple values (Stream) over time.
+Cancellation    Cannot be cancelled         Can be cancelled (Unsubscribe).
+Timing          Starts immediately (Eager)  Starts only when watched (Lazy).
+Operators       Very limited (then/catch)   "Massive library (map, tap, filter, etc.)."
+
+@Injectable({
+  providedIn: 'root'
+})
+Dependency Injection : It allows the class to receive other services (like HttpClient) in its constructor
+Shared State: Allows to share multiple component using @input and @output
+Efficiency: ensure the service is a Singleton and "tree-shakable," making the app faster and memory-efficient.
+
+Feature         Without @Injectable                     With @Injectable
+Management      You must manually do new MyService()    Angular creates and manages it for you.
+Sharing         Every component gets a different copy   Every component shares the same instance (Singleton).
+Dependencies    Cannot easily use HttpClient            "Can easily ""inject"" any other Angular service."
+
+req.clone({ withCredentials: true }): Crucial! HTTP requests in Angular are Immutable (you cannot change them). 
+    To add something (like a cookie/credential), you must make a perfect copy (clone) with that one change added.
+
+Guard               Question it asks                Real-World Use Case
+CanActivate         Can I see this page?            Checking if isLoggedIn == true.
+CanActivateChild    Can I see these sub-pages?      Protecting an entire Admin panel.
+CanDeactivate       Did I save my work?             Preventing data loss on a form.
+CanMatch            Should I download this code?    Protecting Lazy Loaded modules.
+Resolve             Is the data ready?              Pre-loading Product info from API.
+
+
+
+
+
+
