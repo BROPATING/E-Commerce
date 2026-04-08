@@ -4,7 +4,7 @@ import { AppDataSource } from "../config/data-source";
 import { createProduct, deleteProduct, getAllCustomers, getAllOrders, getAllProducts, getOrderDetail, toggleLock, updateProduct } from "../controllers/admin.controller";
 import { Product } from "../entities/Product";
 import { SubCategory } from "../entities/SubCategory";
-import { User } from '../entities/User';
+import { User, UserRole } from '../entities/User';
 import { ApiError } from '../utils/ApiError/ApiError';
 import { Order } from '../entities/Order';
 import { SessionStore } from '../middleware/sessionStore';
@@ -154,11 +154,15 @@ export const AdminService = {
    * Results are ordered by creation date (newest first).
    */
     async getAllCustomers() {
-        return AppDataSource.getRepository(User).find({
-            where: { role: 'customer' as any },
-            select: ['id', 'name', 'email', 'isLocked', 'createdAt'],
-            order: { createdAt: 'DESC' },
-        });
+        const userRepo = AppDataSource.getRepository(User);
+        const customers = await userRepo
+            .createQueryBuilder('user')
+            .where('user.role = :role', { role: UserRole.CUSTOMER })
+            .orderBy('user.createdAt', 'DESC')
+            .getMany();
+
+        // Strip passwordHash from each result before sending
+        return customers.map(({ passwordHash: _, ...safe }) => safe);
     },
 
     /**

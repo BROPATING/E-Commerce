@@ -1,0 +1,92 @@
+<div class="orders-page">
+  <div class="orders-container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>My Orders</h1>
+        <p class="page-subtitle" *ngIf="!loading">
+          {{ orders.length }} order{{ orders.length !== 1 ? 's' : '' }} placed
+        </p>
+      </div>
+      <a routerLink="/products" class="btn btn-secondary">
+        Continue shopping
+      </a>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="state-box">
+      <div class="spinner"></div>
+      <p>Loading your orders...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="!loading && errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && !errorMessage && orders.length === 0" class="state-box empty">
+      <div class="empty-icon">📦</div>
+      <h2>No orders yet</h2>
+      <p>When you place an order, it will appear here.</p>
+      <a routerLink="/products" class="btn btn-primary">Start shopping</a>
+    </div>
+
+    <!-- Orders list -->
+    <div *ngIf="!loading && orders.length > 0" class="orders-list">
+
+      
+        <a *ngFor="let order of orders"
+        [routerLink]="['/orders', order.id]"
+        class="order-card"
+      >
+        <!-- Card header -->
+        <div class="order-card-header">
+          <div class="order-id-section">
+            <span class="order-label">Order</span>
+            <span class="order-id">#{{ order.id }}</span>
+          </div>
+          <div class="order-date-section">
+            <span class="order-label">Date</span>
+            <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+          </div>
+          <div class="order-payment-section">
+            <span class="order-label">Payment</span>
+            <span class="order-payment">{{ order.paymentMethod }}</span>
+          </div>
+          <div class="order-total-section">
+            <span class="order-label">Total</span>
+            <span class="order-total">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="order-arrow">→</div>
+        </div>
+
+        <!-- Item previews -->
+        <div class="order-items-preview" *ngIf="order.items && order.items.length > 0">
+          <div class="preview-thumbs">
+            <img
+              *ngFor="let item of getPreviewItems(order)"
+              [src]="getImageUrl(item.product.imagePath)"
+              [alt]="item.product.name"
+              [title]="item.product.name"
+              class="preview-thumb"
+            />
+            <div class="preview-more" *ngIf="getRemainingCount(order) > 0">
+              +{{ getRemainingCount(order) }}
+            </div>
+          </div>
+          <p class="items-summary">
+            {{ getItemCount(order) }} item{{ getItemCount(order) !== 1 ? 's' : '' }}
+            —
+            <span *ngFor="let item of order.items; let last = last">
+              {{ item.product.name }}{{ !last ? ', ' : '' }}
+            </span>
+          </p>
+        </div>
+
+      </a>
+
+    </div>
+  </div>
+</div>

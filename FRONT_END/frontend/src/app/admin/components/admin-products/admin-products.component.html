@@ -1,0 +1,55 @@
+<div class="admin-section">
+  <div class="section-header">
+    <h1>Products</h1>
+    <a routerLink="/admin/products/new" class="btn btn-primary">+ Add product</a>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">Loading products...</div>
+
+  <div *ngIf="!loading" class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>
+            <img
+              [src]="getImageUrl(product.imagePath)"
+              [alt]="product.name"
+              class="product-thumb"
+            />
+          </td>
+          <td class="product-name-cell">{{ product.name }}</td>
+          <td class="category-cell">
+            {{ product.subCategory?.category?.type?.name }}
+            › {{ product.subCategory?.name }}
+          </td>
+          <td>₹{{ product.price | number:'1.2-2' }}</td>
+          <td>
+            <span [class.low-stock]="product.stock < 5">
+              {{ product.stock }}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button
+              class="btn-action edit"
+              (click)="editProduct(product.id)"
+            >Edit</button>
+            <button
+              class="btn-action delete"
+              (click)="deleteProduct(product.id, product.name)"
+            >Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

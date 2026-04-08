@@ -89,7 +89,7 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
 export const getAllCustomers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = await AdminService.getAllCustomers();
-        res.status(200).json({user});
+        res.status(200).json(user);
     } catch (err) {
         next(err);
     }

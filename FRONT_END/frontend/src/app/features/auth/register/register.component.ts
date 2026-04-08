@@ -16,11 +16,7 @@ function passwordMatchValidator(group: AbstractControl) {
 
 @Component({
   selector: 'app-register',
-  imports: [
-    CommonModule,        // Provides *ngIf
-    ReactiveFormsModule, // Provides [formGroup] and formControlName
-    RouterModule         // Provides routerLink
-  ],
+  standalone: false,
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
@@ -59,7 +55,7 @@ export class RegisterComponent {
     ).subscribe({
       next: () => {
         this.successMessage = 'Account created! Redirecting to login...';
-        setTimeout(() => this.router.navigate(['/auth/login']), 1500);
+        setTimeout(() => this.router.navigate(['/auth/login']), 200);
       },
       error: (err) => {
         this.loading = false;

@@ -522,3 +522,95 @@ importing them statically in AppModule?"
     faster because it only downloads the products bundle — not the cart, orders, profile, and 
     admin bundles simultaneously.
 
+Why do you use form.markAllAsTouched() before checking form.invalid?"
+    Validation error messages are only shown when a field is touched — meaning the user 
+    has interacted with it. On first submit with an empty form, no fields are touched yet so no 
+    error messages show, even though the form is invalid. markAllAsTouched() programmatically 
+    marks every control as touched, triggering all validation error messages to appear simultaneously. 
+    This gives the user a complete picture of everything wrong with the form in one submission 
+    attempt rather than revealing errors one field at a time.
+
+The passwordMatchValidator is a group-level validator — why not just a control-level 
+validator on confirmPassword ?
+    A control-level validator only has access to its own value. To compare password and 
+    confirmPassword, the validator needs to read both fields simultaneously — which requires 
+    access to the parent FormGroup. A group-level validator receives the entire FormGroup as 
+    its argument, making both values accessible. The error is set on the group itself 
+    ({ passwordMismatch: true }) rather than on a specific control, which is why the template checks 
+    form.hasError('passwordMismatch') rather than confirmPassword.hasError(...).
+
+Why does the forgot password flow display the reset code directly on screen instead of sending an email?
+    The spec explicitly calls this a "mock flow" — email delivery infrastructure is out of scope 
+    for a course project. The intent is to demonstrate the full reset flow: code generation, 
+    expiry enforcement, one-time use validation, and password update. Displaying the code on 
+    screen fulfils all of these requirements while clearly labelling it as a mock. 
+    In a production system, the backend service would call an email provider (SendGrid, AWS SES) 
+    with the code — the forgotPassword service method already isolates the code generation logic, 
+    so adding email delivery is a single-line change to that method.
+
+Why does the product list component react to route.queryParams instead of calling 
+loadProducts() directly when a filter changes?
+    Using route.queryParams as the single source of truth means the URL always reflects the 
+    current filter state. If a user searches for "table" the URL becomes /products?search=table — they 
+    can bookmark it, share it, or paste it in a new tab and get the same results. 
+    If we called loadProducts() directly on filter change without updating the URL, 
+    the filter state would be invisible and lost on refresh. Routing through the URL also means 
+    the browser back button works correctly — navigating back restores the previous filter 
+    state automatically.
+
+The ProductCardComponent has @Input() showAddToCart — why pass this as an input rather than 
+checking authService.isCustomer inside the component itself?
+    Injecting AuthService directly into ProductCardComponent would make it a smart component — it would 
+    have a service dependency and know about the application's auth state. A dumb component should 
+    only know about its inputs. Passing showAddToCart as a boolean input keeps the component purely 
+    presentational — it renders whatever it's told to render. This makes it reusable in contexts 
+    where you might want to show or hide the button for reasons unrelated to auth, and makes it 
+    independently testable by just setting the input value in a test.
+
+How does the share button satisfy the spec's requirement that 'if the URL is pasted on 
+another device, the user should be directed to the same product page'?
+    The product detail route is /products/:id where :id is the product's database ID. 
+    This URL is deterministic and permanent — the same product always maps to the same URL. 
+    window.location.href returns the full current URL including the ID. When shared and opened 
+    on another device, Angular's router matches the URL to the ProductDetailComponent route, 
+    extracts the :id parameter, and fetches the same product from the backend. 
+    The share button itself just copies or shares this URL — the routing architecture is what 
+    makes the deep link work.
+
+Why does the confirmation page redirect to /orders if there is no order in the service 
+state, instead of showing an error?
+    The confirmation page only makes sense in the context of a just-completed checkout. 
+    If a user navigates directly to /cart/confirmation by typing the URL or refreshing, the 
+    lastOrder$ observable is null — there is no order to display. Showing an error page would be confusing. 
+    Redirecting to /orders is the graceful degradation — if they completed an order recently, 
+    they'll see it there. It also prevents a "broken" empty confirmation page from ever being 
+    visible, which matters for the professional quality of the UI.
+
+The checkout component redirects to /cart if the cart is empty — why check this in ngOnInit 
+rather than in the route guard?
+    A route guard checks conditions before the component loads. But the cart's empty/non-empty 
+    state is only known after an async HTTP call — guards run synchronously by default. 
+    We could return an Observable from the guard, but that adds complexity and couples the 
+    cart-loading logic to the routing layer. Checking in ngOnInit keeps the logic in the component 
+    where the cart service is already being used, and the redirect happens so quickly the user never 
+    sees an empty checkout page. It's a pragmatic tradeoff between architectural purity and implementation simplicity.
+
+The order detail page displays priceAtPurchase with the label 'Price at purchase' — why make this label explicit rather than just showing the price?
+    Transparency in financial records. If a customer sees ₹1,499 on their order history but the 
+    product currently costs ₹2,999, without the explicit label they might assume the site is 
+    displaying incorrect data or that they're being overcharged. The label "Price at purchase" 
+    communicates that this value is a historical snapshot, not the current price — it's the price 
+    they actually paid. This builds user trust and also demonstrates that your order history implementation 
+    correctly preserves purchase-time prices, which is exactly what the examiner is looking for.
+
+Why NgModule ?
+    The requirement document states:
+        "The Admin panel must be implemented as a separate lazy-loaded Angular module."
+        The word module maps directly to @NgModule.
+    
+
+
+
+
+
+

@@ -1,0 +1,59 @@
+<div class="admin-section">
+  <div class="section-header">
+    <h1>All Orders</h1>
+    <span class="order-count" *ngIf="!loading">
+      {{ orders.length }} total
+    </span>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">Loading orders...</div>
+
+  <div *ngIf="!loading" class="orders-list">
+    <div *ngFor="let order of orders" class="order-row">
+
+      <!-- Order summary row -->
+      <div class="order-summary" (click)="viewOrder(order)">
+        <div class="order-left">
+          <span class="order-id">Order #{{ order.id }}</span>
+          <span class="order-customer">
+            {{ order.user?.name }} ({{ order.user?.email }})
+          </span>
+        </div>
+        <div class="order-right">
+          <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+          <span class="order-payment">{{ order.paymentMethod }}</span>
+          <span class="order-total">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+          <span class="expand-icon">
+            {{ selectedOrder?.id === order.id ? '▲' : '▼' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Expanded order detail -->
+      <div class="order-detail" *ngIf="selectedOrder?.id === order.id">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price at purchase</th>
+              <th>Qty</th>
+              <th>Line total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of order.items">
+              <td>{{ item.product.name }}</td>
+              <td>₹{{ item.priceAtPurchase | number:'1.2-2' }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>₹{{ (item.quantity * item.priceAtPurchase) | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="detail-total">
+          Total: <strong>₹{{ order.totalAmount | number:'1.2-2' }}</strong>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

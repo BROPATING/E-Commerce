@@ -1,0 +1,192 @@
+<div class="list-page">
+
+  <!-- Filters sidebar -->
+  <aside class="filters-sidebar">
+    <div class="filters-top">
+      <h3 class="filters-title">
+        Filters
+        <span class="filter-badge" *ngIf="activeFilterCount > 0">
+          {{ activeFilterCount }}
+        </span>
+      </h3>
+      <button
+        *ngIf="activeFilterCount > 0"
+        class="clear-btn"
+        (click)="clearFilters()"
+      >
+        Clear all
+      </button>
+    </div>
+
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+
+      <!-- Search -->
+      <div class="filter-section">
+        <label class="filter-label">Search</label>
+        <input
+          type="text"
+          formControlName="search"
+          placeholder="Keywords..."
+          class="filter-input"
+        />
+      </div>
+
+      <!-- Type -->
+      <div class="filter-section">
+        <label class="filter-label">Type</label>
+        <select formControlName="typeId" class="filter-select">
+          <option value="">All types</option>
+          <option *ngFor="let t of taxonomy" [value]="t.id">
+            {{ t.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Category -->
+      <div class="filter-section" *ngIf="filterForm.value.typeId">
+        <label class="filter-label">Category</label>
+        <select formControlName="categoryId" class="filter-select">
+          <option value="">All categories</option>
+          <ng-container *ngFor="let t of taxonomy">
+            <ng-container *ngIf="t.id == filterForm.value.typeId">
+              <option *ngFor="let c of t.categories" [value]="c.id">
+                {{ c.name }}
+              </option>
+            </ng-container>
+          </ng-container>
+        </select>
+      </div>
+
+      <!-- Sub-category -->
+      <div class="filter-section" *ngIf="filterForm.value.categoryId">
+        <label class="filter-label">Sub-category</label>
+        <select formControlName="subCategoryId" class="filter-select">
+          <option value="">All sub-categories</option>
+          <ng-container *ngFor="let t of taxonomy">
+            <ng-container *ngFor="let c of t.categories">
+              <ng-container *ngIf="c.id == filterForm.value.categoryId">
+                <option *ngFor="let s of c.subCategories" [value]="s.id">
+                  {{ s.name }}
+                </option>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </select>
+      </div>
+
+      <!-- Price range -->
+      <div class="filter-section">
+        <label class="filter-label">Price range (₹)</label>
+        <div class="price-inputs">
+          <input
+            type="number"
+            formControlName="minPrice"
+            placeholder="Min"
+            class="filter-input price-input"
+            min="0"
+          />
+          <span class="price-dash">–</span>
+          <input
+            type="number"
+            formControlName="maxPrice"
+            placeholder="Max"
+            class="filter-input price-input"
+            min="0"
+          />
+        </div>
+      </div>
+
+      <!-- In stock -->
+      <div class="filter-section">
+        <label class="filter-checkbox-label">
+          <input
+            type="checkbox"
+            formControlName="inStock"
+            class="filter-checkbox"
+          />
+          <span>In stock only</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary apply-btn">
+        Apply filters
+      </button>
+
+    </form>
+  </aside>
+
+  <!-- Main content -->
+  <main class="list-main">
+
+    <!-- Page heading -->
+    <div class="list-header">
+      <h1 class="list-title">{{ currentSearchLabel }}</h1>
+      <p class="results-count" *ngIf="!loading">
+        {{ pagination.total }} result{{ pagination.total !== 1 ? 's' : '' }}
+      </p>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="loading" class="products-grid">
+      <div
+        *ngFor="let s of skeletons"
+        class="skeleton-card"
+      ></div>
+    </div>
+
+    <!-- Products grid -->
+    <div *ngIf="!loading && products.length > 0" class="products-grid">
+      <div
+        *ngFor="let product of products"
+        class="product-card-wrap"
+        [class.added]="cartSuccessId === product.id"
+      >
+        <app-product-card
+          [product]="product"
+          [showAddToCart]="authService.isCustomer"
+          (addToCart)="onAddToCart($event)"
+        ></app-product-card>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && products.length === 0" class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h2>No products found</h2>
+      <p>Try adjusting your search or filters.</p>
+      <button class="btn btn-secondary" (click)="clearFilters()">
+        Clear all filters
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <nav
+      class="pagination"
+      *ngIf="!loading && pagination.totalPages > 1"
+      aria-label="Product pages"
+    >
+      <button
+        class="page-btn prev-next"
+        (click)="goToPage(pagination.page - 1)"
+        [disabled]="pagination.page === 1"
+      >← Prev</button>
+
+      <ng-container *ngFor="let p of pageNumbers">
+        <span *ngIf="p === -1" class="page-ellipsis">…</span>
+        <button
+          *ngIf="p !== -1"
+          class="page-btn"
+          [class.active]="p === pagination.page"
+          (click)="goToPage(p)"
+        >{{ p }}</button>
+      </ng-container>
+
+      <button
+        class="page-btn prev-next"
+        (click)="goToPage(pagination.page + 1)"
+        [disabled]="pagination.page === pagination.totalPages"
+      >Next →</button>
+    </nav>
+
+  </main>
+</div>

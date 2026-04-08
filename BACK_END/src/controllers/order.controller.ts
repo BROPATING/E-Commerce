@@ -8,7 +8,7 @@ import { ApiError } from '../utils/ApiError/ApiError';
 export const getMyOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => { 
     try {
         const result = await OrderService.getMyOrders(req.user!.id);
-        res.json({result});
+        res.json({orders: result});
     } catch (err) {
         next(err);
     }

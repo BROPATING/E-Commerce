@@ -1,0 +1,43 @@
+<div class="admin-section">
+  <div class="section-header">
+    <h1>Customers</h1>
+    <span class="customer-count" *ngIf="!loading">
+      {{ customers.length}} registered
+    </span>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">Loading customers...</div>
+
+  <div *ngIf="!loading" class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of customers" [class.locked-row]="customer.isLocked">
+          <td class="customer-name">{{ customer.name }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.createdAt | date:'mediumDate' }}</td>
+          <td>
+            <span class="status-badge" [class.status-active]="!customer.isLocked"
+              [class.status-locked]="customer.isLocked">
+              {{ customer.isLocked ? 'Locked' : 'Active' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn-action" [class.edit]="customer.isLocked" [class.delete]="!customer.isLocked"
+              (click)="toggleLock(customer)">
+              {{ customer.isLocked ? 'Unlock' : 'Lock' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

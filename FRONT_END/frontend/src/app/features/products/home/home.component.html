@@ -1,0 +1,132 @@
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Welcome to ShopNow</p>
+    <h1 class="hero-title">Find What<br>You Love</h1>
+    <p class="hero-subtitle">
+      Thousands of products across Electronics,
+      Furniture, Stationery and more — all in one place.
+    </p>
+    <div class="hero-search">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Search for anything..."
+        class="hero-input"
+        autofocus
+      />
+      <button (click)="onSearch()" class="hero-search-btn">
+        Search
+      </button>
+    </div>
+    <div class="hero-chips">
+      <span class="hero-chip" (click)="browseByType(1)">Electronics</span>
+      <span class="hero-chip" (click)="browseByType(2)">Stationery</span>
+      <span class="hero-chip" (click)="browseByType(3)">Furniture</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Browse by Category ─────────────────────────────────────── -->
+<section class="section taxonomy-section" *ngIf="taxonomy.length > 0">
+  <div class="section-wrap">
+    <div class="section-head">
+      <h2 class="section-title">Shop by Category</h2>
+      <a routerLink="/products" class="see-all">View all products →</a>
+    </div>
+
+    <div class="taxonomy-grid">
+      <div
+        *ngFor="let type of taxonomy"
+        class="type-card"
+        (click)="browseByType(type.id)"
+      >
+        <div class="type-header">
+          <h3 class="type-name">{{ type.name }}</h3>
+          <span class="type-count">
+            {{ type.categories.length }} categories
+          </span>
+        </div>
+        <ul class="category-list">
+          <li
+            *ngFor="let cat of type.categories"
+            class="category-item"
+            (click)="browseByCategory($event, cat.id)"
+          >
+            <span class="category-name">{{ cat.name }}</span>
+            <span class="category-arrow">→</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Featured Products ──────────────────────────────────────── -->
+<section class="section products-section">
+  <div class="section-wrap">
+    <div class="section-head">
+      <h2 class="section-title">Featured Products</h2>
+      <a routerLink="/products" class="see-all">See all →</a>
+    </div>
+
+    <!-- Skeleton loading -->
+    <div *ngIf="loading" class="products-grid">
+      <div
+        *ngFor="let s of skeletons"
+        class="skeleton-card"
+      ></div>
+    </div>
+
+    <!-- Products grid -->
+    <div *ngIf="!loading && featuredProducts.length > 0" class="products-grid">
+      <div
+        *ngFor="let product of featuredProducts"
+        class="product-card-wrap"
+        [class.added]="cartSuccessId === product.id"
+      >
+        <app-product-card
+          [product]="product"
+          [showAddToCart]="authService.isCustomer"
+          (addToCart)="onAddToCart($event)"
+        ></app-product-card>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && featuredProducts.length === 0" class="empty-products">
+      <p>No products available yet.</p>
+      <small>Ask the admin to add some products first.</small>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Why Choose Us ──────────────────────────────────────────── -->
+<section class="section features-section">
+  <div class="section-wrap">
+    <div class="features-grid">
+      <div class="feature-item">
+        <span class="feature-icon">🚚</span>
+        <h4>Free Shipping</h4>
+        <p>On all orders above ₹999</p>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">🔒</span>
+        <h4>Secure Payments</h4>
+        <p>Multiple payment options available</p>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">↩️</span>
+        <h4>Easy Returns</h4>
+        <p>30-day hassle-free returns</p>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">💬</span>
+        <h4>24/7 Support</h4>
+        <p>We're here whenever you need us</p>
+      </div>
+    </div>
+  </div>
+</section>

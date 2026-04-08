@@ -122,6 +122,24 @@ CanDeactivate       Did I save my work?             Preventing data loss on a fo
 CanMatch            Should I download this code?    Protecting Lazy Loaded modules.
 Resolve             Is the data ready?              Pre-loading Product info from API.
 
+| Aspect                    | Module Base (Angular 17+) | Component Base Standalone (Angular 14+)|
+|---------------------------|---------------------------|----------------|
+| Default in Angular 17+    | No                        | Yes            |
+| Spec says                 | "lazy-loaded Angular module" | ✅ Satisfies literally |
+| Conceptual fit            | Satisfies conceptually    | Examiner recognition |
+| Recognition               | Universally understood    | Newer, less tested in course contexts |
+| Interview explainability  | Deep, well-documented     | Simpler but less to discuss |
+| Boilerplate               | More                      | Less           |
+| Production trend          | Being phased out slowly   | Future direction |
+
+NgModule ?
+    I use NgModules to create a modular architecture. 
+    It helps with Separation of Concerns—keeping my Guest, Customer, and Admin features in their own 'boxes'—and improves performance through Lazy Loading.
+    I used a separate AdminModule to ensure that Admin-only components and heavy 
+    logic aren't loaded for regular customers, keeping the initial bundle size small.
+
+
+
 
 
 

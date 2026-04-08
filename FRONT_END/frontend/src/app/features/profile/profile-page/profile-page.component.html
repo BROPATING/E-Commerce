@@ -1,0 +1,256 @@
+<div class="profile-page">
+  <div class="profile-container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1>Account Settings</h1>
+      <p class="page-subtitle">Manage your profile and security settings</p>
+    </div>
+
+    <div class="profile-layout">
+
+      <!-- Sidebar -->
+      <aside class="profile-sidebar">
+
+        <!-- Avatar -->
+        <div class="avatar-section">
+          <div class="avatar">{{ userInitials }}</div>
+          <div class="avatar-info">
+            <p class="avatar-name">{{ currentUser?.name }}</p>
+            <p class="avatar-email">{{ currentUser?.email }}</p>
+            <span class="avatar-role">{{ currentUser?.role }}</span>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+          <button
+            class="nav-item"
+            [class.active]="activeTab === 'profile'"
+            (click)="switchTab('profile')"
+          >
+            <span class="nav-icon">👤</span>
+            Edit profile
+          </button>
+          <button
+            class="nav-item"
+            [class.active]="activeTab === 'password'"
+            (click)="switchTab('password')"
+          >
+            <span class="nav-icon">🔒</span>
+            Change password
+          </button>
+          <a routerLink="/orders" class="nav-item">
+            <span class="nav-icon">📦</span>
+            My orders
+          </a>
+          <a routerLink="/cart" class="nav-item">
+            <span class="nav-icon">🛒</span>
+            My cart
+          </a>
+        </nav>
+
+      </aside>
+
+      <!-- Main panel -->
+      <div class="profile-main">
+
+        <!-- ── Edit Profile Tab ─────────────────────────────── -->
+        <div *ngIf="activeTab === 'profile'" class="panel">
+          <div class="panel-header">
+            <h2>Edit Profile</h2>
+            <p class="panel-hint">
+              Update your display name and email address
+            </p>
+          </div>
+
+          <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
+
+            <div class="form-group">
+              <label for="prof-name">Full name</label>
+              <input
+                id="prof-name"
+                type="text"
+                formControlName="name"
+                placeholder="Your full name"
+                [class.input-error]="pName.invalid && pName.touched"
+              />
+              <span class="error-msg" *ngIf="pName.invalid && pName.touched">
+                Name must be between 2 and 50 characters
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="prof-email">Email address</label>
+              <input
+                id="prof-email"
+                type="email"
+                formControlName="email"
+                placeholder="your@email.com"
+                [class.input-error]="pEmail.invalid && pEmail.touched"
+              />
+              <span class="error-msg" *ngIf="pEmail.invalid && pEmail.touched">
+                Please enter a valid email address
+              </span>
+            </div>
+
+            <!-- Feedback -->
+            <div *ngIf="profileSuccess" class="alert alert-success">
+              ✓ {{ profileSuccess }}
+            </div>
+            <div *ngIf="profileError" class="alert alert-error">
+              {{ profileError }}
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="profileLoading"
+              >
+                {{ profileLoading ? 'Saving...' : 'Save changes' }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- ── Change Password Tab ─────────────────────────── -->
+        <div *ngIf="activeTab === 'password'" class="panel">
+          <div class="panel-header">
+            <h2>Change Password</h2>
+            <p class="panel-hint">
+              You will be logged out after changing your password
+            </p>
+          </div>
+
+          <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+
+            <!-- Current password -->
+            <div class="form-group">
+              <label for="current-pwd">Current password</label>
+              <div class="input-wrap">
+                <input
+                  id="current-pwd"
+                  [type]="showCurrentPwd ? 'text' : 'password'"
+                  formControlName="currentPassword"
+                  placeholder="Enter your current password"
+                  [class.input-error]="currentPassword.invalid && currentPassword.touched"
+                />
+                <button
+                  type="button"
+                  class="toggle-pwd"
+                  (click)="showCurrentPwd = !showCurrentPwd"
+                  tabindex="-1"
+                >
+                  {{ showCurrentPwd ? '🙈' : '👁' }}
+                </button>
+              </div>
+              <span class="error-msg"
+                    *ngIf="currentPassword.invalid && currentPassword.touched">
+                Current password is required
+              </span>
+            </div>
+
+            <!-- New password -->
+            <div class="form-group">
+              <label for="new-pwd">New password</label>
+              <div class="input-wrap">
+                <input
+                  id="new-pwd"
+                  [type]="showNewPwd ? 'text' : 'password'"
+                  formControlName="newPassword"
+                  placeholder="Min 8 chars, 1 uppercase, 1 number"
+                  [class.input-error]="newPassword.invalid && newPassword.touched"
+                />
+                <button
+                  type="button"
+                  class="toggle-pwd"
+                  (click)="showNewPwd = !showNewPwd"
+                  tabindex="-1"
+                >
+                  {{ showNewPwd ? '🙈' : '👁' }}
+                </button>
+              </div>
+
+              <!-- Password strength indicator -->
+              <div class="strength-bar-wrap" *ngIf="newPassword.value">
+                <div class="strength-bars">
+                  <div
+                    *ngFor="let i of [1,2,3,4]"
+                    class="strength-segment"
+                    [style.background]="i <= passwordStrength.level
+                      ? passwordStrength.color
+                      : '#e5e7eb'"
+                  ></div>
+                </div>
+                <span
+                  class="strength-label"
+                  [style.color]="passwordStrength.color"
+                >
+                  {{ passwordStrength.label }}
+                </span>
+              </div>
+
+              <span class="error-msg"
+                    *ngIf="newPassword.invalid && newPassword.touched">
+                Password must be at least 8 characters with one uppercase
+                letter and one number
+              </span>
+            </div>
+
+            <!-- Confirm password -->
+            <div class="form-group">
+              <label for="confirm-pwd">Confirm new password</label>
+              <div class="input-wrap">
+                <input
+                  id="confirm-pwd"
+                  [type]="showConfirmPwd ? 'text' : 'password'"
+                  formControlName="confirmPassword"
+                  placeholder="Repeat your new password"
+                  [class.input-error]="
+                    confirmPassword.touched &&
+                    (confirmPassword.invalid || passwordForm.hasError('passwordMismatch'))
+                  "
+                />
+                <button
+                  type="button"
+                  class="toggle-pwd"
+                  (click)="showConfirmPwd = !showConfirmPwd"
+                  tabindex="-1"
+                >
+                  {{ showConfirmPwd ? '🙈' : '👁' }}
+                </button>
+              </div>
+              <span class="error-msg"
+                    *ngIf="confirmPassword.touched &&
+                           passwordForm.hasError('passwordMismatch')">
+                Passwords do not match
+              </span>
+            </div>
+
+            <!-- Feedback -->
+            <div *ngIf="passwordSuccess" class="alert alert-success">
+              ✓ {{ passwordSuccess }}
+            </div>
+            <div *ngIf="passwordError" class="alert alert-error">
+              {{ passwordError }}
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="passwordLoading"
+              >
+                {{ passwordLoading ? 'Changing...' : 'Change password' }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

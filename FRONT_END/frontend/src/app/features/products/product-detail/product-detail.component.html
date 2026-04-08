@@ -1,0 +1,174 @@
+<!-- Loading -->
+<div *ngIf="loading" class="state-page">
+  <div class="spinner"></div>
+  <p>Loading product...</p>
+</div>
+
+<!-- Error -->
+<div *ngIf="!loading && errorMessage" class="state-page error">
+  <div class="error-icon">⚠️</div>
+  <h2>{{ errorMessage }}</h2>
+  <a routerLink="/products" class="btn btn-secondary">Browse products</a>
+</div>
+
+<!-- Product detail -->
+<div *ngIf="!loading && product && !errorMessage" class="detail-page">
+  <div class="detail-container">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Product location">
+      <a routerLink="/" class="crumb">Home</a>
+      <span class="crumb-sep">›</span>
+      <span
+        class="crumb crumb-link"
+        (click)="browseType(product.subCategory?.category?.type?.id)"
+      >{{ product.subCategory?.category?.type?.name }}</span>
+      <span class="crumb-sep">›</span>
+      <span
+        class="crumb crumb-link"
+        (click)="browseCategory(product.subCategory?.category?.id)"
+      >{{ product.subCategory?.category?.name }}</span>
+      <span class="crumb-sep">›</span>
+      <span
+        class="crumb crumb-link"
+        (click)="browseSubCategory(product.subCategory?.id)"
+      >{{ product.subCategory?.name }}</span>
+      <span class="crumb-sep">›</span>
+      <span class="crumb crumb-current">{{ product.name }}</span>
+    </nav>
+
+    <!-- Main grid -->
+    <div class="detail-grid">
+
+      <!-- Left: Image -->
+      <div class="detail-image-col">
+        <div class="image-frame">
+          <img
+            [src]="imageUrl"
+            [alt]="product.name"
+            class="product-image"
+          />
+          <div class="out-of-stock-overlay" *ngIf="isOutOfStock">
+            Out of stock
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Info -->
+      <div class="detail-info-col">
+
+        <!-- Category path pills -->
+        <div class="category-pills">
+          <span class="pill" (click)="browseType(product.subCategory?.category?.type?.id)">
+            {{ product.subCategory?.category?.type?.name }}
+          </span>
+          <span class="pill-sep">›</span>
+          <span class="pill" (click)="browseCategory(product.subCategory?.category?.id)">
+            {{ product.subCategory?.category?.name }}
+          </span>
+          <span class="pill-sep">›</span>
+          <span class="pill" (click)="browseSubCategory(product.subCategory?.id)">
+            {{ product.subCategory?.name }}
+          </span>
+        </div>
+
+        <!-- Name -->
+        <h1 class="product-name">{{ product.name }}</h1>
+
+        <!-- Price -->
+        <div class="price-row">
+          <span class="product-price">₹{{ product.price | number:'1.2-2' }}</span>
+        </div>
+
+        <!-- Stock -->
+        <div class="stock-row">
+          <span *ngIf="!isOutOfStock && !isLowStock" class="stock-ok">
+            ✓ In stock ({{ product.stock }} available)
+          </span>
+          <span *ngIf="isLowStock" class="stock-low">
+            ⚠ Only {{ product.stock }} left — order soon
+          </span>
+          <span *ngIf="isOutOfStock" class="stock-none">
+            ✕ Out of stock
+          </span>
+        </div>
+
+        <!-- Description -->
+        <p class="product-description">{{ product.description }}</p>
+
+        <div class="detail-divider"></div>
+
+        <!-- Add to cart section (customer only) -->
+        <div *ngIf="authService.isCustomer && !isOutOfStock" class="add-section">
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-control">
+              <button
+                class="qty-btn"
+                (click)="decrement()"
+                [disabled]="quantity <= 1"
+              >−</button>
+              <span class="qty-val">{{ quantity }}</span>
+              <button
+                class="qty-btn"
+                (click)="increment()"
+                [disabled]="quantity >= product.stock"
+              >+</button>
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary add-btn"
+            [class.success]="cartSuccess"
+            (click)="onAddToCart()"
+            [disabled]="addingToCart"
+          >
+            <span *ngIf="!addingToCart && !cartSuccess">
+              Add to cart — ₹{{ (product.price * quantity) | number:'1.2-2' }}
+            </span>
+            <span *ngIf="addingToCart">Adding...</span>
+            <span *ngIf="cartSuccess && !addingToCart">✓ Added!</span>
+          </button>
+
+          <div
+            *ngIf="cartMessage"
+            class="cart-feedback"
+            [class.success]="cartSuccess"
+            [class.error]="!cartSuccess"
+          >
+            {{ cartMessage }}
+          </div>
+        </div>
+
+        <!-- Out of stock message -->
+        <div *ngIf="isOutOfStock" class="out-of-stock-msg">
+          This product is currently out of stock.
+          <a routerLink="/products">Browse similar products →</a>
+        </div>
+
+        <!-- Login prompt (guests) -->
+        <div *ngIf="!authService.isLoggedIn && !isOutOfStock" class="login-prompt">
+          <a routerLink="/auth/login" class="login-link">Sign in</a>
+          to add this item to your cart.
+        </div>
+
+        <!-- Share button -->
+        <div class="share-section">
+          <button
+            class="share-btn"
+            [class.shared]="shareSuccess"
+            (click)="onShare()"
+          >
+            <span *ngIf="!shareSuccess">↗ Share this product</span>
+            <span *ngIf="shareSuccess">✓ Link copied!</span>
+          </button>
+          <span class="share-hint" *ngIf="!shareSuccess">
+            Anyone with this link can view this product
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

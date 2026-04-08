@@ -1,12 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { AdminProductsComponent } from './components/admin-products/admin-products.component';
+import { AdminProductFormComponent } from './components/admin-product-form/admin-product-form.component';
+import { AdminCustomersComponent } from './components/admin-customer/admin-customer.component';
+import { AdminOrderComponent } from './components/admin-order/admin-order.component';
 
 const routes: Routes = [
   {
     path: '',
-    // AdminDashboardComponent will be the layout wrapper
-    // Children will be added in Step 28
-    children: [],
+    component: AdminDashboardComponent,
+    children: [
+      { path: '',          redirectTo: 'products', pathMatch: 'full' },
+      { path: 'products',  component: AdminProductsComponent },
+      { path: 'products/new',     component: AdminProductFormComponent },
+      { path: 'products/:id/edit', component: AdminProductFormComponent },
+      { path: 'customers', component: AdminCustomersComponent },
+      { path: 'orders',    component: AdminOrderComponent},
+    ]
   },
 ];
 

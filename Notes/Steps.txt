@@ -90,13 +90,62 @@ The Objective
     and route guards. Getting the architecture right here means every subsequent Angular step slots in cleanly.
 
 Step 15: Auth Pages — Register, Login & Forgot Password
-The Objective
+The Objective 
     We're building the three auth pages — Register, Login, and Forgot Password. 
     These are the first real Angular components we write. By the end of this step, 
     a user can register, log in, see validation errors, and go through the forgot 
     password flow — all connected to the live Express backend.This step covers the Angular 
     Reactive Forms pattern, which you must be able to explain deeply. It also demonstrates 
     error handling from the API and navigation after successful auth.
+
+Step 16: Homepage, Product Listing & Taxonomy Browse
+The Objective
+    We're building the core shopping experience — the homepage, product listing with search and filters,
+    and the product detail page. This is the most visible part of the application and directly ties to 
+    8 marks for search/filtering, 5 marks for taxonomy, and 5 marks for homepage design quality. 
+    The examiner will land on the homepage first — it needs to make a strong first impression.
+
+Step 17: Cart, Checkout & Order Pages
+The Objective
+    We're building the cart page, checkout flow, and order history — worth 8 marks for cart, 7 marks 
+    for checkout, and 5 marks for order history. These three pages form a single user journey and must 
+    work together seamlessly. The cart page lets customers manage items, checkout collects the payment 
+    method and places the order, and the confirmation page summarises what was purchased with 
+    the frozen prices.
+
+Step 18: Profile Page & Admin Panel
+The Objective
+    We're building the final two feature areas — the customer profile page (edit profile + change password) 
+    and the complete admin panel (product CRUD, customer management, order viewing). 
+    This completes the Angular frontend. After this step, every rubric item has a working UI.
+
+The admin panel uses a parent AdminDashboardComponent with a <router-outlet> — why this nested 
+routing pattern instead of separate top-level routes?
+    The nested routing pattern allows the admin sidebar to be rendered once at the parent level while 
+    child routes swap the content area independently. Without nesting, every admin page would need to 
+    include the sidebar markup individually — duplicating the navigation logic across five components. 
+    The parent component owns the shared layout; children own their specific content. It also means 
+    navigating between admin pages doesn't re-render or re-initialise the sidebar, which would cause a flash. 
+    Angular's router-outlet acts as the content slot, and the parent component is the frame.
+
+When the admin locks an account, the customer's next request fails immediately — but how does 
+the Angular frontend know to log them out?
+    The Express backend returns 403 Forbidden when it detects user.isLocked. 
+    The Angular HTTP interceptor in credentials.interceptor.ts catches every 403 response globally 
+    and calls authService.setUser(null) then redirects to /auth/login?reason=locked. 
+    This happens without any component-specific error handling — the interceptor is a cross-cutting 
+    concern that runs on every HTTP response regardless of which component made the request. 
+    The login page reads the reason=locked query parameter and displays the appropriate message.
+
+The product form uses FormData instead of JSON for the API call — why?
+    File uploads cannot be sent as JSON. The HTTP Content-Type: application/json format only 
+    supports text data — binary file content must be sent as multipart/form-data. FormData is 
+    the browser's built-in class for constructing multipart payloads. It handles the boundary 
+    markers and binary encoding automatically. When FormData is passed to Angular's HttpClient.post(), 
+    the client automatically sets the correct Content-Type: multipart/form-data header with the boundary string. 
+    On the server, multer parses this multipart body and separates the file from the text fields.
+
+
 
 
 
