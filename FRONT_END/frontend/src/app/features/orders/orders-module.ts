@@ -14,6 +14,7 @@ import { OrderListComponent } from './order-list/order-list.component';
   imports: [
     CommonModule,
     OrdersRoutingModule
-  ]
+  ],
+  exports: [OrderDetailComponent]
 })
 export class OrdersModule { }

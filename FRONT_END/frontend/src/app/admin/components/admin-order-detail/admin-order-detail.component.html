@@ -1,0 +1,164 @@
+<!-- Loading -->
+<div *ngIf="loading" class="state-box">
+  <div class="spinner"></div>
+  <p>Loading order...</p>
+</div>
+
+<!-- Error -->
+<div *ngIf="!loading && errorMessage" class="state-box error">
+  <div class="error-icon">⚠️</div>
+  <h2>{{ errorMessage }}</h2>
+  <button class="btn btn-secondary" (click)="goBack()">
+    ← Back to orders
+  </button>
+</div>
+
+<!-- Order detail -->
+<div *ngIf="!loading && order && !errorMessage" class="admin-detail">
+
+  <!-- Header -->
+  <div class="detail-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="goBack()">
+        ← All orders
+      </button>
+      <div class="title-row">
+        <h1>Order #{{ order.id }}</h1>
+        <span class="admin-badge">Admin view</span>
+      </div>
+      <p class="order-placed">
+        Placed on {{ order.createdAt | date:'fullDate' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Customer card — admin exclusive -->
+  <div class="customer-card" *ngIf="order.user">
+    <p class="section-label">Customer</p>
+    <div class="customer-info">
+      <div class="customer-avatar">
+        {{ order.user.name.charAt(0).toUpperCase() }}
+      </div>
+      <div class="customer-text">
+        <p class="customer-name">{{ order.user.name }}</p>
+        <p class="customer-email">{{ order.user.email }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meta cards -->
+  <div class="meta-grid">
+    <div class="meta-card">
+      <p class="meta-label">Payment method</p>
+      <p class="meta-value">{{ order.paymentMethod }}</p>
+    </div>
+    <div class="meta-card">
+      <p class="meta-label">Order date</p>
+      <p class="meta-value">{{ order.createdAt | date:'mediumDate' }}</p>
+    </div>
+    <div class="meta-card">
+      <p class="meta-label">Total items</p>
+      <p class="meta-value">
+        {{ getTotalItems() }} item{{ getTotalItems() !== 1 ? 's' : '' }}
+      </p>
+    </div>
+    <div class="meta-card highlight">
+      <p class="meta-label">Total paid</p>
+      <p class="meta-value total-paid">
+        ₹{{ order.totalAmount | number:'1.2-2' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Items card -->
+  <div class="items-card">
+    <h2 class="items-title">Items in this order</h2>
+
+    <!-- Price snapshot note -->
+    <div class="items-note">
+      <span>ℹ️</span>
+      Prices shown are what the customer paid at time of purchase.
+      Current price changes are flagged below.
+    </div>
+
+    <div class="order-items">
+      <div class="order-item" *ngFor="let item of order.items">
+
+        <!-- Image -->
+        <img
+          [src]="getImageUrl(item.product.imagePath)"
+          [alt]="item.product.name"
+          class="item-img"
+        />
+
+        <!-- Info -->
+        <div class="item-info">
+          <p class="item-name">{{ item.product.name }}</p>
+
+          <div class="price-row">
+            <span class="price-label">Price at purchase:</span>
+            <span class="price-snapshot">
+              ₹{{ item.priceAtPurchase | number:'1.2-2' }}
+            </span>
+          </div>
+
+          <!-- Show if price has changed since purchase -->
+          <div
+            class="price-row"
+            *ngIf="item.product.price != item.priceAtPurchase"
+          >
+            <span class="price-label">Current price:</span>
+            <span class="price-current">
+              ₹{{ item.product.price | number:'1.2-2' }}
+            </span>
+            <span class="price-changed-badge">Changed</span>
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="item-col">
+          <p class="col-label">Qty</p>
+          <p class="col-value">{{ item.quantity }}</p>
+        </div>
+
+        <!-- Line total -->
+        <div class="item-col">
+          <p class="col-label">Subtotal</p>
+          <p class="col-value strong">
+            ₹{{ getLineTotal(item.priceAtPurchase, item.quantity) | number:'1.2-2' }}
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Totals -->
+    <div class="totals-section">
+      <div class="totals-inner">
+        <div class="totals-row">
+          <span>Subtotal ({{ getTotalItems() }} items)</span>
+          <span>₹{{ order.totalAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="totals-row">
+          <span>Shipping</span>
+          <span class="free">Free</span>
+        </div>
+        <div class="totals-final">
+          <span>Total paid</span>
+          <span class="totals-amount">
+            ₹{{ order.totalAmount | number:'1.2-2' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="detail-actions">
+    <button class="btn btn-secondary" (click)="goBack()">
+      ← Back to all orders
+    </button>
+  </div>
+
+</div>

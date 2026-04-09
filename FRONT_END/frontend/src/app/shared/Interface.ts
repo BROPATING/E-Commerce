@@ -99,7 +99,7 @@ export interface Order {
   totalAmount: number;
   paymentMethod: string;
   createdAt: string;
-  items: OrderItem[];
+  items?: OrderItem[];
   user?: {
     id: number;
     name: string;

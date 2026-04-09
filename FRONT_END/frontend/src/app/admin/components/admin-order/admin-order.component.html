@@ -8,24 +8,39 @@
 
   <div *ngIf="loading" class="loading-state">Loading orders...</div>
 
-  <div *ngIf="!loading" class="orders-list">
-    <div *ngFor="let order of orders" class="order-row">
-      
-      <div class="order-summary" (click)="viewOrder(order.id)">
-        <div class="order-left">
+  <div *ngIf="!loading && orders.length === 0" class="empty-state">
+    No orders placed yet.
+  </div>
+
+  <div *ngIf="!loading && orders.length > 0" class="orders-list">
+    <a *ngFor="let order of orders" 
+       [routerLink]="['/admin/orders', order.id]" 
+       class="order-row">
+       
+      <div class="order-left">
+        <div class="order-id-row">
           <span class="order-id">Order #{{ order.id }}</span>
-          <span class="order-customer">
-            {{ order.user?.name }} ({{ order.user?.email }})
+          <span class="order-date">
+            {{ order.createdAt | date:'mediumDate' }}
           </span>
         </div>
-        <div class="order-right">
-          <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
-          <span class="order-payment">{{ order.paymentMethod }}</span>
-          <span class="order-total">₹{{ order.totalAmount | number:'1.2-2' }}</span>
-          <span class="view-link">View Details →</span>
-        </div>
+        <p class="order-customer" *ngIf="order.user">
+          {{ order.user.name }}
+          <span class="order-email">({{ order.user.email }})</span>
+        </p>
       </div>
 
-    </div>
+      <div class="order-right">
+        <span class="order-payment">{{ order.paymentMethod }}</span>
+        <span class="order-items-count">
+          {{ order.items?.length ?? 0 }}
+          item{{ (order.items?.length ?? 0) !== 1 ? 's' : '' }}
+        </span>
+        <span class="order-total">
+          ₹{{ order.totalAmount | number:'1.2-2' }}
+        </span>
+        <span class="order-arrow">→</span>
+      </div>
+    </a>
   </div>
 </div>
