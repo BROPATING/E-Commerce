@@ -24,7 +24,7 @@ export class ProductService {
     if (query.limit)         params = params.set('limit',         query.limit);
 
     return this.http.get<ProductsResponse>(
-      `${this.apiUrl}/products`, { params }
+      `${this.apiUrl}/products`, { params, withCredentials: true }
     );
   }
 

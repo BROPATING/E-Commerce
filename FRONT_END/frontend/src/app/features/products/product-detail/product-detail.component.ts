@@ -30,19 +30,32 @@ export class ProductDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    // We subscribe to paramMap so if the ID changes, the data reloads
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
 
-    if (isNaN(id) || id <= 0) {
-      this.router.navigate(['/products']);
-      return;
-    }
+      if (isNaN(id) || id <= 0) {
+        this.router.navigate(['/products']);
+        return;
+      }
 
+      this.loadProduct(id);
+    });
+  }
+
+  loadProduct(id: number): void {
+    this.loading = true;
+    this.errorMessage = '';
+    
     this.productService.getProductById(id).subscribe({
       next: res => {
-        this.product = res.product;
+        // Fix: res.product handles the object wrapper, res handles direct objects
+        this.product = res.product || res; 
         this.loading = false;
+        this.quantity = 1;
       },
       error: err => {
+        console.error('Error fetching product:', err);
         this.errorMessage = err.status === 404
           ? 'This product could not be found.'
           : 'Could not load product. Please try again.';
@@ -97,14 +110,6 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  /**
-   * Share button implementation.
-   * Uses the Web Share API if available (mobile/modern browsers).
-   * Falls back to clipboard copy.
-   * Spec requirement: "share button that allows the user to share
-   * the product page URL. If the URL is pasted on another device,
-   * the user should be directed to the same product page."
-   */
   onShare(): void {
     const url  = window.location.href;
     const name = this.product?.name ?? 'product';
@@ -114,20 +119,19 @@ export class ProductDetailComponent implements OnInit {
         title: name,
         text:  `Check out ${name} on ShopNow`,
         url,
-      }).catch(() => {}); // user cancelled share sheet
+      }).catch(() => {});
     } else {
       navigator.clipboard.writeText(url).then(() => {
         this.shareSuccess = true;
         setTimeout(() => { this.shareSuccess = false; }, 2500);
       }).catch(() => {
-        // Clipboard API blocked — show the URL in a prompt
         prompt('Copy this link to share:', url);
       });
     }
   }
 
   browseType(typeId: number | undefined): void {
-    if (typeId === undefined) return; // Guard: Stop if ID is missing
+    if (typeId === undefined) return;
     this.router.navigate(['/products'], { queryParams: { typeId } });
   }
 

@@ -45,7 +45,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
             page: page ? Number(page) : 1,
             limit: limit ? Number(limit) : 12,
         });
-        res.json({ result });
+        res.json( result );
     } catch (err) {
         next(err);
     }
@@ -64,7 +64,7 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
             return;
         }
         const result = await ProductService.getProductById(id);
-        res.json({result});
+        res.json(result);
     } catch (err) {
         next(err);
     }

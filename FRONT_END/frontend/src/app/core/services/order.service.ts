@@ -35,7 +35,7 @@ export class OrderService {
    */
   checkout(paymentMethod: string): Observable<{ message: string; order: Order }> {
     return this.http.post<{ message: string; order: Order }>(
-      `${this.apiUrl}/orders/checkout`,
+      `${this.apiUrl}/order/checkout`,
       { paymentMethod },
       { withCredentials: true },
     ).pipe(
@@ -61,7 +61,7 @@ export class OrderService {
    */
   getOrderById(id: number): Observable<{ order: Order }> {
     return this.http.get<{ order: Order }>(
-      `${this.apiUrl}/orders/${id}`,
+      `${this.apiUrl}/order/${id}`,
       { withCredentials: true },
     );
   }

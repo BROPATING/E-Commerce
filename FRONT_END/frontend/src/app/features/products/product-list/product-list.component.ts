@@ -86,6 +86,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       limit:         this.pagination.limit,
     }).subscribe({
       next: res => {
+        console.log(this.products);
         this.products   = res.products   ?? [];
         this.pagination = res.pagination ?? this.pagination;
         this.loading    = false;

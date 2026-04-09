@@ -607,7 +607,34 @@ Why NgModule ?
     The requirement document states:
         "The Admin panel must be implemented as a separate lazy-loaded Angular module."
         The word module maps directly to @NgModule.
-    
+
+The admin panel uses a parent AdminDashboardComponent with a <router-outlet> — why this nested 
+routing pattern instead of separate top-level routes?
+    The nested routing pattern allows the admin sidebar to be rendered once at the parent level while 
+    child routes swap the content area independently. Without nesting, every admin page would need to 
+    include the sidebar markup individually — duplicating the navigation logic across five components. 
+    The parent component owns the shared layout; children own their specific content. It also means 
+    navigating between admin pages doesn't re-render or re-initialise the sidebar, which would cause a flash. 
+    Angular's router-outlet acts as the content slot, and the parent component is the frame.
+
+When the admin locks an account, the customer's next request fails immediately — but how does 
+the Angular frontend know to log them out?
+    The Express backend returns 403 Forbidden when it detects user.isLocked. 
+    The Angular HTTP interceptor in credentials.interceptor.ts catches every 403 response globally 
+    and calls authService.setUser(null) then redirects to /auth/login?reason=locked. 
+    This happens without any component-specific error handling — the interceptor is a cross-cutting 
+    concern that runs on every HTTP response regardless of which component made the request. 
+    The login page reads the reason=locked query parameter and displays the appropriate message.
+
+The product form uses FormData instead of JSON for the API call — why?
+    File uploads cannot be sent as JSON. The HTTP Content-Type: application/json format only 
+    supports text data — binary file content must be sent as multipart/form-data. FormData is 
+    the browser's built-in class for constructing multipart payloads. It handles the boundary 
+    markers and binary encoding automatically. When FormData is passed to Angular's HttpClient.post(), 
+    the client automatically sets the correct Content-Type: multipart/form-data header with the boundary string. 
+    On the server, multer parses this multipart body and separates the file from the text fields.
+
+
 
 
 

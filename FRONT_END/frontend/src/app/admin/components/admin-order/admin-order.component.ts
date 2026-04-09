@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router'; // 1. Import Router
 import { AdminService } from '../../../core/services/admin.service';
 import { Order } from '../../../shared/Interface';
 
@@ -10,15 +11,17 @@ import { Order } from '../../../shared/Interface';
 })
 export class AdminOrderComponent implements OnInit {
   orders: Order[] = [];
-  selectedOrder: Order | null = null;
   loading = true;
 
-  constructor(private adminService: AdminService) { }
+  // 2. Inject Router in constructor
+  constructor(
+    private adminService: AdminService,
+    private router: Router 
+  ) { }
 
   ngOnInit(): void {
     this.adminService.getAllOrders().subscribe({
       next: (res: any) => {
-        // This check handles both wrapped {orders: []} and direct [] responses
         this.orders = res.orders || res || [];
         this.loading = false;
       },
@@ -29,7 +32,9 @@ export class AdminOrderComponent implements OnInit {
     });
   }
 
-  viewOrder(order: Order): void {
-    this.selectedOrder = this.selectedOrder?.id === order.id ? null : order;
+  // 3. Update this method to navigate
+  viewOrder(orderId: number): void {
+    // This assumes your admin route is something like /admin/orders/:id
+    this.router.navigate(['/admin/orders/', orderId]);
   }
 }
