@@ -1,0 +1,35 @@
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <span class="brand-icon">⚡</span>
+      <span>Admin Panel</span>
+    </div>
+
+    <nav class="admin-nav">
+      <a routerLink="products"  routerLinkActive="active" class="admin-nav-item">
+        Products
+      </a>
+      <a routerLink="customers" routerLinkActive="active" class="admin-nav-item">
+        Customers
+      </a>
+      <a routerLink="orders"    routerLinkActive="active" class="admin-nav-item">
+        Orders
+      </a>
+    </nav>
+
+    <div class="admin-sidebar-footer">
+      <a routerLink="/" class="admin-nav-item">← Back to store</a>
+      <button class="admin-nav-item logout-btn" (click)="onLogout()">
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

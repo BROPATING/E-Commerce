@@ -1,0 +1,73 @@
+<div class="confirmation-page" *ngIf="order">
+  <div class="confirmation-container">
+
+    <!-- Success banner -->
+    <div class="success-banner">
+      <div class="success-circle">
+        <span class="success-tick">✓</span>
+      </div>
+      <div class="success-text">
+        <h1>Order Confirmed!</h1>
+        <p>Thank you for your purchase. Your order has been placed successfully.</p>
+        <span class="order-ref">Order #{{ order.id }}</span>
+      </div>
+    </div>
+
+    <!-- Order breakdown -->
+    <div class="detail-card">
+      <div class="detail-meta">
+        <div class="meta-item">
+          <span class="meta-label">Payment method</span>
+          <span class="meta-value">{{ order.paymentMethod }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Order date</span>
+          <span class="meta-value">{{ order.createdAt | date:'longDate' }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Order ID</span>
+          <span class="meta-value">#{{ order.id }}</span>
+        </div>
+      </div>
+
+      <div class="items-section">
+        <h3 class="items-title">Items in this order</h3>
+
+        <div class="order-items">
+          <div class="order-item" *ngFor="let item of order.items">
+            <img
+              [src]="getImageUrl(item.product.imagePath)"
+              [alt]="item.product.name"
+              class="item-thumb"
+            />
+            <div class="item-info">
+              <p class="item-name">{{ item.product.name }}</p>
+              <p class="item-snapshot">
+                ₹{{ item.priceAtPurchase | number:'1.2-2' }} × {{ item.quantity }}
+              </p>
+            </div>
+            <p class="item-line">
+              ₹{{ getLineTotal(item.priceAtPurchase, item.quantity) | number:'1.2-2' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="total-section">
+        <span>Total paid</span>
+        <span class="total-paid">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="confirmation-actions">
+      <button class="btn btn-primary" (click)="onContinueShopping()">
+        Continue shopping
+      </button>
+      <button class="btn btn-secondary" (click)="onViewOrders()">
+        View all orders
+      </button>
+    </div>
+
+  </div>
+</div>

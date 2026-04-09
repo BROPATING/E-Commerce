@@ -1,0 +1,107 @@
+<div class="detail-page">
+  <div class="detail-container">
+
+    <div *ngIf="loading" class="state-box">
+      <div class="spinner"></div>
+      <p>Loading order details...</p>
+    </div>
+
+    <div *ngIf="!loading && errorMessage" class="state-box error">
+      <div class="error-icon">⚠️</div>
+      <h2>{{ errorMessage }}</h2>
+      <button class="btn btn-secondary" (click)="goBack()">← Back to orders</button>
+    </div>
+
+    <div *ngIf="!loading && order && !errorMessage">
+
+      <div class="detail-header">
+        <button class="back-btn" (click)="goBack()">← All orders</button>
+        <h1>Order #{{ order.id }}</h1>
+        <p class="order-placed">Placed on {{ order.createdAt | date:'fullDate' }}</p>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-card">
+          <p class="meta-label">Payment method</p>
+          <p class="meta-value">{{ order.paymentMethod }}</p>
+        </div>
+        <div class="meta-card">
+          <p class="meta-label">Order date</p>
+          <p class="meta-value">{{ order.createdAt | date:'mediumDate' }}</p>
+        </div>
+        <div class="meta-card">
+          <p class="meta-label">Total items</p>
+          <p class="meta-value">{{ getTotalItems() }} items</p>
+        </div>
+        <div class="meta-card highlight">
+          <p class="meta-label">Total paid</p>
+          <p class="meta-value total-paid">₹{{ order.totalAmount | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <div class="items-card">
+        <h2 class="items-title">Items in this order</h2>
+        <div class="items-note">
+          <span class="note-icon">ℹ️</span>
+          Prices shown are what you paid at the time of purchase.
+        </div>
+
+        <div class="order-items">
+          <div class="order-item" *ngFor="let item of order.items">
+            <a [routerLink]="['/products', item.product.id]" class="item-img-link">
+              <img [src]="getImageUrl(item.product.imagePath ?? null)" [alt]="item.product.name" class="item-img" />
+            </a>
+
+            <div class="item-info">
+              <a [routerLink]="['/products', item.product.id]" class="item-name">
+                {{ item.product.name }}
+              </a>
+              <div class="item-price-row">
+                <span class="price-label">Price at purchase:</span>
+                <span class="price-snapshot">₹{{ item.priceAtPurchase | number:'1.2-2' }}</span>
+              </div>
+              <div class="item-current-row" *ngIf="item.product && item.product.price !== item.priceAtPurchase">
+                <span class="price-label">Current price:</span>
+                <span class="price-current">₹{{ item.product.price | number:'1.2-2' }}</span>
+                <span class="price-changed-badge">Price changed</span>
+              </div>
+            </div>
+
+            <div class="item-qty">
+              <p class="qty-label">Qty</p>
+              <p class="qty-value">{{ item.quantity }}</p>
+            </div>
+
+            <div class="item-line-total">
+              <p class="qty-label">Subtotal</p>
+              <p class="line-amount">₹{{ getLineTotal(item.priceAtPurchase, item.quantity) | number:'1.2-2' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-total-row">
+          <div class="total-breakdown">
+            <div class="breakdown-line">
+              <span>Subtotal ({{ getTotalItems() }} items)</span>
+              <span>₹{{ order.totalAmount | number:'1.2-2' }}</span>
+            </div>
+            <div class="breakdown-line">
+              <span>Shipping</span>
+              <span class="free">Free</span>
+            </div>
+          </div>
+          <div class="total-final">
+            <span>Total paid</span>
+            <span class="total-final-amount">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn btn-secondary" (click)="goBack()">← Back to orders</button>
+        <a routerLink="/products" class="btn btn-primary" *ngIf="!isAdminView">Continue shopping</a>
+      </div>
+
+    </div>
+  </div>
+</div>

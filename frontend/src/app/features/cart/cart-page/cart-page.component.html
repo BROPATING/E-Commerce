@@ -1,0 +1,133 @@
+<div class="cart-page">
+  <div class="cart-container">
+
+    <!-- Header -->
+    <div class="cart-header">
+      <h1>Your Cart</h1>
+      <a routerLink="/products" class="continue-link">← Continue shopping</a>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="state-box">
+      <div class="spinner"></div>
+      <p>Loading your cart...</p>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && cart.items.length === 0" class="state-box empty">
+      <div class="empty-icon">🛒</div>
+      <h2>Your cart is empty</h2>
+      <p>Add some products to get started</p>
+      <a routerLink="/products" class="btn btn-primary">Browse products</a>
+    </div>
+
+    <!-- Cart content -->
+    <div *ngIf="!loading && cart.items.length > 0" class="cart-layout">
+
+      <!-- Items list -->
+      <div class="cart-items">
+        <div
+          *ngFor="let item of cart.items"
+          class="cart-item"
+          [class.updating]="isUpdating(item.product.id)"
+        >
+          <!-- Product image -->
+          <a [routerLink]="['/products', item.product.id]" class="item-img-link">
+            <img
+              [src]="getImageUrl(item.product.imagePath)"
+              [alt]="item.product.name"
+              class="item-img"
+            />
+          </a>
+
+          <!-- Product info -->
+          <div class="item-info">
+            <a [routerLink]="['/products', item.product.id]" class="item-name">
+              {{ item.product.name }}
+            </a>
+            <p class="item-unit-price">
+              ₹{{ item.product.price | number:'1.2-2' }} each
+            </p>
+            <p class="item-stock-hint"
+               *ngIf="item.product.stock < 10 && item.product.stock > 0">
+              Only {{ item.product.stock }} left in stock
+            </p>
+          </div>
+
+          <!-- Quantity controls -->
+          <div class="item-qty-controls">
+            <button
+              class="qty-btn"
+              (click)="decrement(item.product.id, item.quantity)"
+              [disabled]="item.quantity <= 1 || isUpdating(item.product.id)"
+              aria-label="Decrease quantity"
+            >−</button>
+            <span class="qty-value">{{ item.quantity }}</span>
+            <button
+              class="qty-btn"
+              (click)="increment(item.product.id, item.quantity, item.product.stock)"
+              [disabled]="item.quantity >= item.product.stock || isUpdating(item.product.id)"
+              aria-label="Increase quantity"
+            >+</button>
+          </div>
+
+          <!-- Line total -->
+          <div class="item-total">
+            <p class="item-total-amount">
+              ₹{{ getLineTotal(item.product.price, item.quantity) | number:'1.2-2' }}
+            </p>
+          </div>
+
+          <!-- Remove button -->
+          <button
+            class="remove-btn"
+            (click)="removeItem(item.product.id)"
+            [disabled]="isUpdating(item.product.id)"
+            aria-label="Remove item"
+            title="Remove from cart"
+          >✕</button>
+
+        </div>
+      </div>
+
+      <!-- Order summary -->
+      <div class="cart-summary">
+        <h2 class="summary-title">Order Summary</h2>
+
+        <div class="summary-lines">
+          <div class="summary-line"
+               *ngFor="let item of cart.items">
+            <span class="summary-line-name">
+              {{ item.product.name }}
+              <span class="summary-line-qty">× {{ item.quantity }}</span>
+            </span>
+            <span class="summary-line-price">
+              ₹{{ getLineTotal(item.product.price, item.quantity) | number:'1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <span class="summary-total-amount">
+            ₹{{ cart.total | number:'1.2-2' }}
+          </span>
+        </div>
+
+        <button
+          class="btn btn-primary checkout-btn"
+          (click)="proceedToCheckout()"
+        >
+          Proceed to checkout
+        </button>
+
+        <p class="summary-note">
+          Taxes and shipping calculated at checkout
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

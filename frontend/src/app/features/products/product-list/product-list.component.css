@@ -1,0 +1,230 @@
+.list-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+  align-items: start;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── Filters sidebar ─────────────────────────────────────────── */
+.filters-sidebar {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  position: sticky;
+  top: 80px;
+}
+
+.filters-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.filters-title {
+  font-size: 1rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-badge {
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0;
+}
+
+.clear-btn:hover { text-decoration: underline; }
+
+.filter-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.filter-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 1rem;
+}
+
+.filter-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.15s;
+}
+
+.filter-input:focus,
+.filter-select:focus { border-color: #2563eb; }
+
+.price-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.price-input { width: calc(50% - 0.75rem); }
+.price-dash { color: #9ca3af; font-size: 0.875rem; }
+
+.filter-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.filter-checkbox { accent-color: #2563eb; width: 16px; height: 16px; }
+
+.apply-btn { width: 100%; }
+
+/* ── Main ────────────────────────────────────────────────────── */
+.list-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.list-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.results-count {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.product-card-wrap.added {
+  animation: addPulse 0.35s ease;
+}
+
+@keyframes addPulse {
+  0%  { transform: scale(1); }
+  50% { transform: scale(1.025); }
+  100%{ transform: scale(1); }
+}
+
+/* ── Skeleton ────────────────────────────────────────────────── */
+.skeleton-card {
+  height: 320px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e4e4e4 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 5rem 2rem;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.empty-icon { font-size: 3rem; }
+.empty-state h2 { font-size: 1.15rem; font-weight: 700; color: #1a1a1a; }
+.empty-state p  { color: #6b7280; font-size: 0.9rem; }
+
+/* ── Pagination ──────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: #374151;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.page-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+  font-weight: 700;
+}
+
+.page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.prev-next { min-width: 80px; }
+.page-ellipsis { color: #9ca3af; padding: 0 0.25rem; }

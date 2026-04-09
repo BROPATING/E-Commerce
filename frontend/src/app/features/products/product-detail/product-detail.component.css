@@ -1,0 +1,344 @@
+/* ── State pages ─────────────────────────────────────────────── */
+.state-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #6b7280;
+  padding: 2rem;
+}
+
+.error-icon { font-size: 2.5rem; }
+.error h2 { color: #1a1a1a; font-size: 1.1rem; font-weight: 700; }
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Page ────────────────────────────────────────────────────── */
+.detail-page {
+  background: #f5f5f5;
+  min-height: calc(100vh - 64px);
+  padding: 2rem 1.5rem;
+}
+
+.detail-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Breadcrumb ──────────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+}
+
+.crumb {
+  color: #9ca3af;
+}
+
+.crumb-link {
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.15s;
+}
+
+.crumb-link:hover { color: #2563eb; text-decoration: underline; }
+
+.crumb-current {
+  color: #374151;
+  font-weight: 600;
+}
+
+.crumb-sep { color: #d1d5db; }
+
+/* ── Detail grid ─────────────────────────────────────────────── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  align-items: start;
+}
+
+/* ── Image ───────────────────────────────────────────────────── */
+.image-frame {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  aspect-ratio: 1;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.out-of-stock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+/* ── Info column ─────────────────────────────────────────────── */
+.detail-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Category pills */
+.category-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 0.25rem 0.625rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pill:hover { background: #dbeafe; }
+.pill-sep { color: #d1d5db; font-size: 0.75rem; }
+
+/* Name */
+.product-name {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+/* Price */
+.price-row { margin-bottom: 0.875rem; }
+
+.product-price {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #2563eb;
+  letter-spacing: -0.02em;
+}
+
+/* Stock */
+.stock-row { margin-bottom: 1.25rem; }
+
+.stock-ok  { font-size: 0.875rem; font-weight: 600; color: #16a34a; }
+.stock-low { font-size: 0.875rem; font-weight: 600; color: #d97706; }
+.stock-none{ font-size: 0.875rem; font-weight: 600; color: #dc2626; }
+
+/* Description */
+.product-description {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+
+.detail-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+/* Add to cart */
+.add-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.qty-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.qty-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #374151;
+  min-width: 60px;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+}
+
+.qty-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #374151;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.15s;
+  padding: 0;
+}
+
+.qty-btn:hover:not(:disabled) { background: #e5e7eb; }
+.qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.qty-val {
+  font-size: 1.1rem;
+  font-weight: 700;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.add-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.add-btn.success {
+  background: #16a34a !important;
+}
+
+.add-btn:active:not(:disabled) { transform: scale(0.98); }
+
+.cart-feedback {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.cart-feedback.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.cart-feedback.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Out of stock */
+.out-of-stock-msg {
+  padding: 1.25rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #991b1b;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.out-of-stock-msg a {
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* Login prompt */
+.login-prompt {
+  padding: 1rem 1.25rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #92400e;
+  margin-bottom: 1.5rem;
+}
+
+.login-link {
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.login-link:hover { text-decoration: underline; }
+
+/* Share */
+.share-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.share-btn {
+  padding: 0.625rem 1.25rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.share-btn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.share-btn.shared {
+  border-color: #16a34a;
+  color: #16a34a;
+  background: #f0fdf4;
+}
+
+.share-hint {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}

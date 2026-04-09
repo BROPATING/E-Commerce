@@ -1,0 +1,53 @@
+<nav class="navbar">
+  <div class="navbar-container">
+
+    <!-- Brand -->
+    <a routerLink="/" class="navbar-brand">ShopNow</a>
+
+    <!-- Search -->
+    <div class="navbar-search">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Search products..."
+        class="search-input"
+      />
+      <button (click)="onSearch()" class="search-btn">Search</button>
+    </div>
+
+    <!-- Nav links -->
+    <div class="navbar-links">
+
+      <a routerLink="/products" routerLinkActive="active">Products</a>
+
+      <ng-container *ngIf="currentUser; else guestLinks">
+
+        <a *ngIf="currentUser.role === 'customer'"
+           routerLink="/cart"
+           class="cart-link">
+          Cart
+          <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+        </a>
+
+        <a *ngIf="currentUser.role === 'customer'"
+           routerLink="/orders">Orders</a>
+
+        <a *ngIf="currentUser.role === 'customer'"
+           routerLink="/profile">Profile</a>
+
+        <a *ngIf="currentUser.role === 'admin'"
+           routerLink="/admin">Admin panel</a>
+
+        <button class="btn-logout" (click)="onLogout()">Logout</button>
+
+      </ng-container>
+
+      <ng-template #guestLinks>
+        <a routerLink="/auth/login">Login</a>
+        <a routerLink="/auth/register" class="btn btn-primary nav-register">Register</a>
+      </ng-template>
+
+    </div>
+  </div>
+</nav>

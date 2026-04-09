@@ -19,7 +19,6 @@ export const appConfig: ApplicationConfig = {
 
     // 2. Setup HttpClient with support for Class-based Interceptors
     provideHttpClient(withInterceptorsFromDi()), 
-
     // 3. Register your CredentialsInterceptor
     {
       provide: HTTP_INTERCEPTORS,

@@ -16,9 +16,13 @@ export class CredentialsInterceptor implements HttpInterceptor {
     private router = inject(Router);
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        const token = localStorage.getItem('token');
         // Clone the request and add withCredentials
         // We must clone because HttpRequest objects are immutable(cannot change) so to edit the cookies perfect copy is send
-        const credentialed = req.clone({ withCredentials: true });
+        const credentialed = req.clone({ 
+            withCredentials: true,
+            setHeaders: token ? { Authorization: `Bearer ${token}` } : {}
+         });
 
         return next.handle(credentialed).pipe(
             catchError((error: HttpErrorResponse) => {

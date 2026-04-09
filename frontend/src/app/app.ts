@@ -4,9 +4,13 @@ import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true, // ✅ Add this line
-  imports: [RouterOutlet], // ✅ Import RouterOutlet, NOT the AdminRoutingModule
-  templateUrl: "app.html",
+  standalone: false,
+  template: `
+    <app-navbar></app-navbar>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  `,
 })
 export class AppComponent implements OnInit {
   constructor(private authService: AuthService) {}

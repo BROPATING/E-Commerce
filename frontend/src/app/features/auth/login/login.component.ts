@@ -6,11 +6,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [
-    CommonModule,        // Provides *ngIf
-    ReactiveFormsModule, // Provides [formGroup] and formControlName
-    RouterModule       // Provides routerLink
-  ],
+  standalone: false,
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
