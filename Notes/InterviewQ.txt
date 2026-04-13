@@ -195,7 +195,9 @@ Your session store is in memory — what happens when the server restarts?
     For a course project this is acceptable. In production, the session store would be backed by 
     Redis — an in-memory data store that is external to the Node process, survives restarts, and can be shared across 
     multiple server instances in a horizontally scaled deployment. 
-    The interface we've built (set, get, delete, deleteAllForUser) (sessionStore) is intentionally simple enough that swapping the Map for a Redis client would only require changing the implementation inside sessionStore.ts — none of the middleware or route code would need to change.
+    The interface we've built (set, get, delete, deleteAllForUser) (sessionStore) is intentionally simple enough that swapping the
+    Map for a Redis client would only require changing the implementation inside sessionStore.ts — none of the middleware or route
+    code would need to change.
 
 Why do you query the database on every authenticated request to check isLocked? Isn't that expensive?
     It is one extra DB query per protected request. 
@@ -218,7 +220,6 @@ Why 409 Conflict and not 400 Bad Request?
     request is well-formed but conflicts with existing state — a duplicate email is a conflict, not a malformed request. 
     Using the precise status code makes your API self-documenting and helps the frontend display the right error message 
     without parsing the error string.
-
 
 Why strip passwordHash before returning? 
     Defence in depth. Even if a future developer accidentally logs the response or sends it somewhere unexpected, 
@@ -359,7 +360,8 @@ What happens to the image file on disk when a product is deleted?
     We call fs.unlinkSync() to delete the file from ProductImages/ before removing 
     the database row. Without this, deleted products leave orphaned files accumulating 
     on disk indefinitely — a storage leak. 
-    The delete is synchronous (unlinkSync) rather than async because we want the file deletion to complete before the database row is removed. 
+    The delete is synchronous (unlinkSync) rather than async because we want the file deletion to complete before 
+    the database row is removed. 
     If they were async and the process crashed between the two operations, 
     we'd have a deleted DB row but an orphaned file — or worse, a deleted file but an intact DB row pointing to a missing image.
 

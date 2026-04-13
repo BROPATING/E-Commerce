@@ -119,7 +119,7 @@ export class ForgotPasswordComponent {
    */
   onRequestCode(): void {
     if (this.emailForm.invalid) { this.emailCtrl.markAsTouched(); return; }
-    
+
     this.emailLoading = true;
     this.emailError = '';
     this.submittedEmail = this.emailCtrl.value;
@@ -127,7 +127,8 @@ export class ForgotPasswordComponent {
     this.authService.forgotPassword(this.submittedEmail).subscribe({
       next: (res) => {
         this.emailLoading = false;
-        this.displayedCode = res.resetCode;
+        // Ensure it is a string so .split('') works in the HTML
+        this.displayedCode = String(res.resetCode);
         this.step = 2;
       },
       error: (err) => {
@@ -145,7 +146,7 @@ export class ForgotPasswordComponent {
    */
   onResetPassword(): void {
     if (this.resetForm.invalid) { this.resetForm.markAllAsTouched(); return; }
-    
+
     this.resetLoading = true;
     this.resetError = '';
 

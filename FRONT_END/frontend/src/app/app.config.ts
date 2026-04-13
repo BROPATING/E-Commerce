@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { CredentialsInterceptor } from './core/interceptors/credentials.interceptor';
 import { routes } from './features/auth/auth-routing-module';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 // export const appConfig: ApplicationConfig = {
 //   providers: [
@@ -19,11 +20,13 @@ export const appConfig: ApplicationConfig = {
 
     // 2. Setup HttpClient with support for Class-based Interceptors
     provideHttpClient(withInterceptorsFromDi()), 
+    provideAnimationsAsync(),
     // 3. Register your CredentialsInterceptor
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CredentialsInterceptor,
       multi: true,
     },
+
   ]
 };
