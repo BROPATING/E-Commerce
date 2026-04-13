@@ -8,7 +8,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/index.ts",
-    "seed": "ts-node -r reflect-metadata src/seed.ts",
+    "seed": "ts-node -r reflect-metadata src/seeds/seed.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm migration:generate -- -d \"src/data-source.cli.ts\"",
     "migration:run": "npm run typeorm migration:run -- -d \"src/data-source.cli.ts\"",

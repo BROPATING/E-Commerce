@@ -29,13 +29,14 @@ export const AppDataSource = new DataSource({
      * In Dev: You have maximum productivity and speed.
      * In Prod: The feature is forced OFF, requiring you to use Migrations (version-controlled scripts) to update the database safely.
      */
-    synchronize: process.env.NODE_ENV === "true",  // For Migration === 'Production'
+    // synchronize: process.env.NODE_ENV === "true",  // For Migration === 'Production'
     // synchronize: process.env.NODE_ENV === 'development', // Without Migration
+    synchronize: true,
     /**
      * logging: Prints all SQL queries to the terminal.
      * Useful for debugging complex joins between Categories and Products.
      */
-    logging: process.env.NODE_ENV === 'true',
+    logging: process.env.NODE_ENV === 'false',
     // logging: process.env.NODE_ENV === 'development',
     /**
      * entities: The list of classes that TypeORM should track.

@@ -64,4 +64,13 @@ export class OrderConfirmationComponent implements OnInit {
     this.orderService.clearLastOrder();
     this.router.navigate(['/orders']);
   }
+
+  particles = Array.from({ length: 18 }, (_, i) => ({
+    x: Math.random() * 100,
+    y: Math.random() * 60,
+    size: Math.random() * 6 + 4,
+    delay: Math.random() * 0.8,
+    color: ['#06b6d4', '#10b981', '#a78bfa', '#34d399', '#f59e0b']
+    [Math.floor(Math.random() * 5)],
+  }));
 }
