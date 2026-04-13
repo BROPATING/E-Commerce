@@ -12,7 +12,7 @@ import productRoutes from './routes/product.routes';
 import cartRoutes from './routes/cart.routes';
 import orderRoutes from './routes/order.routes';
 import adminRoutes from './routes/admin.routes';
-import { profile } from 'console';
+import fs from "fs";
 /**
  * Express Application Configuration
  * This file initializes middleware, security settings, and global route handlers.
@@ -75,6 +75,22 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/admin", adminRoutes);
 
+// Serve Angular build output from dist folder in production.
+    const angularDistRoot = path.join(
+      __dirname, "../../FRONT_END/frontend/dist/frontend",
+    );
+    const angularBrowserPath = path.join(angularDistRoot, "browser");
+    const angularDistPath = fs.existsSync(angularBrowserPath)
+      ? angularBrowserPath
+      : angularDistRoot;
+    app.use(express.static(angularDistPath));
+
+
+    // SPA fallback for non-API routes.
+    app.get(/^\/(?!api).*/, (req, res) => {
+      res.sendFile(path.join(angularDistPath, "index.html"));
+    });
+
 // 404 Handler
 app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
@@ -86,7 +102,7 @@ app.use('/api', (_req, res) => {
  * Prevents the server from crashing and returns a clean JSON error to the client.
  */
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    if (err.message === 'Only image files are allowed (JPEG, PNG, WebP, GIF)') {
+    if (err.message === 'Only image files are allowed (JPEG, PNG, WebP, GIF, https)') {
         return res.status(400).json({ error: err.message });
     }
     console.error("Error");

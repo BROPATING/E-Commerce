@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import 'reflect-metadata';
-import app from "./src/app";
-import { AppDataSource } from "./src/config/data-source";
+import app from "./app";
+import { AppDataSource } from "./config/data-source";
 
 /**
  * Server Initialization Script

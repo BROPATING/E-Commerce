@@ -5,9 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/index.ts",
+    "start": "node dist/index.js",
+    "dev": "npx ts-node src/index.ts",
     "seed": "ts-node -r reflect-metadata src/seeds/seed.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm migration:generate -- -d \"src/data-source.cli.ts\"",
@@ -33,7 +33,7 @@
   "homepage": "https://github.com/BROPATING/E-Commerce#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "better-sqlite3": "^12.8.0",
+    "better-sqlite3": "^10.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

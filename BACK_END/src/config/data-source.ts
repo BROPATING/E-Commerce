@@ -9,6 +9,7 @@ import { Order } from '../entities/Order';
 import { OrderItem } from '../entities/OrderItem';
 import { ResetCode } from '../entities/ResetCode';
 import dotenv from "dotenv";
+import path from "path";
 dotenv.config();
 /**
  * The Central Database Connection configuration for the E-Commerce Application.
@@ -31,7 +32,7 @@ export const AppDataSource = new DataSource({
      */
     // synchronize: process.env.NODE_ENV === "true",  // For Migration === 'Production'
     // synchronize: process.env.NODE_ENV === 'development', // Without Migration
-    synchronize: true,
+    synchronize: false,
     /**
      * logging: Prints all SQL queries to the terminal.
      * Useful for debugging complex joins between Categories and Products.
@@ -55,7 +56,7 @@ export const AppDataSource = new DataSource({
     // timezone: 'Z',
 
     // Specify migration files location and history table
-    migrations: ["src/migrations/**/*.ts"],    // Path to all migration scripts
+    migrations: [path.join(__dirname, "../migrations/**/*.js")],
     migrationsTableName: 'migrations_history', // Table to track applied migrations
 });
 

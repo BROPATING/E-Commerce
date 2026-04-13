@@ -149,7 +149,8 @@ export const AuthService = {
         }
 
         // Generate 6 digit code
-        const code = Math.floor(1000000 * Math.random() * 900000).toString();
+        // Generates a number between 100,000 and 999,999
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
 
         const expiresAt = new Date();
         expiresAt.setMinutes(expiresAt.getMinutes() + RESET_CODE_EXPIRY_MINUTES);
