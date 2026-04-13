@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService} from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -21,14 +21,26 @@ export class ProductDetailComponent implements OnInit {
   addingToCart = false;
   shareSuccess = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private productService: ProductService,
-    private cartService: CartService,
-    public authService: AuthService,
-  ) {}
+  /**
+   * Inject required services:
+   * - ActivatedRoute: access route parameters
+   * - Router: handle navigation
+   * - ProductService: fetch product details
+   * - CartService: manage cart operations
+   * - AuthService: provide authentication state
+   */
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private productService = inject(ProductService);
+  private cartService = inject(CartService);
+  
+  // Keep this public if you use it directly in your HTML template
+  public authService = inject(AuthService);
 
+  /**
+   * Lifecycle hook: Initializes component state.
+   * Subscribes to route parameter changes to reload product data.
+   */
   ngOnInit(): void {
     // We subscribe to paramMap so if the ID changes, the data reloads
     this.route.paramMap.subscribe(params => {
@@ -43,6 +55,10 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Loads product details by ID.
+   * Handles both success and error states.
+   */
   loadProduct(id: number): void {
     this.loading = true;
     this.errorMessage = '';
@@ -64,29 +80,38 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  /** Returns the product image URL */
   get imageUrl(): string {
     return this.productService.getImageUrl(this.product?.imagePath ?? null);
   }
 
+  /** Checks if product is out of stock */
   get isOutOfStock(): boolean {
     return (this.product?.stock ?? 0) === 0;
   }
 
+  /** Checks if product stock is low (≤ 5 items) */
   get isLowStock(): boolean {
     const s = this.product?.stock ?? 0;
     return s > 0 && s <= 5;
   }
 
+  /** Increases quantity, respecting stock limits */
   increment(): void {
     if (this.product && this.quantity < this.product.stock) {
       this.quantity++;
     }
   }
 
+  /** Decreases quantity, ensuring minimum of 1 */
   decrement(): void {
     if (this.quantity > 1) this.quantity--;
   }
 
+  /**
+   * Adds product to cart with selected quantity.
+   * Displays success or error messages accordingly.
+   */
   onAddToCart(): void {
     if (!this.product || this.addingToCart) return;
     this.addingToCart = true;
@@ -110,6 +135,9 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Shares product details using Web Share API or clipboard fallback.
+   */
   onShare(): void {
     const url  = window.location.href;
     const name = this.product?.name ?? 'product';
@@ -130,16 +158,19 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
+  /** Navigates to products filtered by taxonomy type */
   browseType(typeId: number | undefined): void {
     if (typeId === undefined) return;
     this.router.navigate(['/products'], { queryParams: { typeId } });
   }
 
+  /** Navigates to products filtered by category */
   browseCategory(categoryId: number | undefined): void {
     if (categoryId === undefined) return;
     this.router.navigate(['/products'], { queryParams: { categoryId } });
   }
 
+  /** Navigates to products filtered by subcategory */
   browseSubCategory(subCategoryId: number | undefined): void {
     if (subCategoryId === undefined) return;
     this.router.navigate(['/products'], { queryParams: { subCategoryId } });

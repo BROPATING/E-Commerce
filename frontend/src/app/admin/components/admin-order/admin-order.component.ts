@@ -1,8 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'; // 1. Import Router
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router'; // Router + ActivatedRoute for navigation
 import { AdminService } from '../../../core/services/admin.service';
 import { Order } from '../../../shared/Interface';
 
+/**
+ * AdminOrderComponent
+ * -------------------
+ * Displays a list of all orders in the admin panel:
+ * - Fetches orders from backend
+ * - Handles loading and error states
+ * - Provides navigation to order detail view
+ */
 @Component({
   selector: 'app-admin-order',
   standalone: false,
@@ -10,18 +18,22 @@ import { Order } from '../../../shared/Interface';
   styleUrl: './admin-order.component.css'
 })
 export class AdminOrderComponent implements OnInit {
+  /** List of orders loaded from backend */
   orders: Order[] = [];
+
+  /** Loading flag for initial data fetch */
   loading = true;
 
-  // 2. Inject Router in constructor
-  constructor(
-    private adminService: AdminService,
-    private router: Router 
-  ) { }
+  /** Injected services */
+  private adminService = inject(AdminService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
+    // Fetch all orders on initialization
     this.adminService.getAllOrders().subscribe({
       next: (res: any) => {
+        // Some APIs may return { orders }, others may return array directly
         this.orders = res.orders || res || [];
         this.loading = false;
       },
@@ -32,9 +44,12 @@ export class AdminOrderComponent implements OnInit {
     });
   }
 
-  // 3. Update this method to navigate
+  /**
+   * Navigate to order detail view
+   * @param orderId order identifier
+   * Uses relative navigation to append ID to current route
+   */
   viewOrder(orderId: number): void {
-    // This assumes your admin route is something like /admin/orders/:id
-    this.router.navigate(['/admin/orders/', orderId]);
+    this.router.navigate([orderId], { relativeTo: this.route });
   }
 }

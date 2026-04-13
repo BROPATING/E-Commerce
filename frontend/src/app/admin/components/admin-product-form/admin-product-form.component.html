@@ -1,105 +1,309 @@
 <div class="form-page">
+
+  <!-- Header -->
   <div class="form-header">
-    <h1>{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h1>
-    <a routerLink="/admin/products" class="btn btn-secondary">← Cancel</a>
+    <div class="header-left">
+      <span class="header-tag">
+        {{ isEditMode ? 'Editing product' : 'New product' }}
+      </span>
+      <h1>
+        {{ isEditMode ? 'Edit Product' : 'Add New Product' }}
+      </h1>
+    </div>
+    <a routerLink="/admin/products" class="cancel-btn">
+      <svg viewBox="0 0 16 16" fill="none" class="cancel-icon">
+        <path d="M10 4L6 8l4 4" stroke="currentColor"
+              stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
+      Cancel
+    </a>
   </div>
 
-  <div class="form-card">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-body">
 
-      <div class="form-grid">
+    <!-- ── Left column ───────────────────────────────── -->
+    <div class="form-left">
+
+      <!-- Basic details card -->
+      <div class="form-card">
+        <div class="card-label-row">
+          <div class="card-num">01</div>
+          <div>
+            <h2 class="card-title">Basic Details</h2>
+            <p class="card-hint">Name, category and pricing</p>
+          </div>
+        </div>
+
+        <!-- Product name -->
         <div class="form-group">
           <label>Product name</label>
-          <input type="text" formControlName="name"
-            [class.input-error]="form.get('name')!.invalid && form.get('name')!.touched"/>
-          <span class="error-msg"
-            *ngIf="form.get('name')!.invalid && form.get('name')!.touched">
-            Name is required
+          <div class="input-wrap">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="input-icon">
+              <path fill-rule="evenodd"
+                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0
+                   016 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                clip-rule="evenodd"/>
+            </svg>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="e.g. Logitech MX Keys"
+              [class.input-error]="form.get('name')!.invalid &&
+                                   form.get('name')!.touched"
+            />
+          </div>
+          <span class="field-error"
+                *ngIf="form.get('name')!.invalid && form.get('name')!.touched">
+            Product name is required
           </span>
         </div>
 
+        <!-- Sub-category -->
         <div class="form-group">
           <label>Sub-category</label>
-          <select formControlName="subCategoryId"
-            [class.input-error]="form.get('subCategoryId')!.invalid && form.get('subCategoryId')!.touched">
-            <option value="">Select sub-category</option>
-            <option *ngFor="let sub of allSubCategories" [value]="sub.id">
-              {{ sub.label }}
-            </option>
-          </select>
-          <span class="error-msg"
-            *ngIf="form.get('subCategoryId')!.invalid && form.get('subCategoryId')!.touched">
-            Sub-category is required
-          </span>
-        </div>
-
-        <div class="form-group">
-          <label>Price (₹)</label>
-          <input type="number" formControlName="price" min="0" step="0.01"
-            [class.input-error]="form.get('price')!.invalid && form.get('price')!.touched"/>
-          <span class="error-msg"
-            *ngIf="form.get('price')!.invalid && form.get('price')!.touched">
-            Valid price is required
-          </span>
-        </div>
-
-        <div class="form-group">
-          <label>Stock quantity</label>
-          <input type="number" formControlName="stock" min="0"
-            [class.input-error]="form.get('stock')!.invalid && form.get('stock')!.touched"/>
-          <span class="error-msg"
-            *ngIf="form.get('stock')!.invalid && form.get('stock')!.touched">
-            Stock is required
-          </span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Description</label>
-        <textarea formControlName="description" rows="4"
-          [class.input-error]="form.get('description')!.invalid && form.get('description')!.touched">
-        </textarea>
-        <span class="error-msg"
-          *ngIf="form.get('description')!.invalid && form.get('description')!.touched">
-          Description is required
-        </span>
-      </div>
-
-      <!-- Image Upload -->
-      <div class="form-group">
-        <label>Product image (optional)</label>
-        <div class="image-upload-area">
-          <img
-            *ngIf="previewUrl"
-            [src]="previewUrl"
-            class="image-preview"
-            alt="Preview"
-          />
-          <div *ngIf="!previewUrl" class="image-placeholder">
-            No image selected
+          <div class="select-wrap">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="input-icon">
+              <path fill-rule="evenodd"
+                d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414
+                   0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7
+                   7zM5 6a1 1 0 100-2 1 1 0 000 2z"
+                clip-rule="evenodd"/>
+            </svg>
+            <select
+              formControlName="subCategoryId"
+              [class.input-error]="form.get('subCategoryId')!.invalid &&
+                                   form.get('subCategoryId')!.touched"
+            >
+              <option value="">Select sub-category</option>
+              <option *ngFor="let sub of allSubCategories" [value]="sub.id">
+                {{ sub.label }}
+              </option>
+            </select>
+            <svg viewBox="0 0 16 16" fill="none" class="select-chevron">
+              <path d="M4 6l4 4 4-4" stroke="currentColor"
+                    stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round"/>
+            </svg>
           </div>
-          <label class="file-label">
-            {{ previewUrl ? 'Change image' : 'Upload image' }}
-            <input
-              type="file"
-              accept="image/*"
-              (change)="onFileChange($event)"
-              style="display: none"
-            />
-          </label>
+          <span class="field-error"
+                *ngIf="form.get('subCategoryId')!.invalid &&
+                       form.get('subCategoryId')!.touched">
+            Please select a sub-category
+          </span>
+        </div>
+
+        <!-- Price + Stock row -->
+        <div class="two-col">
+
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <div class="input-wrap">
+              <span class="input-prefix">₹</span>
+              <input
+                type="number"
+                formControlName="price"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                class="has-prefix"
+                [class.input-error]="form.get('price')!.invalid &&
+                                     form.get('price')!.touched"
+              />
+            </div>
+            <span class="field-error"
+                  *ngIf="form.get('price')!.invalid && form.get('price')!.touched">
+              Valid price is required
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label>Stock quantity</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="input-icon">
+                <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                <path fill-rule="evenodd"
+                  d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0
+                     011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"
+                  clip-rule="evenodd"/>
+              </svg>
+              <input
+                type="number"
+                formControlName="stock"
+                min="0"
+                placeholder="0"
+                [class.input-error]="form.get('stock')!.invalid &&
+                                     form.get('stock')!.touched"
+              />
+            </div>
+            <span class="field-error"
+                  *ngIf="form.get('stock')!.invalid && form.get('stock')!.touched">
+              Stock quantity is required
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Description card -->
+      <div class="form-card">
+        <div class="card-label-row">
+          <div class="card-num">02</div>
+          <div>
+            <h2 class="card-title">Description</h2>
+            <p class="card-hint">Describe the product clearly</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="textarea-wrap">
+            <textarea
+              formControlName="description"
+              rows="5"
+              placeholder="Describe the product — features, materials, specifications..."
+              [class.input-error]="form.get('description')!.invalid &&
+                                   form.get('description')!.touched"
+            ></textarea>
+            <span class="char-count"
+                  [class.char-warn]="(form.get('description')!.value?.length ?? 0) > 480">
+              {{ form.get('description')!.value?.length ?? 0 }} / 500
+            </span>
+          </div>
+          <span class="field-error"
+                *ngIf="form.get('description')!.invalid &&
+                       form.get('description')!.touched">
+            Description is required
+          </span>
         </div>
       </div>
 
-      <div *ngIf="errorMessage" class="alert alert-error">
-        {{ errorMessage }}
+    </div>
+
+    <!-- ── Right column ──────────────────────────────── -->
+    <div class="form-right">
+
+      <!-- Image card -->
+      <div class="form-card image-card">
+        <div class="card-label-row">
+          <div class="card-num">03</div>
+          <div>
+            <h2 class="card-title">Product Image</h2>
+            <p class="card-hint">Optional · Max 5MB</p>
+          </div>
+        </div>
+
+        <!-- Drop zone -->
+        <label class="drop-zone" [class.has-image]="previewUrl">
+
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onFileChange($event)"
+            class="file-input"
+          />
+
+          <!-- Preview -->
+          <div *ngIf="previewUrl" class="preview-wrap">
+            <img [src]="previewUrl" alt="Preview" class="image-preview"/>
+            <div class="preview-overlay">
+              <svg viewBox="0 0 20 20" fill="none" class="change-icon">
+                <path d="M4 16v-2.586a1 1 0 01.293-.707l8-8a1 1 0 011.414
+                         0l2.586 2.586a1 1 0 010 1.414l-8 8A1 1 0 017.414
+                         18H5a1 1 0 01-1-1z"
+                      stroke="white" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M14 6l2 2" stroke="white" stroke-width="1.5"
+                      stroke-linecap="round"/>
+              </svg>
+              <span>Change image</span>
+            </div>
+          </div>
+
+          <!-- Placeholder -->
+          <div *ngIf="!previewUrl" class="drop-placeholder">
+            <div class="drop-icon-wrap">
+              <svg viewBox="0 0 48 48" fill="none" class="drop-svg">
+                <rect x="6" y="10" width="36" height="28" rx="4"
+                      stroke="rgba(6,182,212,0.3)" stroke-width="2"/>
+                <rect x="6" y="10" width="36" height="28" rx="4"
+                      stroke="#06b6d4" stroke-width="2"
+                      stroke-dasharray="128" stroke-dashoffset="80"
+                      stroke-linecap="round"/>
+                <circle cx="17" cy="20" r="4"
+                        stroke="rgba(6,182,212,0.4)" stroke-width="1.5"/>
+                <path d="M6 32l10-8 8 6 6-5 12 9"
+                      stroke="rgba(6,182,212,0.4)" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="drop-title">Click to upload image</p>
+            <p class="drop-sub">PNG, JPG, WEBP up to 5MB</p>
+          </div>
+
+        </label>
+
+        <!-- File info -->
+        <div class="file-info" *ngIf="previewUrl">
+          <svg viewBox="0 0 16 16" fill="currentColor" class="file-info-icon">
+            <path fill-rule="evenodd"
+              d="M4 2a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V6.414A2 2 0
+                 0013.414 5L11 2.586A2 2 0 009.586 2H4zm6 1.586L12.414 6H11a1
+                 1 0 01-1-1V3.586z"
+              clip-rule="evenodd"/>
+          </svg>
+          <span>Image selected</span>
+          <button type="button" class="remove-img-btn"
+                  (click)="previewUrl = null; $event.stopPropagation()">
+            ✕ Remove
+          </button>
+        </div>
+
       </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="loading">
-          {{ loading ? 'Saving...' : (isEditMode ? 'Update product' : 'Create product') }}
+      <!-- Submit card -->
+      <div class="form-card submit-card">
+
+        <div *ngIf="errorMessage" class="form-error">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="err-icon">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0
+                 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414
+                 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414
+                 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"/>
+          </svg>
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" class="submit-btn"
+                [disabled]="loading"
+                [class.submit-loading]="loading">
+          <span *ngIf="!loading" class="btn-content">
+            <svg viewBox="0 0 16 16" fill="none" class="submit-icon">
+              <path *ngIf="!isEditMode"
+                    d="M8 2v12M2 8h12" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round"/>
+              <path *ngIf="isEditMode"
+                    d="M2 8l4 4 8-8" stroke="currentColor"
+                    stroke-width="1.75" stroke-linecap="round"
+                    stroke-linejoin="round"/>
+            </svg>
+            {{ isEditMode ? 'Update product' : 'Create product' }}
+          </span>
+          <span *ngIf="loading" class="spinner-wrap">
+            <span class="btn-spinner"></span>
+            {{ isEditMode ? 'Updating...' : 'Creating...' }}
+          </span>
         </button>
+
+        <a routerLink="/admin/products" class="cancel-link">
+          Discard and go back
+        </a>
+
       </div>
 
-    </form>
-  </div>
+    </div>
+
+  </form>
 </div>

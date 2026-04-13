@@ -24,97 +24,142 @@ export class ProductListComponent implements OnInit, OnDestroy {
   private paramsSub!: Subscription;
   private searchSub!: Subscription;
 
+  // ADD THESE TWO LINES:
+  sidebarOpen = false; // Fixes the "Property does not exist" error
+
+  /**
+   * Inject required services:
+   * - ProductService: fetches products and taxonomy
+   * - CartService: manages cart operations
+   * - AuthService: provides authentication state
+   * - ActivatedRoute: reads query parameters
+   * - Router: handles navigation
+   * - FormBuilder: builds reactive forms
+   */
   constructor(
     private productService: ProductService,
     private cartService: CartService,
     public authService: AuthService,
-    private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
+    private route: ActivatedRoute
   ) {
     this.filterForm = this.fb.group({
-      search:        [''],
-      typeId:        [''],
-      categoryId:    [''],
+      search: [''],
+      typeId: [''],
+      categoryId: [''],
       subCategoryId: [''],
-      minPrice:      [''],
-      maxPrice:      [''],
-      inStock:       [false],
+      minPrice: [''],
+      maxPrice: [''],
+      inStock: [false],
     });
   }
 
+  /**
+   * Lifecycle hook: Initializes component state.
+   * Loads taxonomy and reacts to query parameter changes.
+   */
   ngOnInit(): void {
-    // Load taxonomy for sidebar filters
+    // Step 1 — load taxonomy for the filter dropdowns
     this.productService.getTaxonomy().subscribe({
-      next: res => { this.taxonomy = res.taxonomy ?? []; }
+      next: res => { this.taxonomy = res.taxonomy ?? []; },
+      error: () => { }
     });
 
-    // React to URL query param changes
-    this.paramsSub = this.route.queryParams.subscribe(params => {
+    // Step 2 — subscribe to URL query params
+    // This fires on EVERY navigation: /products?categoryId=2, ?typeId=1, ?search=phone
+    this.route.queryParams.subscribe(params => {
+
+      // Patch the filter form with whatever params are in the URL
       this.filterForm.patchValue({
-        search:        params['search']        || '',
-        typeId:        params['typeId']        || '',
-        categoryId:    params['categoryId']    || '',
+        search: params['search'] || '',
+        typeId: params['typeId'] || '',
+        categoryId: params['categoryId'] || '',
         subCategoryId: params['subCategoryId'] || '',
-        minPrice:      params['minPrice']      || '',
-        maxPrice:      params['maxPrice']      || '',
-        inStock:       params['inStock'] === 'true',
+        minPrice: params['minPrice'] || '',
+        maxPrice: params['maxPrice'] || '',
+        inStock: params['inStock'] === 'true' ? true : false,
       }, { emitEvent: false });
-      this.pagination.page = Number(params['page']) || 1;
+
+      // Reset to page 1 on every new filter navigation
+      this.pagination.page = params['page'] ? Number(params['page']) : 1;
+      // Immediately load products with those filters
       this.loadProducts();
     });
   }
 
+  /**
+   * Lifecycle hook: Cleans up subscriptions on destroy.
+   */
   ngOnDestroy(): void {
     this.paramsSub?.unsubscribe();
     this.searchSub?.unsubscribe();
   }
 
+  /**
+   * Loads products based on current filter form values and pagination.
+   */
   loadProducts(): void {
     this.loading = true;
+
     const v = this.filterForm.value;
 
-    this.productService.getProducts({
-      search:        v.search        || undefined,
-      typeId:        v.typeId        ? Number(v.typeId)        : undefined,
-      categoryId:    v.categoryId    ? Number(v.categoryId)    : undefined,
-      subCategoryId: v.subCategoryId ? Number(v.subCategoryId) : undefined,
-      minPrice:      v.minPrice      ? Number(v.minPrice)      : undefined,
-      maxPrice:      v.maxPrice      ? Number(v.maxPrice)      : undefined,
-      inStock:       v.inStock       || undefined,
-      page:          this.pagination.page,
-      limit:         this.pagination.limit,
-    }).subscribe({
+    const query: any = {
+      page: this.pagination.page,
+      limit: 12,
+    };
+
+    // Only add params that have actual values
+    if (v.search) query.search = v.search.trim();
+    if (v.typeId) query.typeId = v.typeId;
+    if (v.categoryId) query.categoryId = v.categoryId;
+    if (v.subCategoryId) query.subCategoryId = v.subCategoryId;
+    if (v.minPrice) query.minPrice = v.minPrice;
+    if (v.maxPrice) query.maxPrice = v.maxPrice;
+    if (v.inStock) query.inStock = true;
+
+    this.productService.getProducts(query).subscribe({
       next: res => {
-        console.log(this.products);
-        this.products   = res.products   ?? [];
+        this.products = res.products ?? [];
         this.pagination = res.pagination ?? this.pagination;
-        this.loading    = false;
+        this.loading = false;
       },
       error: () => {
-        this.products = [];
-        this.loading  = false;
+        this.loading = false;
       }
     });
   }
 
+  /**
+   * Applies filters by updating query parameters.
+   */
   applyFilters(): void {
     const v = this.filterForm.value;
-    const qp: any = { page: 1 };
-    if (v.search)        qp['search']        = v.search;
-    if (v.typeId)        qp['typeId']        = v.typeId;
-    if (v.categoryId)    qp['categoryId']    = v.categoryId;
-    if (v.subCategoryId) qp['subCategoryId'] = v.subCategoryId;
-    if (v.minPrice)      qp['minPrice']      = v.minPrice;
-    if (v.maxPrice)      qp['maxPrice']      = v.maxPrice;
-    if (v.inStock)       qp['inStock']       = 'true';
-    this.router.navigate(['/products'], { queryParams: qp });
+    const queryParams: any = {};
+
+    if (v.search) queryParams.search = v.search.trim();
+    if (v.typeId) queryParams.typeId = v.typeId;
+    if (v.categoryId) queryParams.categoryId = v.categoryId;
+    if (v.subCategoryId) queryParams.subCategoryId = v.subCategoryId;
+    if (v.minPrice) queryParams.minPrice = v.minPrice;
+    if (v.maxPrice) queryParams.maxPrice = v.maxPrice;
+    if (v.inStock) queryParams.inStock = true;
+
+    // Navigate with new params — this triggers queryParams.subscribe above
+    this.router.navigate(['/products'], { queryParams });
   }
 
   clearFilters(): void {
+    this.filterForm.reset({
+      search: '', typeId: '', categoryId: '',
+      subCategoryId: '', minPrice: '', maxPrice: '', inStock: false
+    });
     this.router.navigate(['/products']);
   }
 
+  /**
+   * Navigates to a specific page in pagination.
+   */
   goToPage(page: number): void {
     if (page < 1 || page > this.pagination.totalPages) return;
     this.router.navigate(['/products'], {
@@ -125,6 +170,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Adds a product to the cart.
+   * Shows a temporary success indicator on the product card.
+   */
   onAddToCart(productId: number): void {
     this.cartService.addToCart(productId, 1).subscribe({
       next: () => {
@@ -135,6 +184,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Generates page numbers for pagination display.
+   * Includes ellipsis (-1) for skipped ranges.
+   */
   get pageNumbers(): number[] {
     const total = this.pagination.totalPages;
     const current = this.pagination.page;
@@ -151,13 +204,15 @@ export class ProductListComponent implements OnInit, OnDestroy {
     return pages;
   }
 
+  /** Counts active filters applied by the user */
   get activeFilterCount(): number {
     const v = this.filterForm.value;
     return [v.search, v.typeId, v.categoryId, v.subCategoryId,
-            v.minPrice, v.maxPrice, v.inStock]
+    v.minPrice, v.maxPrice, v.inStock]
       .filter(Boolean).length;
   }
 
+  /** Returns a label describing current search/filter context */
   get currentSearchLabel(): string {
     const params = this.route.snapshot.queryParams;
     if (params['search']) return `Results for "${params['search']}"`;
@@ -167,6 +222,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     return 'All Products';
   }
 
+  /** Returns a label describing current search/filter context */
   get skeletons(): number[] {
     return Array.from({ length: 12 }, (_, i) => i);
   }

@@ -1,118 +1,292 @@
+<!-- Loading -->
 <div *ngIf="loading" class="state-page">
-  <div class="spinner"></div>
+  <div class="state-spinner"></div>
   <p>Loading product...</p>
 </div>
 
-<div *ngIf="!loading && errorMessage" class="state-page error">
-  <div class="error-icon">⚠️</div>
+<!-- Error -->
+<div *ngIf="!loading && errorMessage" class="state-page state-error">
+  <div class="state-error-icon">⚠️</div>
   <h2>{{ errorMessage }}</h2>
-  <a routerLink="/products" class="btn btn-secondary">Browse products</a>
+  <a routerLink="/products" class="btn-back">← Browse products</a>
 </div>
 
+<!-- Product -->
 <div *ngIf="!loading && product && !errorMessage" class="detail-page">
   <div class="detail-container">
 
-    <nav class="breadcrumb" aria-label="Product location">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
       <a routerLink="/" class="crumb">Home</a>
       <span class="crumb-sep">›</span>
-      <span class="crumb crumb-link" (click)="browseType(product.subCategory?.category?.type?.id)">
+      <span class="crumb crumb-link"
+            (click)="browseType(product.subCategory?.category?.type?.id)">
         {{ product.subCategory?.category?.type?.name }}
       </span>
       <span class="crumb-sep">›</span>
-      <span class="crumb crumb-link" (click)="browseCategory(product.subCategory?.category?.id)">
+      <span class="crumb crumb-link"
+            (click)="browseCategory(product.subCategory?.category?.id)">
         {{ product.subCategory?.category?.name }}
       </span>
       <span class="crumb-sep">›</span>
-      <span class="crumb crumb-link" (click)="browseSubCategory(product.subCategory?.id)">
+      <span class="crumb crumb-link"
+            (click)="browseSubCategory(product.subCategory?.id)">
         {{ product.subCategory?.name }}
       </span>
       <span class="crumb-sep">›</span>
-      <span class="crumb crumb-current">{{ product.name }}</span>
+      <span class="crumb crumb-active">{{ product.name }}</span>
     </nav>
 
+    <!-- Main grid -->
     <div class="detail-grid">
 
-      <div class="detail-image-col">
-        <div class="image-frame">
-          <img [src]="imageUrl" [alt]="product.name" class="product-image" />
-          <div class="out-of-stock-overlay" *ngIf="isOutOfStock">Out of stock</div>
-        </div>
-      </div>
+      <!-- ── Left: Image ──────────────────────────────────── -->
+      <div class="image-col">
 
-      <div class="detail-info-col">
-        <div class="category-pills">
-          <span class="pill" (click)="browseType(product.subCategory?.category?.type?.id)">
+        <div class="image-frame">
+          <img [src]="imageUrl" [alt]="product.name" class="product-img"/>
+
+          <!-- Out of stock overlay -->
+          <div class="oos-overlay" *ngIf="isOutOfStock">
+            <span class="oos-text">Out of stock</span>
+          </div>
+
+          <!-- Stock badge -->
+          <div class="img-badge badge-low" *ngIf="isLowStock">
+            Only {{ product.stock }} left
+          </div>
+        </div>
+
+        <!-- Taxonomy path under image -->
+        <div class="taxonomy-path">
+          <span class="path-item"
+                (click)="browseType(product.subCategory?.category?.type?.id)">
             {{ product.subCategory?.category?.type?.name }}
           </span>
-          <span class="pill-sep">›</span>
-          <span class="pill" (click)="browseCategory(product.subCategory?.category?.id)">
+          <svg viewBox="0 0 12 12" fill="none" class="path-sep-svg">
+            <path d="M3 6h6" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7 4l2 2-2 2" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span class="path-item"
+                (click)="browseCategory(product.subCategory?.category?.id)">
             {{ product.subCategory?.category?.name }}
           </span>
-          <span class="pill-sep">›</span>
-          <span class="pill" (click)="browseSubCategory(product.subCategory?.id)">
+          <svg viewBox="0 0 12 12" fill="none" class="path-sep-svg">
+            <path d="M3 6h6" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7 4l2 2-2 2" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span class="path-item path-active"
+                (click)="browseSubCategory(product.subCategory?.id)">
             {{ product.subCategory?.name }}
           </span>
         </div>
 
+      </div>
+
+      <!-- ── Right: Info ──────────────────────────────────── -->
+      <div class="info-col">
+
+        <!-- Product name -->
         <h1 class="product-name">{{ product.name }}</h1>
 
-        <div class="price-row">
-          <span class="product-price">₹{{ product.price | number:'1.2-2' }}</span>
+        <!-- Price + stock -->
+        <div class="price-stock-row">
+          <span class="product-price">
+            ₹{{ product.price | number:'1.2-2' }}
+          </span>
+          <span class="stock-pill stock-ok"
+                *ngIf="!isOutOfStock && !isLowStock">
+            <span class="stock-dot"></span>
+            In stock · {{ product.stock }}
+          </span>
+          <span class="stock-pill stock-low" *ngIf="isLowStock">
+            <span class="stock-dot"></span>
+            Only {{ product.stock }} left
+          </span>
+          <span class="stock-pill stock-oos" *ngIf="isOutOfStock">
+            <span class="stock-dot"></span>
+            Out of stock
+          </span>
         </div>
 
-        <div class="stock-row">
-          <span *ngIf="!isOutOfStock && !isLowStock" class="stock-ok">
-            ✓ In stock ({{ product.stock }} available)
-          </span>
-          <span *ngIf="isLowStock" class="stock-low">
-            ⚠ Only {{ product.stock }} left — order soon
-          </span>
-          <span *ngIf="isOutOfStock" class="stock-none">✕ Out of stock</span>
-        </div>
-
+        <!-- Description -->
         <p class="product-description">{{ product.description }}</p>
 
-        <div class="detail-divider"></div>
+        <!-- Divider -->
+        <div class="info-divider"></div>
 
-        <div *ngIf="authService.isCustomer && !isOutOfStock" class="add-section">
+        <!-- ── Add to cart ─────────────────────────────── -->
+        <div *ngIf="authService.isCustomer && !isOutOfStock"
+             class="purchase-section">
+
+          <!-- Quantity -->
           <div class="qty-row">
-            <span class="qty-label">Quantity</span>
+            <span class="qty-label">Qty</span>
             <div class="qty-control">
-              <button class="qty-btn" (click)="decrement()" [disabled]="quantity <= 1">−</button>
-              <span class="qty-val">{{ quantity }}</span>
-              <button class="qty-btn" (click)="increment()" [disabled]="quantity >= product.stock">+</button>
+              <button class="qty-btn"
+                      (click)="decrement()"
+                      [disabled]="quantity <= 1">
+                <svg viewBox="0 0 12 12" fill="none">
+                  <path d="M2 6h8" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <span class="qty-value">{{ quantity }}</span>
+              <button class="qty-btn"
+                      (click)="increment()"
+                      [disabled]="quantity >= product.stock">
+                <svg viewBox="0 0 12 12" fill="none">
+                  <path d="M6 2v8M2 6h8" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
             </div>
+            <span class="qty-total">
+              = ₹{{ (product.price * quantity) | number:'1.2-2' }}
+            </span>
           </div>
 
-          <button class="btn btn-primary add-btn" [class.success]="cartSuccess" (click)="onAddToCart()" [disabled]="addingToCart">
-            <span *ngIf="!addingToCart && !cartSuccess">
-              Add to cart — ₹{{ (product.price * quantity) | number:'1.2-2' }}
+          <!-- Add button -->
+          <button
+            class="add-btn"
+            [class.add-btn-success]="cartSuccess"
+            (click)="onAddToCart()"
+            [disabled]="addingToCart"
+          >
+            <ng-container *ngIf="!addingToCart && !cartSuccess">
+              <svg viewBox="0 0 20 20" fill="none" class="add-btn-icon">
+                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5
+                         3.5M17 13l1.5 3.5M9 19.5a.5.5 0 11-1 0 .5.5 0 011
+                         0zm8 0a.5.5 0 11-1 0 .5.5 0 011 0z"
+                      stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Add to cart
+            </ng-container>
+            <span *ngIf="addingToCart" class="btn-loading-wrap">
+              <span class="btn-spinner"></span>
+              Adding...
             </span>
-            <span *ngIf="addingToCart">Adding...</span>
-            <span *ngIf="cartSuccess && !addingToCart">✓ Added!</span>
+            <ng-container *ngIf="cartSuccess && !addingToCart">
+              <svg viewBox="0 0 20 20" fill="none" class="add-btn-icon">
+                <path d="M5 10l4 4L15 6" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+              </svg>
+              Added to cart!
+            </ng-container>
           </button>
 
-          <div *ngIf="cartMessage" class="cart-feedback" [class.success]="cartSuccess" [class.error]="!cartSuccess">
+          <!-- Feedback -->
+          <div *ngIf="cartMessage"
+               class="cart-feedback"
+               [class.feedback-success]="cartSuccess"
+               [class.feedback-error]="!cartSuccess">
             {{ cartMessage }}
           </div>
+
         </div>
 
-        <div *ngIf="isOutOfStock" class="out-of-stock-msg">
-          This product is currently out of stock.
-          <a routerLink="/products">Browse similar products →</a>
+        <!-- Out of stock message -->
+        <div *ngIf="isOutOfStock" class="oos-message">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="oos-icon">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0
+                 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414
+                 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414
+                 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"/>
+          </svg>
+          <div>
+            <p>This product is currently out of stock.</p>
+            <a routerLink="/products" class="oos-link">
+              Browse similar products →
+            </a>
+          </div>
         </div>
 
-        <div *ngIf="!authService.isLoggedIn && !isOutOfStock" class="login-prompt">
-          <a routerLink="/auth/login" class="login-link">Sign in</a> to add this item to your cart.
+        <!-- Login prompt -->
+        <div *ngIf="!authService.isLoggedIn && !isOutOfStock"
+             class="login-prompt">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="prompt-icon">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1
+                 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1
+                 1 0 00-1-1H9z"
+              clip-rule="evenodd"/>
+          </svg>
+          <p>
+            <a routerLink="/auth/login" class="login-link">Sign in</a>
+            to add this item to your cart.
+          </p>
         </div>
 
-        <div class="share-section">
-          <button class="share-btn" [class.shared]="shareSuccess" (click)="onShare()">
-            <span *ngIf="!shareSuccess">↗ Share this product</span>
-            <span *ngIf="shareSuccess">✓ Link copied!</span>
+        <!-- Info divider -->
+        <div class="info-divider"></div>
+
+        <!-- Share + meta row -->
+        <div class="actions-row">
+
+          <button
+            class="share-btn"
+            [class.share-btn-success]="shareSuccess"
+            (click)="onShare()"
+          >
+            <svg *ngIf="!shareSuccess" viewBox="0 0 20 20"
+                 fill="none" class="share-icon">
+              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0
+                       100 4.319l4.94 2.47A3 3 0 1015 12a2.966 2.966
+                       0 00-.117-.742l-4.94-2.47A2.999 2.999 0 0010
+                       9a3.001 3.001 0 00.117-.742l4.94-2.47A2.986
+                       2.986 0 0015 8z"
+                    stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg *ngIf="shareSuccess" viewBox="0 0 20 20"
+                 fill="none" class="share-icon">
+              <path d="M5 10l4 4L15 6" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round"/>
+            </svg>
+            {{ shareSuccess ? 'Link copied!' : 'Share' }}
           </button>
+
+          <!-- Product meta chips -->
+          <div class="meta-chips">
+            <span class="meta-chip">
+              <svg viewBox="0 0 16 16" fill="currentColor"
+                   class="chip-icon">
+                <path fill-rule="evenodd"
+                  d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4.5a.75.75 0
+                     00-1.5 0v3.25H4a.75.75 0 000 1.5h4a.75.75 0
+                     00.75-.75V5.5z"
+                  clip-rule="evenodd"/>
+              </svg>
+              Fast delivery
+            </span>
+            <span class="meta-chip">
+              <svg viewBox="0 0 16 16" fill="currentColor"
+                   class="chip-icon">
+                <path fill-rule="evenodd"
+                  d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.536 5.116a.75.75
+                     0 00-1.06-1.06L7 8.53 5.53 7.056a.75.75 0
+                     00-1.06 1.061l2 2a.75.75 0 001.06 0l4-4z"
+                  clip-rule="evenodd"/>
+              </svg>
+              Secure checkout
+            </span>
+          </div>
+
         </div>
+
       </div>
     </div>
+
   </div>
 </div>

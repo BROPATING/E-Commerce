@@ -1,72 +1,249 @@
 <div class="confirmation-page" *ngIf="order">
+
+  <!-- Background effects -->
+  <div class="page-bg">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <!-- Particle burst -->
+  <div class="particles" aria-hidden="true">
+    <span *ngFor="let p of particles" class="particle"
+          [style.left]="p.x + '%'"
+          [style.top]="p.y + '%'"
+          [style.background]="p.color"
+          [style.animation-delay]="p.delay + 's'"
+          [style.width]="p.size + 'px'"
+          [style.height]="p.size + 'px'">
+    </span>
+  </div>
+
   <div class="confirmation-container">
 
-    <!-- Success banner -->
-    <div class="success-banner">
-      <div class="success-circle">
-        <span class="success-tick">✓</span>
+    <!-- ── Success header ────────────────────────────── -->
+    <div class="success-header">
+
+      <!-- Animated ring + check -->
+      <div class="success-ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 100 100">
+          <!-- Background ring -->
+          <circle cx="50" cy="50" r="44"
+                  stroke="rgba(16,185,129,0.12)"
+                  stroke-width="4" fill="none"/>
+          <!-- Animated ring draw -->
+          <circle cx="50" cy="50" r="44"
+                  stroke="#10b981"
+                  stroke-width="4" fill="none"
+                  stroke-dasharray="276"
+                  stroke-dashoffset="276"
+                  stroke-linecap="round"
+                  class="ring-draw"/>
+          <!-- Rotating accent -->
+          <circle cx="50" cy="50" r="44"
+                  stroke="rgba(6,182,212,0.3)"
+                  stroke-width="1.5" fill="none"
+                  stroke-dasharray="20 256"
+                  class="ring-rotate"/>
+        </svg>
+
+        <div class="check-inner">
+          <svg class="check-svg" viewBox="0 0 52 52" fill="none">
+            <path class="check-path"
+                  d="M14 27l8 8 16-16"
+                  stroke="#10b981" stroke-width="3.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-dasharray="40"
+                  stroke-dashoffset="40"/>
+          </svg>
+        </div>
       </div>
+
       <div class="success-text">
-        <h1>Order Confirmed!</h1>
-        <p>Thank you for your purchase. Your order has been placed successfully.</p>
-        <span class="order-ref">Order #{{ order.id }}</span>
+        <div class="success-eyebrow">
+          <span class="eyebrow-dot"></span>
+          Payment confirmed
+        </div>
+        <h1 class="success-title">Order Placed!</h1>
+        <p class="success-sub">
+          Thank you — your order is confirmed and will be on its way soon.
+        </p>
+        <div class="order-id-pill">
+          <svg viewBox="0 0 16 16" fill="currentColor" class="pill-icon">
+            <path fill-rule="evenodd"
+              d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2h8a2 2 0 002-2V6a2 2 0
+                 00-2-2H4zm1 5a1 1 0 112 0 1 1 0 01-2 0zm5-1a1 1 0 100
+                 2 1 1 0 000-2z"
+              clip-rule="evenodd"/>
+          </svg>
+          Order #{{ order.id }}
+        </div>
       </div>
+
     </div>
 
-    <!-- Order breakdown -->
-    <div class="detail-card">
-      <div class="detail-meta">
-        <div class="meta-item">
-          <span class="meta-label">Payment method</span>
-          <span class="meta-value">{{ order.paymentMethod }}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Order date</span>
-          <span class="meta-value">{{ order.createdAt | date:'longDate' }}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Order ID</span>
-          <span class="meta-value">#{{ order.id }}</span>
-        </div>
+    <!-- ── Receipt card ──────────────────────────────── -->
+    <div class="receipt-card">
+
+      <!-- Receipt top notch -->
+      <div class="notch-row notch-top">
+        <div class="notch-circle left"></div>
+        <div class="notch-line"></div>
+        <div class="notch-circle right"></div>
       </div>
 
+      <!-- Meta row -->
+      <div class="meta-grid">
+
+        <div class="meta-item">
+          <div class="meta-icon-wrap pay-icon">
+            <svg viewBox="0 0 16 16" fill="none" class="meta-svg">
+              <rect x="1" y="4" width="14" height="10" rx="2"
+                    stroke="currentColor" stroke-width="1.5"/>
+              <path d="M1 8h14" stroke="currentColor"
+                    stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="meta-label">Payment</span>
+          <span class="meta-value">{{ order.paymentMethod }}</span>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-icon-wrap date-icon">
+            <svg viewBox="0 0 16 16" fill="none" class="meta-svg">
+              <rect x="2" y="3" width="12" height="12" rx="2"
+                    stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 1v3M11 1v3M2 7h12"
+                    stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="meta-label">Date</span>
+          <span class="meta-value">{{ order.createdAt | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-icon-wrap status-icon">
+            <svg viewBox="0 0 16 16" fill="currentColor" class="meta-svg">
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0
+                   00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414
+                   1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <span class="meta-label">Status</span>
+          <span class="meta-value status-paid">
+            <span class="paid-dot"></span>
+            Paid
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Dashed separator -->
+      <div class="dashed-sep"></div>
+
+      <!-- Items section -->
       <div class="items-section">
-        <h3 class="items-title">Items in this order</h3>
+        <h3 class="items-title">
+          Items in your order
+          <span class="items-count-badge">
+            {{ order.items?.length || 0}}
+          </span>
+        </h3>
 
         <div class="order-items">
-          <div class="order-item" *ngFor="let item of order.items">
-            <img
-              [src]="getImageUrl(item.product.imagePath)"
-              [alt]="item.product.name"
-              class="item-thumb"
-            />
+          <div
+            class="order-item"
+            *ngFor="let item of order.items; let i = index"
+            [style.animation-delay]="(i * 0.08 + 0.5) + 's'"
+          >
+            <!-- Product image -->
+            <div class="thumb-wrap">
+              <img
+                [src]="getImageUrl(item.product.imagePath)"
+                [alt]="item.product.name"
+                class="item-thumb"
+              />
+              <span class="qty-bubble">{{ item.quantity }}</span>
+            </div>
+
+            <!-- Product info -->
             <div class="item-info">
               <p class="item-name">{{ item.product.name }}</p>
-              <p class="item-snapshot">
-                ₹{{ item.priceAtPurchase | number:'1.2-2' }} × {{ item.quantity }}
+              <p class="item-unit">
+                ₹{{ item.priceAtPurchase | number:'1.2-2' }} each
               </p>
             </div>
-            <p class="item-line">
-              ₹{{ getLineTotal(item.priceAtPurchase, item.quantity) | number:'1.2-2' }}
+
+            <!-- Line total -->
+            <p class="item-line-total">
+              ₹{{ getLineTotal(item.priceAtPurchase, item.quantity)
+                  | number:'1.2-2' }}
             </p>
           </div>
         </div>
       </div>
 
+      <!-- Dashed separator -->
+      <div class="dashed-sep"></div>
+
+      <!-- Total section -->
       <div class="total-section">
-        <span>Total paid</span>
-        <span class="total-paid">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span>₹{{ order.totalAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="total-row">
+          <span>Shipping</span>
+          <span class="free-tag">
+            <svg viewBox="0 0 12 12" fill="none" class="free-check">
+              <path d="M2 6l3 3 5-5" stroke="currentColor"
+                    stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round"/>
+            </svg>
+            Free
+          </span>
+        </div>
+        <div class="grand-total-row">
+          <span class="grand-label">Total paid</span>
+          <span class="grand-amount">
+            ₹{{ order.totalAmount | number:'1.2-2' }}
+          </span>
+        </div>
       </div>
+
+      <!-- Receipt bottom notch -->
+      <div class="notch-row notch-bottom">
+        <div class="notch-circle left"></div>
+        <div class="notch-line"></div>
+        <div class="notch-circle right"></div>
+      </div>
+
     </div>
 
-    <!-- Action buttons -->
+    <!-- ── Actions ───────────────────────────────────── -->
     <div class="confirmation-actions">
-      <button class="btn btn-primary" (click)="onContinueShopping()">
+
+      <button class="btn-primary" (click)="onContinueShopping()">
+        <svg viewBox="0 0 16 16" fill="none" class="btn-icon">
+          <path d="M3 8h10M9 5l3 3-3 3" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
         Continue shopping
       </button>
-      <button class="btn btn-secondary" (click)="onViewOrders()">
-        View all orders
+
+      <button class="btn-ghost" (click)="onViewOrders()">
+        <svg viewBox="0 0 16 16" fill="none" class="btn-icon">
+          <path d="M4 6h8M4 9h6M4 12h4" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        View order history
       </button>
+
     </div>
 
   </div>

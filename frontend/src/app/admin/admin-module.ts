@@ -8,6 +8,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AdminOrderComponent } from './components/admin-order/admin-order.component';
 import { AdminCustomersComponent } from './components/admin-customer/admin-customer.component';
+import { OrderDetailComponent } from '../features/orders/order-detail/order-detail.component';
+import { OrdersModule } from '../features/orders/orders-module';
+import { AdminOrderDetailComponent } from './components/admin-order-detail/admin-order-detail.component';
+import { FilterActivePipe } from '../shared/Pipes/filter-active.pipe';
+import { FilterLockedPipe } from '../shared/Pipes/filter-locked.pipe';
 
 /**
  * AdminModule is lazy loaded — its code is only downloaded
@@ -21,6 +26,9 @@ import { AdminCustomersComponent } from './components/admin-customer/admin-custo
     AdminProductFormComponent,
     AdminCustomersComponent,
     AdminOrderComponent,
+    AdminOrderDetailComponent,
+    FilterActivePipe,
+    FilterLockedPipe
   ],
   imports: [
     CommonModule,

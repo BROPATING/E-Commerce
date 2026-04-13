@@ -1,20 +1,24 @@
 <div class="profile-page">
   <div class="profile-container">
 
-    <!-- Header -->
+    <!-- Page header -->
     <div class="page-header">
-      <h1>Account Settings</h1>
-      <p class="page-subtitle">Manage your profile and security settings</p>
+      <div class="page-header-left">
+        <h1>Account Settings</h1>
+        <p class="page-subtitle">Manage your profile and security settings</p>
+      </div>
     </div>
 
     <div class="profile-layout">
 
-      <!-- Sidebar -->
+      <!-- ── Sidebar ──────────────────────────────────────── -->
       <aside class="profile-sidebar">
 
-        <!-- Avatar -->
+        <!-- Avatar section -->
         <div class="avatar-section">
-          <div class="avatar">{{ userInitials }}</div>
+          <div class="avatar-ring">
+            <div class="avatar">{{ userInitials }}</div>
+          </div>
           <div class="avatar-info">
             <p class="avatar-name">{{ currentUser?.name }}</p>
             <p class="avatar-email">{{ currentUser?.email }}</p>
@@ -22,46 +26,91 @@
           </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Sidebar nav -->
         <nav class="sidebar-nav">
+
           <button
             class="nav-item"
             [class.active]="activeTab === 'profile'"
             (click)="switchTab('profile')"
           >
-            <span class="nav-icon">👤</span>
-            Edit profile
+            <span class="nav-icon-wrap">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="nav-svg">
+                <path fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"/>
+              </svg>
+            </span>
+            <span>Edit profile</span>
+            <span class="nav-arrow" *ngIf="activeTab === 'profile'">›</span>
           </button>
+
           <button
             class="nav-item"
             [class.active]="activeTab === 'password'"
             (click)="switchTab('password')"
           >
-            <span class="nav-icon">🔒</span>
-            Change password
+            <span class="nav-icon-wrap">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="nav-svg">
+                <path fill-rule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0
+                     01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3
+                     3 0 016 0z"
+                  clip-rule="evenodd"/>
+              </svg>
+            </span>
+            <span>Change password</span>
+            <span class="nav-arrow" *ngIf="activeTab === 'password'">›</span>
           </button>
+
           <a routerLink="/orders" class="nav-item">
-            <span class="nav-icon">📦</span>
-            My orders
+            <span class="nav-icon-wrap">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="nav-svg">
+                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7
+                         13l-1.5 3.5M17 13l1.5 3.5M9 19.5a.5.5 0
+                         11-1 0 .5.5 0 011 0zm8 0a.5.5 0 11-1 0
+                         .5.5 0 011 0z"/>
+              </svg>
+            </span>
+            <span>My orders</span>
           </a>
+
           <a routerLink="/cart" class="nav-item">
-            <span class="nav-icon">🛒</span>
-            My cart
+            <span class="nav-icon-wrap">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="nav-svg">
+                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997
+                         0 00.01.042l1.358 5.43-.893.892C3.74 11.846
+                         4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1
+                         1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1
+                         1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0
+                         013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+              </svg>
+            </span>
+            <span>My cart</span>
           </a>
+
         </nav>
 
       </aside>
 
-      <!-- Main panel -->
+      <!-- ── Main panel ─────────────────────────────────────── -->
       <div class="profile-main">
 
-        <!-- ── Edit Profile Tab ─────────────────────────────── -->
+        <!-- ── Edit Profile Tab ──────────────────────────── -->
         <div *ngIf="activeTab === 'profile'" class="panel">
+
           <div class="panel-header">
-            <h2>Edit Profile</h2>
-            <p class="panel-hint">
-              Update your display name and email address
-            </p>
+            <div class="panel-header-icon profile-icon">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <h2>Edit Profile</h2>
+              <p class="panel-hint">Update your display name and email address</p>
+            </div>
           </div>
 
           <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
@@ -94,10 +143,17 @@
               </span>
             </div>
 
-            <!-- Feedback -->
             <div *ngIf="profileSuccess" class="alert alert-success">
-              ✓ {{ profileSuccess }}
+              <svg viewBox="0 0 20 20" fill="currentColor" class="alert-icon">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1
+                     1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0
+                     00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"/>
+              </svg>
+              {{ profileSuccess }}
             </div>
+
             <div *ngIf="profileError" class="alert alert-error">
               {{ profileError }}
             </div>
@@ -105,23 +161,38 @@
             <div class="form-actions">
               <button
                 type="submit"
-                class="btn btn-primary"
+                class="btn-submit"
                 [disabled]="profileLoading"
               >
-                {{ profileLoading ? 'Saving...' : 'Save changes' }}
+                <span *ngIf="!profileLoading">Save changes</span>
+                <span *ngIf="profileLoading" class="btn-loading">
+                  <span class="btn-spinner"></span> Saving...
+                </span>
               </button>
             </div>
 
           </form>
         </div>
 
-        <!-- ── Change Password Tab ─────────────────────────── -->
+        <!-- ── Change Password Tab ────────────────────────── -->
         <div *ngIf="activeTab === 'password'" class="panel">
+
           <div class="panel-header">
-            <h2>Change Password</h2>
-            <p class="panel-hint">
-              You will be logged out after changing your password
-            </p>
+            <div class="panel-header-icon password-icon">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0
+                     01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3
+                     3 0 016 0z"
+                  clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <h2>Change Password</h2>
+              <p class="panel-hint">
+                You will be logged out after changing your password
+              </p>
+            </div>
           </div>
 
           <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
@@ -135,16 +206,15 @@
                   [type]="showCurrentPwd ? 'text' : 'password'"
                   formControlName="currentPassword"
                   placeholder="Enter your current password"
-                  [class.input-error]="currentPassword.invalid && currentPassword.touched"
+                  [class.input-error]="
+                    currentPassword.invalid && currentPassword.touched"
                 />
                 <button
                   type="button"
                   class="toggle-pwd"
                   (click)="showCurrentPwd = !showCurrentPwd"
                   tabindex="-1"
-                >
-                  {{ showCurrentPwd ? '🙈' : '👁' }}
-                </button>
+                >{{ showCurrentPwd ? '🙈' : '👁' }}</button>
               </div>
               <span class="error-msg"
                     *ngIf="currentPassword.invalid && currentPassword.touched">
@@ -161,41 +231,36 @@
                   [type]="showNewPwd ? 'text' : 'password'"
                   formControlName="newPassword"
                   placeholder="Min 8 chars, 1 uppercase, 1 number"
-                  [class.input-error]="newPassword.invalid && newPassword.touched"
+                  [class.input-error]="
+                    newPassword.invalid && newPassword.touched"
                 />
                 <button
                   type="button"
                   class="toggle-pwd"
                   (click)="showNewPwd = !showNewPwd"
                   tabindex="-1"
-                >
-                  {{ showNewPwd ? '🙈' : '👁' }}
-                </button>
+                >{{ showNewPwd ? '🙈' : '👁' }}</button>
               </div>
 
-              <!-- Password strength indicator -->
+              <!-- Strength bar -->
               <div class="strength-bar-wrap" *ngIf="newPassword.value">
                 <div class="strength-bars">
                   <div
                     *ngFor="let i of [1,2,3,4]"
                     class="strength-segment"
                     [style.background]="i <= passwordStrength.level
-                      ? passwordStrength.color
-                      : '#e5e7eb'"
+                      ? passwordStrength.color : 'rgba(255,255,255,0.08)'"
                   ></div>
                 </div>
                 <span
                   class="strength-label"
                   [style.color]="passwordStrength.color"
-                >
-                  {{ passwordStrength.label }}
-                </span>
+                >{{ passwordStrength.label }}</span>
               </div>
 
               <span class="error-msg"
                     *ngIf="newPassword.invalid && newPassword.touched">
-                Password must be at least 8 characters with one uppercase
-                letter and one number
+                Min 8 characters, one uppercase letter, one number
               </span>
             </div>
 
@@ -210,17 +275,15 @@
                   placeholder="Repeat your new password"
                   [class.input-error]="
                     confirmPassword.touched &&
-                    (confirmPassword.invalid || passwordForm.hasError('passwordMismatch'))
-                  "
+                    (confirmPassword.invalid ||
+                     passwordForm.hasError('passwordMismatch'))"
                 />
                 <button
                   type="button"
                   class="toggle-pwd"
                   (click)="showConfirmPwd = !showConfirmPwd"
                   tabindex="-1"
-                >
-                  {{ showConfirmPwd ? '🙈' : '👁' }}
-                </button>
+                >{{ showConfirmPwd ? '🙈' : '👁' }}</button>
               </div>
               <span class="error-msg"
                     *ngIf="confirmPassword.touched &&
@@ -229,10 +292,17 @@
               </span>
             </div>
 
-            <!-- Feedback -->
             <div *ngIf="passwordSuccess" class="alert alert-success">
-              ✓ {{ passwordSuccess }}
+              <svg viewBox="0 0 20 20" fill="currentColor" class="alert-icon">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1
+                     1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0
+                     00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"/>
+              </svg>
+              {{ passwordSuccess }}
             </div>
+
             <div *ngIf="passwordError" class="alert alert-error">
               {{ passwordError }}
             </div>
@@ -240,10 +310,13 @@
             <div class="form-actions">
               <button
                 type="submit"
-                class="btn btn-primary"
+                class="btn-submit btn-danger"
                 [disabled]="passwordLoading"
               >
-                {{ passwordLoading ? 'Changing...' : 'Change password' }}
+                <span *ngIf="!passwordLoading">Change password</span>
+                <span *ngIf="passwordLoading" class="btn-loading">
+                  <span class="btn-spinner"></span> Changing...
+                </span>
               </button>
             </div>
 

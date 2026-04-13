@@ -4,10 +4,20 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 
+/**
+ * LoginComponent
+ * --------------
+ * Handles user login flow:
+ * - Builds and validates login form
+ * - Submits credentials to AuthService
+ * - Displays error or account lock messages
+ * - Redirects users based on role (admin vs customer)
+ */
 @Component({
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
+  styleUrl: './login.component.css'
 })
 export class LoginComponent {
   form: FormGroup;
@@ -15,6 +25,7 @@ export class LoginComponent {
   lockedMessage = '';
   loading = false;
 
+  showPassword = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -34,9 +45,20 @@ export class LoginComponent {
     });
   }
 
+  /** Getter for email control */
   get email() { return this.form.get('email')!; }
+
+  /** Getter for password control */
   get password() { return this.form.get('password')!; }
 
+  /**
+   * Submit login form
+   * - Validates form
+   * - Calls AuthService.login
+   * - Redirects admin users to admin panel
+   * - Redirects customers to homepage
+   * - Displays error message on failure
+   */
   onSubmit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.loading = true;

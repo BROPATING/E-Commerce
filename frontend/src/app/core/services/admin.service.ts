@@ -73,4 +73,9 @@ export class AdminService {
       `${environment.apiUrl}/products/taxonomy`, { withCredentials: true }
     );
   }
+
+  getOrderById(id: string) {
+    // Make sure this URL is protected by your Admin middleware on the backend
+    return this.http.get(`http://localhost:3000/api/admin/orders/${id}`);
+  }
 }
