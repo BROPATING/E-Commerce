@@ -1,82 +1,246 @@
 <div class="auth-page">
-  <div class="auth-card">
-    <h1>Create account</h1>
-    <p class="auth-subtitle">Join us today</p>
 
-    <div *ngIf="successMessage" class="alert alert-success">
+  <!-- Background effects -->
+  <div class="auth-bg">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <div class="auth-card">
+
+    <!-- Brand -->
+    <a routerLink="/" class="auth-brand">
+      <span class="brand-diamond">◈</span>
+      ShopNow
+    </a>
+
+    <!-- Header -->
+    <div class="auth-header">
+      <h1>Create account</h1>
+      <p class="auth-subtitle">
+        Join thousands of happy shoppers today
+      </p>
+    </div>
+
+    <!-- Success -->
+    <div *ngIf="successMessage" class="auth-alert alert-success">
+      <svg viewBox="0 0 20 20" fill="currentColor" class="alert-icon">
+        <path fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0
+             00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414
+             1.414l2 2a1 1 0 001.414 0l4-4z"
+          clip-rule="evenodd"/>
+      </svg>
       {{ successMessage }}
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
 
+      <!-- Full name -->
       <div class="form-group">
         <label for="name">Full name</label>
-        <input
-          id="name"
-          type="text"
-          formControlName="name"
-          placeholder="Jane Doe"
-          [class.input-error]="name.invalid && name.touched"
-        />
-        <span class="error-msg" *ngIf="name.invalid && name.touched">
+        <div class="input-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="input-icon">
+            <path fill-rule="evenodd"
+              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+              clip-rule="evenodd"/>
+          </svg>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Jane Doe"
+            autocomplete="name"
+            [class.input-error]="name.invalid && name.touched"
+          />
+        </div>
+        <span class="field-error" *ngIf="name.invalid && name.touched">
           Name must be between 2 and 50 characters
         </span>
       </div>
 
+      <!-- Email -->
       <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          [class.input-error]="email.invalid && email.touched"
-        />
-        <span class="error-msg" *ngIf="email.invalid && email.touched">
+        <label for="email">Email address</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="input-icon">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2
+                     2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            [class.input-error]="email.invalid && email.touched"
+          />
+        </div>
+        <span class="field-error" *ngIf="email.invalid && email.touched">
           Please enter a valid email address
         </span>
       </div>
 
+      <!-- Password -->
       <div class="form-group">
         <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Min 8 chars, 1 uppercase, 1 number"
-          [class.input-error]="password.invalid && password.touched"
-        />
-        <span class="error-msg" *ngIf="password.invalid && password.touched">
-          Password must be at least 8 characters with one uppercase letter and one number
+        <div class="input-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="input-icon">
+            <path fill-rule="evenodd"
+              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2
+                 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+              clip-rule="evenodd"/>
+          </svg>
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Min 8 chars, 1 uppercase, 1 number"
+            autocomplete="new-password"
+            [class.input-error]="password.invalid && password.touched"
+          />
+          <button type="button" class="toggle-pwd"
+                  (click)="showPassword = !showPassword" tabindex="-1">
+            <svg *ngIf="!showPassword" viewBox="0 0 20 20"
+                 fill="currentColor" class="eye-icon">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+              <path fill-rule="evenodd"
+                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542
+                   7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14
+                   10a4 4 0 11-8 0 4 4 0 018 0z"
+                clip-rule="evenodd"/>
+            </svg>
+            <svg *ngIf="showPassword" viewBox="0 0 20 20"
+                 fill="currentColor" class="eye-icon">
+              <path fill-rule="evenodd"
+                d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0
+                   001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542
+                   10C18.268 5.943 14.478 3 10 3a9.958 9.958 0
+                   00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003
+                   2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                clip-rule="evenodd"/>
+              <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335
+                       6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542
+                       7 .847 0 1.669-.105 2.454-.303z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Strength bar -->
+        <div class="strength-wrap" *ngIf="password.value">
+          <div class="strength-bars">
+            <div *ngFor="let i of [1,2,3,4]" class="strength-seg"
+                 [style.background]="i <= passwordStrength.level
+                   ? passwordStrength.color
+                   : 'rgba(255,255,255,0.06)'">
+            </div>
+          </div>
+          <span class="strength-label"
+                [style.color]="passwordStrength.color">
+            {{ passwordStrength.label }}
+          </span>
+        </div>
+
+        <span class="field-error"
+              *ngIf="password.invalid && password.touched">
+          Min 8 characters, one uppercase, one number
         </span>
       </div>
 
+      <!-- Confirm password -->
       <div class="form-group">
         <label for="confirmPassword">Confirm password</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          formControlName="confirmPassword"
-          placeholder="Repeat your password"
-          [class.input-error]="confirmPassword.touched && form.hasError('passwordMismatch')"
-        />
-        <span class="error-msg" *ngIf="confirmPassword.touched && form.hasError('passwordMismatch')">
+        <div class="input-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="input-icon">
+            <path fill-rule="evenodd"
+              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2
+                 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+              clip-rule="evenodd"/>
+          </svg>
+          <input
+            id="confirmPassword"
+            [type]="showConfirm ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            placeholder="Repeat your password"
+            autocomplete="new-password"
+            [class.input-error]="confirmPassword.touched &&
+                                 form.hasError('passwordMismatch')"
+          />
+          <button type="button" class="toggle-pwd"
+                  (click)="showConfirm = !showConfirm" tabindex="-1">
+            <svg *ngIf="!showConfirm" viewBox="0 0 20 20"
+                 fill="currentColor" class="eye-icon">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+              <path fill-rule="evenodd"
+                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542
+                   7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14
+                   10a4 4 0 11-8 0 4 4 0 018 0z"
+                clip-rule="evenodd"/>
+            </svg>
+            <svg *ngIf="showConfirm" viewBox="0 0 20 20"
+                 fill="currentColor" class="eye-icon">
+              <path fill-rule="evenodd"
+                d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0
+                   001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542
+                   10C18.268 5.943 14.478 3 10 3a9.958 9.958 0
+                   00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003
+                   2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                clip-rule="evenodd"/>
+              <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335
+                       6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542
+                       7 .847 0 1.669-.105 2.454-.303z"/>
+            </svg>
+          </button>
+        </div>
+        <span class="field-error"
+              *ngIf="confirmPassword.touched &&
+                     form.hasError('passwordMismatch')">
           Passwords do not match
         </span>
       </div>
 
-      <div *ngIf="errorMessage" class="alert alert-error">
+      <!-- API error -->
+      <div *ngIf="errorMessage" class="auth-alert alert-error">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="alert-icon">
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0
+               00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414
+               1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414
+               10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd"/>
+        </svg>
         {{ errorMessage }}
       </div>
 
-      <button type="submit" class="btn btn-primary" [disabled]="loading">
-        {{ loading ? 'Creating account...' : 'Create account' }}
+      <!-- Submit -->
+      <button type="submit" class="auth-submit-btn"
+              [disabled]="loading" [class.btn-loading]="loading">
+        <span *ngIf="!loading" class="btn-content">
+          Create account
+          <svg viewBox="0 0 16 16" fill="none" class="btn-arrow">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span *ngIf="loading" class="btn-spinner-wrap">
+          <span class="btn-spinner"></span>
+          Creating account...
+        </span>
       </button>
 
     </form>
 
-    <div class="auth-links">
-      Already have an account? <a routerLink="/auth/login">Sign in</a>
+    <!-- Footer -->
+    <div class="auth-footer">
+      Already have an account?
+      <a routerLink="/auth/login" class="auth-footer-link">Sign in</a>
     </div>
+
+    <!-- Divider -->
+    <div class="card-bottom-line"></div>
+
   </div>
 </div>

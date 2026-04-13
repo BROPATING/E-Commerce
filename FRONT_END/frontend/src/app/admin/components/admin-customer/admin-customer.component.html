@@ -1,43 +1,192 @@
 <div class="admin-section">
+
+  <!-- Header -->
   <div class="section-header">
-    <h1>Customers</h1>
-    <span class="customer-count" *ngIf="!loading">
-      {{ customers.length}} registered
-    </span>
+    <div class="header-left">
+      <span class="section-tag">User Management</span>
+      <h1>Customers
+        <span class="count-badge" *ngIf="!loading">
+          {{ customers.length }}
+        </span>
+      </h1>
+    </div>
   </div>
 
-  <div *ngIf="loading" class="loading-state">Loading customers...</div>
-
-  <div *ngIf="!loading" class="admin-table-wrapper">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Joined</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let customer of customers" [class.locked-row]="customer.isLocked">
-          <td class="customer-name">{{ customer.name }}</td>
-          <td>{{ customer.email }}</td>
-          <td>{{ customer.createdAt | date:'mediumDate' }}</td>
-          <td>
-            <span class="status-badge" [class.status-active]="!customer.isLocked"
-              [class.status-locked]="customer.isLocked">
-              {{ customer.isLocked ? 'Locked' : 'Active' }}
-            </span>
-          </td>
-          <td>
-            <button class="btn-action" [class.edit]="customer.isLocked" [class.delete]="!customer.isLocked"
-              (click)="toggleLock(customer)">
-              {{ customer.isLocked ? 'Unlock' : 'Lock' }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Loading skeleton -->
+  <div *ngIf="loading" class="skeleton-list">
+    <div *ngFor="let s of [1,2,3,4,5]" class="skeleton-row">
+      <div class="sk-avatar"></div>
+      <div class="sk-lines">
+        <div class="sk-line sk-w40"></div>
+        <div class="sk-line sk-w60"></div>
+      </div>
+      <div class="sk-line sk-w30 sk-hide"></div>
+      <div class="sk-pill"></div>
+      <div class="sk-btn"></div>
+    </div>
   </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && customers.length === 0" class="empty-state">
+    <div class="empty-icon-wrap">
+      <svg viewBox="0 0 64 64" fill="none" class="empty-svg">
+        <circle cx="24" cy="20" r="10"
+                stroke="rgba(6,182,212,0.2)" stroke-width="2"/>
+        <circle cx="24" cy="20" r="10"
+                stroke="#06b6d4" stroke-width="2"
+                stroke-dasharray="63" stroke-dashoffset="42"
+                stroke-linecap="round"/>
+        <path d="M4 52a20 20 0 0140 0"
+              stroke="rgba(6,182,212,0.2)" stroke-width="2"
+              stroke-linecap="round"/>
+        <path d="M4 52a20 20 0 0140 0"
+              stroke="#06b6d4" stroke-width="2"
+              stroke-dasharray="90" stroke-dashoffset="60"
+              stroke-linecap="round"/>
+        <path d="M44 14l2 2 4-4" stroke="rgba(52,211,153,0.6)"
+              stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <p class="empty-title">No customers yet</p>
+    <p class="empty-sub">Customers will appear here after they register</p>
+  </div>
+
+  <!-- Customer table -->
+  <div *ngIf="!loading && customers.length > 0" class="table-card">
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-num">{{ customers.length }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num green">
+          {{ customers | filterActive }}
+        </span>
+        <span class="stat-label">Active</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num red">
+          {{ customers | filterLocked }}
+        </span>
+        <span class="stat-label">Locked</span>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-scroll">
+      <table class="customers-table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th class="th-hide">Email</th>
+            <th class="th-hide">Joined</th>
+            <th>Status</th>
+            <th class="th-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let customer of customers; let i = index"
+            class="customer-row"
+            [class.row-locked]="customer.isLocked"
+            [style.animation-delay]="(i * 0.04) + 's'"
+          >
+            <!-- Left accent -->
+            <td class="td-customer">
+              <div class="customer-cell">
+                <div class="customer-avatar"
+                     [class.avatar-locked]="customer.isLocked">
+                  {{ customer.name.charAt(0).toUpperCase() }}
+                  <div class="avatar-lock-icon" *ngIf="customer.isLocked">
+                    <svg viewBox="0 0 10 10" fill="currentColor">
+                      <path fill-rule="evenodd"
+                        d="M2 4V3a3 3 0 016 0v1h.5a.5.5 0 01.5.5v4a.5.5
+                           0 01-.5.5h-7A.5.5 0 011 8.5v-4A.5.5 0 011.5 4H2zm4
+                           0V3a1 1 0 10-2 0v1h2z"
+                        clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="customer-info">
+                  <span class="customer-name">{{ customer.name }}</span>
+                  <!-- Mobile: email under name -->
+                  <span class="customer-email-mobile th-show-mobile">
+                    {{ customer.email }}
+                  </span>
+                </div>
+              </div>
+            </td>
+
+            <td class="td-email th-hide">{{ customer.email }}</td>
+
+            <td class="td-date th-hide">
+              <div class="date-cell">
+                <svg viewBox="0 0 14 14" fill="none" class="date-icon">
+                  <rect x="1" y="2" width="12" height="11" rx="2"
+                        stroke="currentColor" stroke-width="1.2"/>
+                  <path d="M4 1v2M10 1v2M1 6h12"
+                        stroke="currentColor" stroke-width="1.2"
+                        stroke-linecap="round"/>
+                </svg>
+                {{ customer.createdAt | date:'mediumDate' }}
+              </div>
+            </td>
+
+            <td class="td-status">
+              <span class="status-badge"
+                    [class.badge-active]="!customer.isLocked"
+                    [class.badge-locked]="customer.isLocked">
+                <span class="status-dot"></span>
+                {{ customer.isLocked ? 'Locked' : 'Active' }}
+              </span>
+            </td>
+
+            <td class="td-action">
+              <button
+                class="action-btn"
+                [class.btn-lock]="!customer.isLocked"
+                [class.btn-unlock]="customer.isLocked"
+                (click)="toggleLock(customer)"
+                [title]="customer.isLocked ? 'Unlock account' : 'Lock account'"
+              >
+                <!-- Lock icon -->
+                <svg *ngIf="!customer.isLocked" viewBox="0 0 14 14"
+                     fill="none" class="action-icon">
+                  <rect x="2" y="6" width="10" height="7" rx="1.5"
+                        stroke="currentColor" stroke-width="1.2"/>
+                  <path d="M4 6V4a3 3 0 016 0v2"
+                        stroke="currentColor" stroke-width="1.2"
+                        stroke-linecap="round"/>
+                </svg>
+                <!-- Unlock icon -->
+                <svg *ngIf="customer.isLocked" viewBox="0 0 14 14"
+                     fill="none" class="action-icon">
+                  <rect x="2" y="6" width="10" height="7" rx="1.5"
+                        stroke="currentColor" stroke-width="1.2"/>
+                  <path d="M4 6V4a3 3 0 016 0"
+                        stroke="currentColor" stroke-width="1.2"
+                        stroke-linecap="round"/>
+                  <circle cx="7" cy="9.5" r="1" fill="currentColor"/>
+                </svg>
+                <span>{{ customer.isLocked ? 'Unlock' : 'Lock' }}</span>
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="table-footer">
+      {{ customers.length }} customer{{ customers.length !== 1 ? 's' : '' }} registered
+    </div>
+
+  </div>
+
 </div>

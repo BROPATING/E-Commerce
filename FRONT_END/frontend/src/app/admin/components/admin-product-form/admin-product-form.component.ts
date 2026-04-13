@@ -4,6 +4,7 @@ import { AdminService } from '../../../core/services/admin.service';
 import { ProductService } from '../../../core/services/product.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-admin-product-form',
@@ -12,6 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './admin-product-form.component.css'
 })
 export class AdminProductFormComponent implements OnInit {
+
   form: FormGroup;
   taxonomy: any[] = [];
   selectedFile: File | null = null;
@@ -38,28 +40,46 @@ export class AdminProductFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.adminService.getTaxonomy().subscribe(
-      (res: any) => { this.taxonomy = res.taxonomy; }
-    );
-
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.isEditMode = true;
-      this.productId = Number(id);
-      this.productService.getProductById(this.productId).subscribe(res => {
-        const p = res.product;
-        this.form.patchValue({
-          name:          p.name,
-          description:   p.description,
-          price:         p.price,
-          stock:         p.stock,
-          subCategoryId: p.subCategory?.id,
-        });
-        if (p.imagePath) {
-          this.previewUrl = this.productService.getImageUrl(p.imagePath);
+    const isEdit = !!id;
+
+    // Build requests
+    const taxonomy$ = this.adminService.getTaxonomy();
+    const product$  = isEdit
+      ? this.productService.getProductById(Number(id))
+      : of(null);
+
+    // ── Use forkJoin so taxonomy is guaranteed loaded
+    //    before we try to patch subCategoryId ──────────
+    forkJoin([taxonomy$, product$]).subscribe({
+      next: ([taxRes, prodRes]: [any, any]) => {
+
+        // 1. Load taxonomy first — this populates the select options
+        this.taxonomy = taxRes.taxonomy;
+
+        // 2. Patch product values after taxonomy is ready
+        if (isEdit && prodRes) {
+          this.isEditMode = true;
+          const p = prodRes.product ?? prodRes;
+          this.productId = p.id;
+
+          this.form.patchValue({
+            name:          p.name,
+            description:   p.description,
+            price:         p.price,
+            stock:         p.stock,
+            subCategoryId: String(p.subCategory?.id ?? ''),
+          });
+
+          if (p.imagePath) {
+            this.previewUrl = this.productService.getImageUrl(p.imagePath);
+          }
         }
-      });
-    }
+      },
+      error: err => {
+        this.errorMessage = 'Failed to load data. Please try again.';
+      }
+    });
   }
 
   onFileChange(event: Event): void {
@@ -67,14 +87,20 @@ export class AdminProductFormComponent implements OnInit {
     if (input.files && input.files[0]) {
       this.selectedFile = input.files[0];
       const reader = new FileReader();
-      reader.onload = e => { this.previewUrl = e.target?.result as string; };
+      reader.onload = e => {
+        this.previewUrl = e.target?.result as string;
+      };
       reader.readAsDataURL(this.selectedFile);
     }
   }
 
   onSubmit(): void {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    this.loading = true;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.loading      = true;
     this.errorMessage = '';
 
     const formData = new FormData();
@@ -83,6 +109,7 @@ export class AdminProductFormComponent implements OnInit {
     formData.append('price',         this.form.value.price);
     formData.append('stock',         this.form.value.stock);
     formData.append('subCategoryId', this.form.value.subCategoryId);
+
     if (this.selectedFile) {
       formData.append('image', this.selectedFile);
     }
@@ -94,13 +121,12 @@ export class AdminProductFormComponent implements OnInit {
     request$.subscribe({
       next: () => this.router.navigate(['/admin/products']),
       error: err => {
-        this.loading = false;
-        this.errorMessage = err.error?.error || 'Save failed.';
+        this.loading      = false;
+        this.errorMessage = err.error?.error || 'Save failed. Please try again.';
       }
     });
   }
 
-  // Flatten all subcategories for the dropdown
   get allSubCategories(): { id: number; label: string }[] {
     const result: { id: number; label: string }[] = [];
     for (const type of this.taxonomy) {

@@ -1,10 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Cart } from '../../../shared/Interface';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../../core/services/cart.service';
 import { ProductService } from '../../../core/services/product.service';
 import { Router } from '@angular/router';
 
+/**
+ * CartPageComponent
+ * -----------------
+ * Responsible for displaying and managing the shopping cart.
+ * Features:
+ * - Shows cart items and totals
+ * - Allows quantity updates and item removal
+ * - Handles loading and update states
+ * - Navigates to checkout
+ */
 @Component({
   selector: 'app-cart-page',
   standalone: false,
@@ -17,12 +27,15 @@ export class CartPageComponent implements OnInit, OnDestroy {
   updatingItems = new Set<number>(); // tracks which items are being updated
   private cartSub!: Subscription;
 
-  constructor(
-    private cartService: CartService,
-    private productService: ProductService,
-    private router: Router,
-  ) {}
+  private readonly cartService = inject(CartService);
+  private readonly productService = inject(ProductService);
+  private readonly router = inject(Router);
 
+  /**
+   * Lifecycle hook: OnInit
+   * - Subscribes to cart state changes
+   * - Loads cart data from backend
+   */
   ngOnInit(): void {
     // Subscribe to cart state changes
     this.cartSub = this.cartService.cart$.subscribe(cart => {
@@ -36,6 +49,10 @@ export class CartPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Lifecycle hook: OnDestroy
+   * - Unsubscribes from cart observable to prevent memory leaks
+   */
   ngOnDestroy(): void {
     this.cartSub?.unsubscribe();
   }
@@ -44,16 +61,32 @@ export class CartPageComponent implements OnInit, OnDestroy {
     return this.productService.getImageUrl(imagePath);
   }
 
+  /**
+   * Increment item quantity by 1
+   * @param productId product identifier
+   * @param currentQty current quantity
+   * @param stock available stock
+   */
   increment(productId: number, currentQty: number, stock: number): void {
     if (currentQty >= stock) return;
     this.updateQuantity(productId, currentQty + 1);
   }
 
+  /**
+   * Decrement item quantity by 1
+   * @param productId product identifier
+   * @param currentQty current quantity
+   */
   decrement(productId: number, currentQty: number): void {
     if (currentQty <= 1) return;
     this.updateQuantity(productId, currentQty - 1);
   }
 
+  /**
+   * Update item quantity in cart
+   * @param productId product identifier
+   * @param quantity new quantity
+   */
   updateQuantity(productId: number, quantity: number): void {
     this.updatingItems.add(productId);
     this.cartService.updateItem(productId, quantity).subscribe({
@@ -65,6 +98,10 @@ export class CartPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Remove item from cart
+   * @param productId product identifier
+   */
   removeItem(productId: number): void {
     this.updatingItems.add(productId);
     this.cartService.removeItem(productId).subscribe({
@@ -76,14 +113,26 @@ export class CartPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Check if item is currently being updated
+   * @param productId product identifier
+   */
   isUpdating(productId: number): boolean {
     return this.updatingItems.has(productId);
   }
-
+  /**
+   * Navigate to checkout page
+   */
   proceedToCheckout(): void {
     this.router.navigate(['/cart/checkout']);
   }
 
+  /**
+   * Calculate line total for item
+   * @param price unit price
+   * @param qty quantity
+   * @returns line total rounded to 2 decimals
+   */
   getLineTotal(price: number, qty: number): number {
     return Number((price * qty).toFixed(2));
   }

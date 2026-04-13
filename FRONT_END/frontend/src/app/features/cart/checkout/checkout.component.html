@@ -1,104 +1,257 @@
-<div class="checkout-page">
+<!-- Loading -->
+<div *ngIf="pageLoading" class="state-page">
+  <div class="state-spinner"></div>
+  <p>Preparing checkout...</p>
+</div>
+
+<!-- Checkout -->
+<div *ngIf="!pageLoading" class="checkout-page">
   <div class="checkout-container">
 
-    <div *ngIf="pageLoading" class="state-box">
-      <div class="spinner"></div>
-      <p>Loading checkout...</p>
+    <!-- Header -->
+    <div class="checkout-header">
+      <div class="header-left">
+        <span class="header-tag">Secure Checkout</span>
+        <h1>Complete Your Order</h1>
+      </div>
+      <a routerLink="/cart" class="back-link">
+        <svg viewBox="0 0 16 16" fill="none" class="back-icon">
+          <path d="M10 4L6 8l4 4" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
+        Back to cart
+      </a>
     </div>
 
-    <div *ngIf="!pageLoading" class="checkout-grid">
+    <!-- Steps indicator -->
+    <div class="checkout-steps">
+      <div class="step step-done">
+        <div class="step-circle">
+          <svg viewBox="0 0 12 12" fill="none">
+            <path d="M2 6l3 3 5-5" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>Cart</span>
+      </div>
+      <div class="step-line step-line-done"></div>
+      <div class="step step-active">
+        <div class="step-circle">2</div>
+        <span>Payment</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step step-pending">
+        <div class="step-circle">3</div>
+        <span>Confirmation</span>
+      </div>
+    </div>
 
-      <!-- Left: Payment method -->
+    <!-- Grid -->
+    <div class="checkout-grid">
+
+      <!-- ── Left: Payment method ───────────────────────── -->
       <div class="checkout-main">
 
-        <div class="checkout-header">
-          <h1>Checkout</h1>
-          <a routerLink="/cart" class="back-link">← Back to cart</a>
-        </div>
-
-        <div class="checkout-card">
-          <h2 class="card-title">Select Payment Method</h2>
-          <p class="card-hint">Choose how you'd like to pay</p>
+        <div class="payment-section">
+          <div class="section-title-row">
+            <div class="section-num">01</div>
+            <div>
+              <h2 class="section-title">Payment Method</h2>
+              <p class="section-hint">Choose how you'd like to pay</p>
+            </div>
+          </div>
 
           <div class="payment-grid">
             <button
-              *ngFor="let method of paymentMethods"
+              *ngFor="let method of paymentMethods; let i = index"
               type="button"
               class="payment-card"
-              [class.selected]="paymentMethod.value === method.value"
+              [class.payment-selected]="paymentMethod.value === method.value"
               (click)="selectMethod(method.value)"
+              [style.animation-delay]="(i * 0.07) + 's'"
             >
+              <!-- Selected glow -->
+              <div class="payment-glow"></div>
+
+              <!-- Check badge -->
+              <div class="payment-check"
+                   *ngIf="paymentMethod.value === method.value">
+                <svg viewBox="0 0 12 12" fill="none">
+                  <path d="M2 6l3 3 5-5" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round"/>
+                </svg>
+              </div>
+
               <span class="payment-icon">{{ method.icon }}</span>
               <span class="payment-label">{{ method.label }}</span>
-              <span class="payment-check"
-                *ngIf="paymentMethod.value === method.value">✓</span>
             </button>
           </div>
 
-          <p class="error-msg"
+          <p class="field-error"
              *ngIf="paymentMethod.invalid && paymentMethod.touched">
             Please select a payment method to continue
           </p>
         </div>
 
+        <!-- Security badges -->
+        <div class="security-row">
+          <div class="security-badge">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="sec-icon">
+              <path fill-rule="evenodd"
+                d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319
+                   2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18
+                   7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110
+                   1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2
+                   0v3a1 1 0 102 0V7z"
+                clip-rule="evenodd"/>
+            </svg>
+            SSL Encrypted
+          </div>
+          <div class="security-badge">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="sec-icon">
+              <path fill-rule="evenodd"
+                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954
+                   0 0017.834 5c.11.65.166 1.32.166 2 0 5.225-3.34 9.67-8
+                   11.317C5.34 16.67 2 12.224 2 7c0-.682.057-1.35.166-2.001zm11.541
+                   3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0
+                   00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"/>
+            </svg>
+            Secure Payment
+          </div>
+          <div class="security-badge">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="sec-icon">
+              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+              <path fill-rule="evenodd"
+                d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1
+                   1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                clip-rule="evenodd"/>
+            </svg>
+            Easy Refunds
+          </div>
+        </div>
+
       </div>
 
-      <!-- Right: Order summary -->
+      <!-- ── Right: Order summary ────────────────────────── -->
       <div class="checkout-summary">
         <div class="summary-card">
-          <h2 class="card-title">Order Summary</h2>
 
+          <!-- Summary header -->
+          <div class="summary-header">
+            <h2 class="summary-title">Order Summary</h2>
+            <span class="summary-item-count">
+              {{ cart.items.length }}
+              item{{ cart.items.length !== 1 ? 's' : '' }}
+            </span>
+          </div>
+
+          <!-- Items list -->
           <div class="summary-items">
-            <div class="summary-item" *ngFor="let item of cart.items">
-              <div class="summary-item-left">
+            <div
+              class="summary-item"
+              *ngFor="let item of cart.items; let i = index"
+              [style.animation-delay]="(i * 0.05) + 's'"
+            >
+              <div class="summary-thumb-wrap">
                 <img
                   [src]="getImageUrl(item.product.imagePath)"
                   [alt]="item.product.name"
                   class="summary-thumb"
                 />
-                <div class="summary-item-info">
-                  <p class="summary-item-name">{{ item.product.name }}</p>
-                  <p class="summary-item-qty">Qty: {{ item.quantity }}</p>
-                </div>
+                <span class="summary-qty-badge">{{ item.quantity }}</span>
               </div>
-              <p class="summary-item-price">
+              <div class="summary-item-info">
+                <p class="summary-item-name">{{ item.product.name }}</p>
+                <p class="summary-unit-price">
+                  ₹{{ item.product.price | number:'1.2-2' }} each
+                </p>
+              </div>
+              <p class="summary-item-total">
                 ₹{{ (item.product.price * item.quantity) | number:'1.2-2' }}
               </p>
             </div>
           </div>
 
+          <!-- Divider -->
           <div class="summary-divider"></div>
 
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span>₹{{ cart.total | number:'1.2-2' }}</span>
-          </div>
-          <div class="summary-row">
-            <span>Shipping</span>
-            <span class="free-shipping">Free</span>
+          <!-- Totals -->
+          <div class="totals-section">
+            <div class="totals-row">
+              <span>Subtotal</span>
+              <span>₹{{ cart.total | number:'1.2-2' }}</span>
+            </div>
+            <div class="totals-row">
+              <span>Shipping</span>
+              <span class="free-tag">
+                <svg viewBox="0 0 12 12" fill="none" class="free-check">
+                  <path d="M2 6l3 3 5-5" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round"/>
+                </svg>
+                Free
+              </span>
+            </div>
           </div>
 
           <div class="summary-divider"></div>
 
-          <div class="summary-total">
-            <span>Total</span>
-            <span class="total-amount">₹{{ cart.total | number:'1.2-2' }}</span>
+          <div class="grand-total-row">
+            <span class="grand-label">Total</span>
+            <span class="grand-amount">
+              ₹{{ cart.total | number:'1.2-2' }}
+            </span>
           </div>
 
-          <div *ngIf="errorMessage" class="alert alert-error">
+          <!-- Error -->
+          <div *ngIf="errorMessage" class="checkout-error">
+            <svg viewBox="0 0 16 16" fill="currentColor" class="err-icon">
+              <path fill-rule="evenodd"
+                d="M8 15A7 7 0 108 1a7 7 0 000 14zm0-10a.75.75 0 01.75.75v3.5a.75.75
+                   0 01-1.5 0v-3.5A.75.75 0 018 5zm0 7a1 1 0 100-2 1 1 0 000 2z"
+                clip-rule="evenodd"/>
+            </svg>
             {{ errorMessage }}
           </div>
 
+          <!-- Place order button -->
           <button
-            class="btn btn-primary place-btn"
+            class="place-btn"
             (click)="onPlaceOrder()"
             [disabled]="loading"
+            [class.place-btn-loading]="loading"
           >
-            <span *ngIf="!loading">Place order — ₹{{ cart.total | number:'1.2-2' }}</span>
-            <span *ngIf="loading">Placing order...</span>
+            <ng-container *ngIf="!loading">
+              <svg viewBox="0 0 20 20" fill="none" class="place-icon">
+                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5
+                         3.5M17 13l1.5 3.5M9 19.5a.5.5 0 11-1 0 .5.5 0 011
+                         0zm8 0a.5.5 0 11-1 0 .5.5 0 011 0z"
+                      stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Place order · ₹{{ cart.total | number:'1.2-2' }}
+            </ng-container>
+            <span *ngIf="loading" class="btn-loading-wrap">
+              <span class="btn-spinner"></span>
+              Placing order...
+            </span>
           </button>
 
-          <p class="secure-note">🔒 Your payment information is secure</p>
+          <!-- Secure note -->
+          <div class="secure-note">
+            <svg viewBox="0 0 16 16" fill="currentColor" class="lock-icon">
+              <path fill-rule="evenodd"
+                d="M8 1a3.5 3.5 0 00-3.5 3.5V6H3a1 1 0 00-1 1v7a1 1 0
+                   001 1h10a1 1 0 001-1V7a1 1 0 00-1-1h-1.5V4.5A3.5 3.5
+                   0 008 1zm2 5V4.5a2 2 0 10-4 0V6h4z"
+                clip-rule="evenodd"/>
+            </svg>
+            Payments are 256-bit SSL encrypted
+          </div>
 
         </div>
       </div>

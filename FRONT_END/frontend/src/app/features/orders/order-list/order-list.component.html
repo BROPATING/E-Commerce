@@ -3,90 +3,185 @@
 
     <!-- Header -->
     <div class="page-header">
-      <div>
-        <h1>My Orders</h1>
-        <p class="page-subtitle" *ngIf="!loading">
-          {{ orders.length }} order{{ orders.length !== 1 ? 's' : '' }} placed
+      <div class="header-left">
+        <div class="header-tag">My Account</div>
+        <h1>Order History</h1>
+        <p class="page-subtitle" *ngIf="!loading && orders.length > 0">
+          <span class="subtitle-num">{{ orders.length }}</span>
+          order{{ orders.length !== 1 ? 's' : '' }} placed
         </p>
       </div>
-      <a routerLink="/products" class="btn btn-secondary">
+      <a routerLink="/products" class="continue-btn">
+        <svg viewBox="0 0 16 16" fill="none" class="continue-icon">
+          <path d="M10 4L6 8l4 4" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
         Continue shopping
       </a>
     </div>
 
     <!-- Loading -->
     <div *ngIf="loading" class="state-box">
-      <div class="spinner"></div>
+      <div class="state-spinner"></div>
       <p>Loading your orders...</p>
     </div>
 
     <!-- Error -->
-    <div *ngIf="!loading && errorMessage" class="alert alert-error">
+    <div *ngIf="!loading && errorMessage" class="error-banner">
+      <svg viewBox="0 0 20 20" fill="currentColor" class="error-icon">
+        <path fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0
+             00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10
+             11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1
+             1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          clip-rule="evenodd"/>
+      </svg>
       {{ errorMessage }}
     </div>
 
     <!-- Empty -->
-    <div *ngIf="!loading && !errorMessage && orders.length === 0" class="state-box empty">
-      <div class="empty-icon">📦</div>
+    <div *ngIf="!loading && !errorMessage && orders.length === 0"
+         class="state-box empty-state">
+      <div class="empty-visual">
+        <svg viewBox="0 0 80 80" fill="none" class="empty-svg">
+          <rect x="16" y="20" width="48" height="44" rx="6"
+                stroke="rgba(6,182,212,0.2)" stroke-width="2"/>
+          <rect x="16" y="20" width="48" height="44" rx="6"
+                stroke="#06b6d4" stroke-width="2"
+                stroke-dasharray="184" stroke-dashoffset="120"
+                stroke-linecap="round"/>
+          <path d="M28 20V14a12 12 0 0124 0v6"
+                stroke="rgba(6,182,212,0.3)" stroke-width="2"
+                stroke-linecap="round"/>
+          <circle cx="40" cy="42" r="6"
+                  fill="rgba(6,182,212,0.1)"
+                  stroke="#06b6d4" stroke-width="1.5"/>
+          <path d="M40 46v4" stroke="#06b6d4"
+                stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
       <h2>No orders yet</h2>
-      <p>When you place an order, it will appear here.</p>
-      <a routerLink="/products" class="btn btn-primary">Start shopping</a>
+      <p>Your order history will appear here once you make a purchase.</p>
+      <a routerLink="/products" class="empty-cta">
+        Browse products →
+      </a>
     </div>
 
     <!-- Orders list -->
     <div *ngIf="!loading && orders.length > 0" class="orders-list">
-
-      
-        <a *ngFor="let order of orders"
+      <a
+        *ngFor="let order of orders; let i = index"
         [routerLink]="['/orders', order.id]"
         class="order-card"
+        [style.animation-delay]="(i * 0.06) + 's'"
       >
-        <!-- Card header -->
-        <div class="order-card-header">
-          <div class="order-id-section">
-            <span class="order-label">Order</span>
-            <span class="order-id">#{{ order.id }}</span>
-          </div>
-          <div class="order-date-section">
-            <span class="order-label">Date</span>
-            <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
-          </div>
-          <div class="order-payment-section">
-            <span class="order-label">Payment</span>
-            <span class="order-payment">{{ order.paymentMethod }}</span>
-          </div>
-          <div class="order-total-section">
-            <span class="order-label">Total</span>
-            <span class="order-total">₹{{ order.totalAmount | number:'1.2-2' }}</span>
-          </div>
-          <div class="order-arrow">→</div>
-        </div>
+        <!-- Top accent line -->
+        <div class="card-accent-line"></div>
 
-        <!-- Item previews -->
-        <div class="order-items-preview" *ngIf="order.items && order.items.length > 0">
-          <div class="preview-thumbs">
-            <img
-              *ngFor="let item of getPreviewItems(order)"
-              [src]="getImageUrl(item.product.imagePath)"
-              [alt]="item.product.name"
-              [title]="item.product.name"
-              class="preview-thumb"
-            />
-            <div class="preview-more" *ngIf="getRemainingCount(order) > 0">
-              +{{ getRemainingCount(order) }}
+        <!-- Card body -->
+        <div class="card-body">
+
+          <!-- Left: Order info -->
+          <div class="card-left">
+
+            <!-- Order ID + status -->
+            <div class="order-id-row">
+              <span class="order-id">Order #{{ order.id }}</span>
+              <span class="order-status-badge">Completed</span>
+            </div>
+
+            <!-- Meta row -->
+            <div class="order-meta-row">
+              <div class="meta-item">
+                <svg viewBox="0 0 16 16" fill="none" class="meta-icon">
+                  <rect x="2" y="3" width="12" height="12" rx="2"
+                        stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M5 1v3M11 1v3M2 7h12"
+                        stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round"/>
+                </svg>
+                <span>{{ order.createdAt | date:'mediumDate' }}</span>
+              </div>
+              <span class="meta-sep">·</span>
+              <div class="meta-item">
+                <svg viewBox="0 0 16 16" fill="none" class="meta-icon">
+                  <rect x="1" y="4" width="14" height="10" rx="2"
+                        stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M1 8h14" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>{{ order.paymentMethod }}</span>
+              </div>
+              <span class="meta-sep">·</span>
+              <div class="meta-item">
+                <svg viewBox="0 0 16 16" fill="none" class="meta-icon">
+                  <path d="M2 5h12l-1 7H3L2 5z"
+                        stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M5 5V3.5A1.5 1.5 0 016.5 2h3A1.5 1.5 0 0111 3.5V5"
+                        stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round"/>
+                </svg>
+                <span>
+                  {{ getItemCount(order) }}
+                  item{{ getItemCount(order) !== 1 ? 's' : '' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Product thumbnails -->
+            <div class="thumbs-row"
+                 *ngIf="order.items && order.items.length > 0">
+              <div class="thumb-stack">
+                <img
+                  *ngFor="let item of getPreviewItems(order); let ti = index"
+                  [src]="getImageUrl(item.product.imagePath)"
+                  [alt]="item.product.name"
+                  [title]="item.product.name"
+                  class="thumb-img"
+                  [style.z-index]="10 - ti"
+                  [style.margin-left]="ti > 0 ? '-10px' : '0'"
+                />
+                <div class="thumb-more"
+                     *ngIf="getRemainingCount(order) > 0">
+                  +{{ getRemainingCount(order) }}
+                </div>
+              </div>
+              <p class="thumb-names">
+                <span *ngFor="let item of order.items.slice(0,2); let last = last">
+                  {{ item.product.name }}{{ !last && order.items.length > 1 ? ',' : '' }}
+                </span>
+                <span *ngIf="order.items.length > 2"
+                      class="thumb-overflow">
+                  +{{ order.items.length - 2 }} more
+                </span>
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Right: Total + arrow -->
+          <div class="card-right">
+            <div class="total-section">
+              <span class="total-label">Total paid</span>
+              <span class="total-amount">
+                ₹{{ order.totalAmount | number:'1.2-2' }}
+              </span>
+            </div>
+            <div class="card-arrow-wrap">
+              <svg viewBox="0 0 16 16" fill="none" class="card-arrow">
+                <path d="M4 8h8M9 5l3 3-3 3"
+                      stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
           </div>
-          <p class="items-summary">
-            {{ getItemCount(order) }} item{{ getItemCount(order) !== 1 ? 's' : '' }}
-            —
-            <span *ngFor="let item of order.items; let last = last">
-              {{ item.product.name }}{{ !last ? ', ' : '' }}
-            </span>
-          </p>
+
         </div>
 
       </a>
-
     </div>
+
   </div>
 </div>

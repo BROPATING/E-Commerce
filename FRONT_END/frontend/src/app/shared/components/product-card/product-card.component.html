@@ -1,33 +1,88 @@
 <div class="product-card">
-    <a [routerLink]="['/products', product.id]" class="product-card-img-link">
-        <img [src]="imageUrl" [alt]="product.name" class="product-card-img" loading="lazy" />
-        <span class="product-card-badge out-of-stock" *ngIf="product.stock === 0">
-            Out of stock
-        </span>
-    </a>
 
-    <div class="product-card-body">
-        <p class="product-card-category">
-            {{ product.subCategory?.category?.type?.name }}
-            › {{ product.subCategory?.category?.name }}
-            › {{ product.subCategory?.name }}
-        </p>
-        <h3 class="product-card-name">
-            <a [routerLink]="['/products', product.id]">{{ product.name }}</a>
-        </h3>
-        <p class="product-card-price">₹{{ product.price | number:'1.2-2' }}</p>
+  <!-- Image section -->
+  <a [routerLink]="['/products', product.id]" class="card-img-link">
 
-        <button *ngIf="showAddToCart && product.stock > 0" class="btn btn-primary product-card-btn"
-            (click)="onAddToCart()">
-            Add to cart
-        </button>
+    <img
+      [src]="imageUrl"
+      [alt]="product.name"
+      class="card-img"
+      loading="lazy"
+    />
 
-
-        <a href="" *ngIf="!showAddToCart"
-            [routerLink]="['/products', product.id]"
-            class="btn btn-secondary product-card-btn"
-            >
-            View details
-        </a>
+    <!-- Overlay on hover -->
+    <div class="card-img-overlay">
+      <span class="overlay-text">View product</span>
     </div>
+
+    <!-- Out of stock badge -->
+    <span class="card-badge badge-oos" *ngIf="product.stock === 0">
+      Out of stock
+    </span>
+
+    <!-- Low stock badge -->
+    <span
+      class="card-badge badge-low"
+      *ngIf="product.stock > 0 && product.stock <= 5"
+    >
+      Only {{ product.stock }} left
+    </span>
+
+  </a>
+
+  <!-- Body -->
+  <div class="card-body">
+
+    <!-- Taxonomy path -->
+    <p class="card-category">
+      {{ product.subCategory?.category?.type?.name }}
+      <span class="crumb-sep">›</span>
+      {{ product.subCategory?.category?.name }}
+      <span class="crumb-sep">›</span>
+      {{ product.subCategory?.name }}
+    </p>
+
+    <!-- Product name -->
+    <h3 class="card-name">
+      <a [routerLink]="['/products', product.id]">
+        {{ product.name }}
+      </a>
+    </h3>
+
+    <!-- Price row -->
+    <div class="card-footer card-footer-v2">
+      <p class="card-price">₹{{ product.price | number:'1.2-2' }}</p>
+
+      <!-- Add to cart -->
+      <button
+        *ngIf="showAddToCart && product.stock > 0"
+        class="card-btn btn-add btn-full-width"
+        (click)="onAddToCart()"
+
+        title="Add to cart"
+      >
+        <svg viewBox="0 0 20 20" fill="none" class="btn-icon">
+          <path
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 3.5M17
+               13l1.5 3.5M9 19.5a.5.5 0 11-1 0 .5.5 0 011 0zm8 0a.5.5 0
+               11-1 0 .5.5 0 011 0z"
+            stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"
+          />
+        </svg>
+        Add to cart
+      </button>
+
+      <!-- View details -->
+      <a
+        *ngIf="!showAddToCart"
+        [routerLink]="['/products', product.id]"
+        class="card-btn btn-view"
+      >
+        View details
+      </a>
+
+    </div>
+  </div>
+
 </div>

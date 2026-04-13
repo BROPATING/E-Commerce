@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { OrderService} from '../../../core/services/order.service';
 import { ProductService } from '../../../core/services/product.service';
 import { Order } from '../../../shared/Interface';
@@ -14,10 +14,8 @@ export class OrderListComponent implements OnInit {
   loading = true;
   errorMessage = '';
 
-  constructor(
-    private orderService: OrderService,
-    private productService: ProductService,
-  ) {}
+  private orderService = inject(OrderService);
+  private productService = inject(ProductService);
 
   ngOnInit(): void {
     this.orderService.getMyOrders().subscribe({

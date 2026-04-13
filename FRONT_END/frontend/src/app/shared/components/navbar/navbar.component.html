@@ -2,52 +2,191 @@
   <div class="navbar-container">
 
     <!-- Brand -->
-    <a routerLink="/" class="navbar-brand">ShopNow</a>
+    <a routerLink="/" class="navbar-brand">
+      <span class="brand-icon">◈</span>
+      JiBe Shopping PlatForm
+    </a>
 
-    <!-- Search -->
+    <!-- Search — centre -->
     <div class="navbar-search">
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (keyup.enter)="onSearch()"
-        placeholder="Search products..."
-        class="search-input"
-      />
-      <button (click)="onSearch()" class="search-btn">Search</button>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="none">
+          <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round"/>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          placeholder="Search products..."
+          class="search-input"
+        />
+        <button (click)="onSearch()" class="search-btn">Search</button>
+      </div>
     </div>
 
-    <!-- Nav links -->
+    <!-- Nav links — right side -->
     <div class="navbar-links">
 
-      <a routerLink="/products" routerLinkActive="active">Products</a>
+      <a routerLink="/products"
+         routerLinkActive="active"
+         class="nav-link">
+        Products
+      </a>
 
       <ng-container *ngIf="currentUser; else guestLinks">
 
-        <a *ngIf="currentUser.role === 'customer'"
-           routerLink="/cart"
-           class="cart-link">
-          Cart
-          <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+        <!-- Customer links -->
+        <ng-container *ngIf="currentUser.role === 'customer'">
+
+          <a routerLink="/orders"
+             routerLinkActive="active"
+             class="nav-link">
+            Orders
+          </a>
+
+          <a routerLink="/profile"
+             routerLinkActive="active"
+             class="nav-link">
+            Profile
+          </a>
+
+          <!-- Cart with badge -->
+          <a routerLink="/cart"
+             routerLinkActive="active"
+             class="nav-link cart-link">
+            <svg viewBox="0 0 24 24" fill="none" class="cart-icon">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"
+                    stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="3" y1="6" x2="21" y2="6"
+                    stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round"/>
+              <path d="M16 10a4 4 0 01-8 0"
+                    stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="cart-badge" *ngIf="cartCount > 0">
+              {{ cartCount > 9 ? '9+' : cartCount }}
+            </span>
+          </a>
+
+        </ng-container>
+
+        <!-- Admin link -->
+        <a *ngIf="currentUser.role === 'admin'"
+           routerLink="/admin"
+           routerLinkActive="active"
+           class="nav-link admin-link">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="admin-icon">
+            <path fill-rule="evenodd"
+              d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0
+                 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061
+                 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0
+                 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532
+                 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0
+                 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533
+                 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0
+                 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532
+                 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+              clip-rule="evenodd"/>
+          </svg>
+          Admin
         </a>
 
-        <a *ngIf="currentUser.role === 'customer'"
-           routerLink="/orders">Orders</a>
+        <!-- Divider -->
+        <span class="nav-divider"></span>
 
-        <a *ngIf="currentUser.role === 'customer'"
-           routerLink="/profile">Profile</a>
-
-        <a *ngIf="currentUser.role === 'admin'"
-           routerLink="/admin">Admin panel</a>
-
-        <button class="btn-logout" (click)="onLogout()">Logout</button>
+        <!-- User pill + logout -->
+        <div class="user-section">
+          <div class="user-pill">
+            <div class="user-avatar">
+              {{ currentUser.name?.charAt(0)?.toUpperCase() }}
+            </div>
+            <span class="user-name">{{ currentUser.name?.split(' ')[0] }}</span>
+          </div>
+          <button class="btn-logout" (click)="onLogout()">
+            <svg viewBox="0 0 20 20" fill="none" class="logout-icon">
+              <path d="M13 7l3 3m0 0l-3 3m3-3H8m5-7H5a2 2 0 00-2 2v10a2 2 0 002 2h8"
+                    stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Logout
+          </button>
+        </div>
 
       </ng-container>
 
+      <!-- Guest links -->
       <ng-template #guestLinks>
-        <a routerLink="/auth/login">Login</a>
-        <a routerLink="/auth/register" class="btn btn-primary nav-register">Register</a>
+        <a routerLink="/auth/login"
+           routerLinkActive="active"
+           class="nav-link">
+          Login
+        </a>
+        <a routerLink="/auth/register" class="btn-register">
+          Get started
+        </a>
       </ng-template>
 
     </div>
+
+    <!-- Mobile menu toggle -->
+    <button
+      class="mobile-toggle"
+      (click)="mobileOpen = !mobileOpen"
+      [class.open]="mobileOpen"
+      aria-label="Toggle menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
   </div>
+
+  <!-- Mobile drawer -->
+  <div class="mobile-drawer" [class.open]="mobileOpen">
+    <div class="mobile-search">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch(); mobileOpen = false"
+        placeholder="Search products..."
+        class="search-input"
+      />
+      <button
+        (click)="onSearch(); mobileOpen = false"
+        class="search-btn"
+      >Search</button>
+    </div>
+
+    <div class="mobile-links" (click)="mobileOpen = false">
+      <a routerLink="/products"   routerLinkActive="active" class="mobile-link">Products</a>
+
+      <ng-container *ngIf="currentUser; else mobileGuest">
+
+        <ng-container *ngIf="currentUser.role === 'customer'">
+          <a routerLink="/cart"    routerLinkActive="active" class="mobile-link">
+            Cart
+            <span class="mobile-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+          </a>
+          <a routerLink="/orders"  routerLinkActive="active" class="mobile-link">Orders</a>
+          <a routerLink="/profile" routerLinkActive="active" class="mobile-link">Profile</a>
+        </ng-container>
+
+        <a *ngIf="currentUser.role === 'admin'"
+           routerLink="/admin" class="mobile-link">Admin panel</a>
+
+        <button class="mobile-logout" (click)="onLogout()">Logout</button>
+      </ng-container>
+
+      <ng-template #mobileGuest>
+        <a routerLink="/auth/login"    class="mobile-link">Login</a>
+        <a routerLink="/auth/register" class="mobile-link mobile-register">Get started</a>
+      </ng-template>
+    </div>
+  </div>
+
 </nav>

@@ -1,90 +1,356 @@
-<!-- ── Hero ─────────────────────────────────────────────────── -->
+<!-- ══════════════════════════════════════════════════════════
+     HERO — Split layout with decorative right panel
+══════════════════════════════════════════════════════════ -->
 <section class="hero">
-  <div class="hero-inner">
-    <p class="hero-eyebrow">Welcome to ShopNow</p>
-    <h1 class="hero-title">Find What<br>You Love</h1>
-    <p class="hero-subtitle">
-      Thousands of products across Electronics,
-      Furniture, Stationery and more — all in one place.
-    </p>
-    <div class="hero-search">
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (keyup.enter)="onSearch()"
-        placeholder="Search for anything..."
-        class="hero-input"
-        autofocus
-      />
-      <button (click)="onSearch()" class="hero-search-btn">
-        Search
-      </button>
-    </div>
-    <div class="hero-chips">
-      <span class="hero-chip" (click)="browseByType(1)">Electronics</span>
-      <span class="hero-chip" (click)="browseByType(2)">Stationery</span>
-      <span class="hero-chip" (click)="browseByType(3)">Furniture</span>
-    </div>
+  <div class="hero-bg">
+    <div class="hero-noise"></div>
+    <div class="hero-beam hero-beam-1"></div>
+    <div class="hero-beam hero-beam-2"></div>
+    <div class="hero-beam hero-beam-3"></div>
   </div>
-</section>
 
-<!-- ── Browse by Category ─────────────────────────────────────── -->
-<section class="section taxonomy-section" *ngIf="taxonomy.length > 0">
-  <div class="section-wrap">
-    <div class="section-head">
-      <h2 class="section-title">Shop by Category</h2>
-      <a routerLink="/products" class="see-all">View all products →</a>
+  <div class="hero-layout">
+
+    <!-- Left: Content -->
+    <div class="hero-left">
+
+      <div class="hero-badge">
+        <span class="badge-pulse"></span>
+        <span>Now live</span>
+        <span class="badge-sep">·</span>
+        <span class="badge-highlight">500+ products</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span class="title-line-1">Discover.</span>
+        <span class="title-line-2">
+          Shop
+          <span class="title-underline-wrap">
+            Smarter
+            <svg class="title-underline-svg" viewBox="0 0 200 12"
+                 preserveAspectRatio="none">
+              <path d="M2 9 Q50 3 100 8 Q150 13 198 6"
+                    stroke="url(#uline-grad)" stroke-width="3"
+                    fill="none" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="uline-grad" x1="0" y1="0"
+                                x2="1" y2="0">
+                  <stop offset="0%" stop-color="#06b6d4"/>
+                  <stop offset="100%" stop-color="#a78bfa"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </span>
+        </span>
+      </h1>
+
+      <p class="hero-desc">
+        Electronics, Furniture, Stationery and more.
+        Everything you need, in one beautifully curated place.
+      </p>
+
+      <!-- Search -->
+      <div class="hero-search-box">
+        <div class="search-container">
+          <svg class="search-mag" viewBox="0 0 20 20" fill="none">
+            <circle cx="8.5" cy="8.5" r="5.5"
+                    stroke="currentColor" stroke-width="1.5"/>
+            <path d="M13.5 13.5L17 17" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()"
+            placeholder="What are you looking for?"
+            class="search-field"
+          />
+          <button (click)="onSearch()" class="search-action">
+            <svg viewBox="0 0 20 20" fill="none" class="search-arrow">
+              <path d="M4 10h12M12 6l4 4-4 4"
+                    stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="search-suggestions">
+          <span class="sugg-label">Popular:</span>
+          <button
+            class="sugg-tag"
+            (click)="searchQuery='Keyboard'; onSearch()"
+          >Keyboards</button>
+          <button
+            class="sugg-tag"
+            (click)="searchQuery='Table'; onSearch()"
+          >Tables</button>
+          <button
+            class="sugg-tag"
+            (click)="searchQuery='Notebook'; onSearch()"
+          >Notebooks</button>
+        </div>
+      </div>
+
+      <!-- CTA row -->
+      <div class="hero-cta-row">
+        <a routerLink="/products" class="cta-primary">
+          Browse all products
+          <svg viewBox="0 0 16 16" fill="none" class="cta-icon">
+            <path d="M3 8h10M9 4l4 4-4 4"
+                  stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a routerLink="/auth/register" class="cta-secondary"
+           *ngIf="!authService.isLoggedIn">
+          Create account
+        </a>
+      </div>
+
     </div>
 
-    <div class="taxonomy-grid">
-      <div
-        *ngFor="let type of taxonomy"
-        class="type-card"
-        (click)="browseByType(type.id)"
-      >
-        <div class="type-header">
-          <h3 class="type-name">{{ type.name }}</h3>
-          <span class="type-count">
-            {{ type.categories.length }} categories
-          </span>
+    <!-- Right: Decorative visual -->
+    <div class="hero-right" aria-hidden="true">
+
+      <!-- Floating stat cards -->
+      <div class="hero-visual">
+
+        <div class="vis-card vis-card-main">
+          <div class="vis-card-glow"></div>
+          <div class="vis-card-header">
+            <span class="vis-dot green"></span>
+            <span class="vis-label">Today's picks</span>
+          </div>
+          <div class="vis-product-list">
+            <div class="vis-product" *ngFor="let p of featuredProducts.slice(0,3)">
+              <div class="vis-product-img">
+                <img [src]="productService.getImageUrl(p.imagePath)"
+                     [alt]="p.name" />
+              </div>
+              <div class="vis-product-info">
+                <p class="vis-product-name">{{ p.name }}</p>
+                <p class="vis-product-price">
+                  ₹{{ p.price | number:'1.0-0' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Placeholder rows when loading -->
+            <ng-container *ngIf="loading">
+              <div class="vis-product" *ngFor="let s of [1,2,3]">
+                <div class="vis-product-img vis-shimmer"></div>
+                <div class="vis-product-info">
+                  <div class="vis-line vis-shimmer"></div>
+                  <div class="vis-line short vis-shimmer"></div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
         </div>
-        <ul class="category-list">
-          <li
-            *ngFor="let cat of type.categories"
-            class="category-item"
-            (click)="browseByCategory($event, cat.id)"
-          >
-            <span class="category-name">{{ cat.name }}</span>
-            <span class="category-arrow">→</span>
-          </li>
-        </ul>
+
+        <!-- Floating mini badges -->
+        <div class="float-badge float-badge-1">
+          <span class="float-icon">⚡</span>
+          <div>
+            <p class="float-title">Electronics</p>
+            <p class="float-sub">200+ items</p>
+          </div>
+        </div>
+
+        <div class="float-badge float-badge-2">
+          <span class="float-icon green-icon">✓</span>
+          <div>
+            <p class="float-title">Secure checkout</p>
+            <p class="float-sub">SSL encrypted</p>
+          </div>
+        </div>
+
+        <div class="float-badge float-badge-3">
+          <span class="float-num">4.9</span>
+          <div>
+            <p class="float-stars">★★★★★</p>
+            <p class="float-sub">Customer rating</p>
+          </div>
+        </div>
+
+        <!-- Background rings -->
+        <div class="vis-ring vis-ring-1"></div>
+        <div class="vis-ring vis-ring-2"></div>
+
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- ── Featured Products ──────────────────────────────────────── -->
-<section class="section products-section">
-  <div class="section-wrap">
+<!-- ══════════════════════════════════════════════════════════
+     MARQUEE STRIP
+══════════════════════════════════════════════════════════ -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span *ngFor="let item of [
+      '⚡ Electronics', '📚 Stationery', '🪑 Furniture',
+      '⌨️ Keyboards', '📱 Phones', '🖥️ Monitors',
+      '⚡ Electronics', '📚 Stationery', '🪑 Furniture',
+      '⌨️ Keyboards', '📱 Phones', '🖥️ Monitors'
+    ]" class="marquee-item">
+      {{ item }}
+      <span class="marquee-dot">◈</span>
+    </span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     BENTO CATEGORIES
+══════════════════════════════════════════════════════════ -->
+<section class="cat-section" *ngIf="taxonomy.length > 0">
+  <div class="cat-wrap">
+
+    <!-- Header -->
     <div class="section-head">
-      <h2 class="section-title">Featured Products</h2>
-      <a routerLink="/products" class="see-all">See all →</a>
+      <div class="section-title-group">
+        <span class="section-tag">Explore</span>
+        <h2 class="section-title">Shop by Category</h2>
+      </div>
+      <a routerLink="/products" class="see-all-btn">
+        All products
+        <svg viewBox="0 0 16 16" fill="none" class="see-all-icon">
+          <path d="M3 8h10M9 4l4 4-4 4"
+                stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     </div>
 
-    <!-- Skeleton loading -->
-    <div *ngIf="loading" class="products-grid">
+    <!-- Type groups — one row per type -->
+    <div class="cat-groups">
+
       <div
-        *ngFor="let s of skeletons"
-        class="skeleton-card"
-      ></div>
+        *ngFor="let type of taxonomy; let ti = index"
+        class="cat-group"
+        [attr.data-accent]="ti === 0 ? 'cyan' : ti === 1 ? 'green' : 'purple'"
+      >
+
+        <!-- Type header pill -->
+        <div class="type-pill" (click)="browseByType(type.id)">
+
+          <div class="type-pill-left">
+            <div class="type-pill-icon">
+              <span>{{ ti === 0 ? '⚡' : ti === 1 ? '📚' : '🪑' }}</span>
+            </div>
+            <div class="type-pill-info">
+              <span class="type-pill-name">{{ type.name }}</span>
+              <span class="type-pill-meta">
+                {{ type.categories.length }}
+                {{ type.categories.length === 1 ? 'category' : 'categories' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="type-pill-right">
+            <span class="type-pill-cta">Browse all</span>
+            <div class="type-pill-arrow">
+              <svg viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4"
+                      stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Category cards row -->
+        <div class="cat-cards-row">
+          <div
+            *ngFor="let cat of type.categories; let ci = index"
+            class="cat-card"
+            [attr.data-ci]="ci"
+            (click)="browseByCategory($event, cat.id)"
+          >
+            <div class="cat-card-inner">
+
+              <div class="cat-card-top">
+                <span class="cat-card-name">{{ cat.name }}</span>
+                <div class="cat-card-arrow-wrap">
+                  <svg viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6h8M7 3l3 3-3 3"
+                          stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="cat-card-bottom">
+                <div class="sub-tags">
+                  <span
+                    *ngFor="let sub of cat.subCategories.slice(0, 3)"
+                    class="sub-tag"
+                    (click)="browseBySubCategory($event, sub.id)"
+                  >
+                    {{ sub.name }}
+                  </span>
+                  <span
+                    *ngIf="cat.subCategories.length > 3"
+                    class="sub-tag sub-tag-more"
+                  >
+                    +{{ cat.subCategories.length - 3 }} more
+                  </span>
+                </div>
+              </div>
+
+            </div>
+            <!-- Hover glow -->
+            <div class="cat-card-glow"></div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Products grid -->
-    <div *ngIf="!loading && featuredProducts.length > 0" class="products-grid">
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FEATURED PRODUCTS
+══════════════════════════════════════════════════════════ -->
+<section class="products-section">
+  <div class="products-wrap">
+
+    <div class="section-head">
+      <div class="section-title-group">
+        <span class="section-tag">Handpicked</span>
+        <h2 class="section-title">Featured Products</h2>
+      </div>
+      <a routerLink="/products" class="see-all-btn">
+        See all
+        <svg viewBox="0 0 16 16" fill="none" class="see-all-icon">
+          <path d="M3 8h10M9 4l4 4-4 4"
+                stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Skeleton -->
+    <div *ngIf="loading" class="products-grid">
+      <div *ngFor="let s of skeletons" class="skeleton-card">
+        <div class="sk-img"></div>
+        <div class="sk-body">
+          <div class="sk-line w40"></div>
+          <div class="sk-line w80"></div>
+          <div class="sk-line w60"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div *ngIf="!loading && featuredProducts.length > 0"
+         class="products-grid">
       <div
         *ngFor="let product of featuredProducts"
         class="product-card-wrap"
-        [class.added]="cartSuccessId === product.id"
+        [class.cart-flash]="cartSuccessId === product.id"
       >
         <app-product-card
           [product]="product"
@@ -94,39 +360,99 @@
       </div>
     </div>
 
-    <!-- Empty state -->
-    <div *ngIf="!loading && featuredProducts.length === 0" class="empty-products">
-      <p>No products available yet.</p>
-      <small>Ask the admin to add some products first.</small>
+    <!-- Empty -->
+    <div *ngIf="!loading && featuredProducts.length === 0"
+         class="empty-state">
+      <div class="empty-icon">📦</div>
+      <p>No products yet — check back soon.</p>
     </div>
 
   </div>
 </section>
 
-<!-- ── Why Choose Us ──────────────────────────────────────────── -->
-<section class="section features-section">
-  <div class="section-wrap">
-    <div class="features-grid">
-      <div class="feature-item">
-        <span class="feature-icon">🚚</span>
-        <h4>Free Shipping</h4>
-        <p>On all orders above ₹999</p>
+<!-- ══════════════════════════════════════════════════════════
+     TRUST STRIP
+══════════════════════════════════════════════════════════ -->
+<section class="trust-section">
+  <div class="trust-wrap">
+
+    <div class="trust-headline">
+      <h2>Why shoppers choose <span class="trust-brand">ShopNow</span></h2>
+    </div>
+
+    <div class="trust-grid">
+
+      <div class="trust-card">
+        <div class="trust-icon-ring cyan-ring">
+          <svg viewBox="0 0 24 24" fill="none" class="trust-svg">
+            <path d="M5 8h14M5 8a2 2 0 01-2-2V6a2 2 0 012-2h14a2
+                     2 0 012 2v0a2 2 0 01-2 2M5 8v10a2 2 0 002 2h10
+                     a2 2 0 002-2V8"
+                  stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="trust-text">
+          <h4>Free Shipping</h4>
+          <p>On all orders above ₹999</p>
+        </div>
+        <div class="trust-stat">₹999+</div>
       </div>
-      <div class="feature-item">
-        <span class="feature-icon">🔒</span>
-        <h4>Secure Payments</h4>
-        <p>Multiple payment options available</p>
+
+      <div class="trust-card">
+        <div class="trust-icon-ring green-ring">
+          <svg viewBox="0 0 24 24" fill="none" class="trust-svg">
+            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0
+                     0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02
+                     12.02 0 003 9c0 5.591 3.824 10.29 9 11.622
+                     5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052
+                     -.382-3.016z"
+                  stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="trust-text">
+          <h4>Secure Payments</h4>
+          <p>Multiple payment options</p>
+        </div>
+        <div class="trust-stat">100%</div>
       </div>
-      <div class="feature-item">
-        <span class="feature-icon">↩️</span>
-        <h4>Easy Returns</h4>
-        <p>30-day hassle-free returns</p>
+
+      <div class="trust-card">
+        <div class="trust-icon-ring purple-ring">
+          <svg viewBox="0 0 24 24" fill="none" class="trust-svg">
+            <path d="M4 4v5h.582m15.356 2A8.001 8.001 0
+                     004.582 9m0 0H9m11 11v-5h-.581m0
+                     0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="trust-text">
+          <h4>Easy Returns</h4>
+          <p>30-day hassle-free returns</p>
+        </div>
+        <div class="trust-stat">30d</div>
       </div>
-      <div class="feature-item">
-        <span class="feature-icon">💬</span>
-        <h4>24/7 Support</h4>
-        <p>We're here whenever you need us</p>
+
+      <div class="trust-card">
+        <div class="trust-icon-ring amber-ring">
+          <svg viewBox="0 0 24 24" fill="none" class="trust-svg">
+            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0
+                     4.418-4.03 8-9 8a9.863 9.863 0 01-4.255
+                     -.949L3 20l1.395-3.72C3.512 15.042 3 13.574
+                     3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="trust-text">
+          <h4>24/7 Support</h4>
+          <p>Always here to help</p>
+        </div>
+        <div class="trust-stat">24/7</div>
       </div>
+
     </div>
   </div>
 </section>

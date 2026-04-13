@@ -1,73 +1,79 @@
 <div class="confirmation-page" *ngIf="order">
-  <div class="confirmation-container">
+  <div class="confetti-container"></div> <div class="confirmation-container">
 
-    <!-- Success banner -->
-    <div class="success-banner">
+    <div class="success-banner animate-in">
       <div class="success-circle">
-        <span class="success-tick">✓</span>
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
       </div>
       <div class="success-text">
         <h1>Order Confirmed!</h1>
-        <p>Thank you for your purchase. Your order has been placed successfully.</p>
-        <span class="order-ref">Order #{{ order.id }}</span>
+        <p>Your package will be on its way soon.</p>
+        <div class="order-badge">
+           <span class="dot"></span>
+           Order #{{ order.id }}
+        </div>
       </div>
     </div>
 
-    <!-- Order breakdown -->
-    <div class="detail-card">
+    <div class="receipt-card animate-in-delayed">
+      <div class="receipt-notch-top"></div>
+      
       <div class="detail-meta">
         <div class="meta-item">
-          <span class="meta-label">Payment method</span>
+          <span class="meta-label">Method</span>
           <span class="meta-value">{{ order.paymentMethod }}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Order date</span>
-          <span class="meta-value">{{ order.createdAt | date:'longDate' }}</span>
+          <span class="meta-label">Date</span>
+          <span class="meta-value">{{ order.createdAt | date:'mediumDate' }}</span>
         </div>
-        <div class="meta-item">
-          <span class="meta-label">Order ID</span>
-          <span class="meta-value">#{{ order.id }}</span>
+        <div class="meta-item text-right">
+          <span class="meta-label">Status</span>
+          <span class="meta-value status-pill">Paid</span>
         </div>
       </div>
 
       <div class="items-section">
-        <h3 class="items-title">Items in this order</h3>
-
+        <h3 class="section-title">Order Summary</h3>
         <div class="order-items">
-          <div class="order-item" *ngFor="let item of order.items">
-            <img
-              [src]="getImageUrl(item.product.imagePath)"
-              [alt]="item.product.name"
-              class="item-thumb"
-            />
+          <div class="order-item" *ngFor="let item of order.items; let i = index" 
+               [style.animation-delay]="(i * 0.1) + 0.5 + 's'">
+            <div class="thumb-wrapper">
+              <img [src]="getImageUrl(item.product.imagePath)" [alt]="item.product.name" class="item-thumb" />
+              <span class="qty-badge">{{ item.quantity }}</span>
+            </div>
             <div class="item-info">
               <p class="item-name">{{ item.product.name }}</p>
-              <p class="item-snapshot">
-                ₹{{ item.priceAtPurchase | number:'1.2-2' }} × {{ item.quantity }}
-              </p>
+              <p class="item-price">₹{{ item.priceAtPurchase | number:'1.2-2' }} each</p>
             </div>
-            <p class="item-line">
-              ₹{{ getLineTotal(item.priceAtPurchase, item.quantity) | number:'1.2-2' }}
-            </p>
+            <p class="item-line">₹{{ getLineTotal(item.priceAtPurchase, item.quantity) | number:'1.2-2' }}</p>
           </div>
         </div>
       </div>
 
+      <div class="receipt-divider"></div>
+
       <div class="total-section">
-        <span>Total paid</span>
-        <span class="total-paid">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+        <div class="total-row">
+          <span class="total-label">Amount Paid</span>
+          <span class="total-amount">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+        </div>
       </div>
+      
+      <div class="receipt-notch-bottom"></div>
     </div>
 
-    <!-- Action buttons -->
     <div class="confirmation-actions">
-      <button class="btn btn-primary" (click)="onContinueShopping()">
-        Continue shopping
+      <button class="btn-primary-cool" (click)="onContinueShopping()">
+        Continue Shopping
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <button class="btn btn-secondary" (click)="onViewOrders()">
-        View all orders
+      <button class="btn-outline-cool" (click)="onViewOrders()">
+        View Order History
       </button>
     </div>
-
   </div>
 </div>

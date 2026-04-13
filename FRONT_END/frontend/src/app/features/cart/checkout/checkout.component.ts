@@ -6,6 +6,15 @@ import { ProductService } from '../../../core/services/product.service';
 import { Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
 
+/**
+ * CheckoutComponent
+ * -----------------
+ * Handles the checkout process including:
+ * - Displaying cart items
+ * - Selecting payment methods
+ * - Placing an order
+ * - Redirecting to confirmation or cart page
+ */
 @Component({
   selector: 'app-checkout',
   standalone: false,
@@ -38,6 +47,12 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  /**
+   * Lifecycle hook: OnInit
+   * - Subscribes to cart updates
+   * - Loads cart data
+   * - Redirects to cart page if empty
+   */
   ngOnInit(): void {
     this.cartService.cart$.subscribe(cart => {
       this.cart = cart ?? { items: [], total: 0 };
@@ -56,17 +71,32 @@ export class CheckoutComponent implements OnInit {
       }
     });
   }
-
+  /** Getter for payment method form control */
   get paymentMethod() { return this.form.get('paymentMethod')!; }
 
+  /**
+   * Utility: Get product image URL
+   * @param imagePath relative path or null
+   */
   getImageUrl(imagePath: string | null): string {
     return this.productService.getImageUrl(imagePath);
   }
 
+  /**
+   * Select a payment method programmatically
+   * @param value chosen payment method
+   */
   selectMethod(value: string): void {
     this.form.patchValue({ paymentMethod: value });
   }
 
+  /**
+   * Place order
+   * - Validates form
+   * - Calls checkout service
+   * - Clears cart on success
+   * - Handles error messages
+   */
   onPlaceOrder(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

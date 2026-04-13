@@ -1,55 +1,206 @@
 <div class="admin-section">
+
+  <!-- Header -->
   <div class="section-header">
-    <h1>Products</h1>
-    <a routerLink="/admin/products/new" class="btn btn-primary">+ Add product</a>
+    <div class="header-left">
+      <span class="section-tag">Inventory</span>
+      <h1>Products
+        <span class="product-count" *ngIf="!loading">
+          {{ products.length }}
+        </span>
+      </h1>
+    </div>
+    <a routerLink="/admin/products/new" class="add-btn">
+      <svg viewBox="0 0 16 16" fill="none" class="add-icon">
+        <path d="M8 2v12M2 8h12" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Add product
+    </a>
   </div>
 
-  <div *ngIf="loading" class="loading-state">Loading products...</div>
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-rows">
+      <div *ngFor="let s of [1,2,3,4,5]" class="skeleton-row">
+        <div class="sk-thumb"></div>
+        <div class="sk-lines">
+          <div class="sk-line sk-w60"></div>
+          <div class="sk-line sk-w40"></div>
+        </div>
+        <div class="sk-line sk-w50 sk-hide-mobile"></div>
+        <div class="sk-line sk-w30 sk-hide-mobile"></div>
+        <div class="sk-line sk-w30 sk-hide-mobile"></div>
+        <div class="sk-btns">
+          <div class="sk-btn"></div>
+          <div class="sk-btn"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <div *ngIf="!loading" class="admin-table-wrapper">
-    <table class="admin-table">
+  <!-- Empty -->
+  <div *ngIf="!loading && products.length === 0" class="empty-state">
+    <div class="empty-icon-wrap">
+      <svg viewBox="0 0 48 48" fill="none" class="empty-svg">
+        <rect x="8" y="12" width="32" height="28" rx="4"
+              stroke="rgba(6,182,212,0.3)" stroke-width="2"/>
+        <rect x="8" y="12" width="32" height="28" rx="4"
+              stroke="#06b6d4" stroke-width="2"
+              stroke-dasharray="120" stroke-dashoffset="80"
+              stroke-linecap="round"/>
+        <path d="M16 12V10a8 8 0 0116 0v2"
+              stroke="rgba(6,182,212,0.3)" stroke-width="2"
+              stroke-linecap="round"/>
+        <path d="M20 26h8M24 22v8"
+              stroke="rgba(6,182,212,0.5)" stroke-width="2"
+              stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="empty-title">No products yet</p>
+    <p class="empty-sub">Add your first product to get started</p>
+    <a routerLink="/admin/products/new" class="add-btn add-btn-sm">
+      <svg viewBox="0 0 16 16" fill="none" class="add-icon">
+        <path d="M8 2v12M2 8h12" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Add first product
+    </a>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading && products.length > 0" class="table-card">
+
+    <!-- Desktop table -->
+    <table class="products-table">
       <thead>
         <tr>
-          <th>Image</th>
+          <th class="th-img">Image</th>
           <th>Name</th>
-          <th>Category</th>
-          <th>Price</th>
-          <th>Stock</th>
-          <th>Actions</th>
+          <th class="th-hide">Category</th>
+          <th class="th-hide">Price</th>
+          <th class="th-hide">Stock</th>
+          <th class="th-actions">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of products">
-          <td>
-            <img
-              [src]="getImageUrl(product.imagePath)"
-              [alt]="product.name"
-              class="product-thumb"
-            />
+        <tr *ngFor="let product of products; let i = index"
+            class="product-row"
+            [style.animation-delay]="(i * 0.04) + 's'">
+
+          <!-- Image -->
+          <td class="td-img">
+            <div class="thumb-wrap">
+              <img
+                [src]="getImageUrl(product.imagePath)"
+                [alt]="product.name"
+                class="product-thumb"
+              />
+              <div class="thumb-overlay">
+                <svg viewBox="0 0 16 16" fill="none" class="thumb-eye">
+                  <path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z"
+                        stroke="white" stroke-width="1.5"/>
+                  <circle cx="8" cy="8" r="2" stroke="white"
+                          stroke-width="1.5"/>
+                </svg>
+              </div>
+            </div>
           </td>
-          <td class="product-name-cell">{{ product.name }}</td>
-          <td class="category-cell">
-            {{ product.subCategory?.category?.type?.name }}
-            › {{ product.subCategory?.name }}
+
+          <!-- Name -->
+          <td class="td-name">
+            <a [routerLink]="['/products', product.id]"
+               class="product-name-link" target="_blank">
+              {{ product.name }}
+            </a>
+            <!-- Mobile: show category + price under name -->
+            <div class="mobile-meta">
+              <span class="mobile-cat">
+                {{ product.subCategory?.category?.type?.name }}
+                › {{ product.subCategory?.name }}
+              </span>
+              <span class="mobile-price">
+                ₹{{ product.price | number:'1.2-2' }}
+              </span>
+            </div>
           </td>
-          <td>₹{{ product.price | number:'1.2-2' }}</td>
-          <td>
-            <span [class.low-stock]="product.stock < 5">
-              {{ product.stock }}
+
+          <!-- Category -->
+          <td class="td-category th-hide">
+            <span class="category-path">
+              {{ product.subCategory?.category?.type?.name }}
+            </span>
+            <span class="category-sep">›</span>
+            <span class="category-sub">
+              {{ product.subCategory?.name }}
             </span>
           </td>
-          <td class="actions-cell">
-            <button
-              class="btn-action edit"
-              (click)="editProduct(product.id)"
-            >Edit</button>
-            <button
-              class="btn-action delete"
-              (click)="deleteProduct(product.id, product.name)"
-            >Delete</button>
+
+          <!-- Price -->
+          <td class="td-price th-hide">
+            ₹{{ product.price | number:'1.2-2' }}
           </td>
+
+          <!-- Stock -->
+          <td class="td-stock th-hide">
+            <div class="stock-wrap">
+              <span class="stock-pill"
+                    [class.stock-low]="product.stock < 5"
+                    [class.stock-ok]="product.stock >= 5">
+                <span class="stock-dot"></span>
+                {{ product.stock }}
+              </span>
+              <span class="stock-label"
+                    *ngIf="product.stock < 5 && product.stock > 0">
+                Low
+              </span>
+              <span class="stock-label out"
+                    *ngIf="product.stock === 0">
+                Out
+              </span>
+            </div>
+          </td>
+
+          <!-- Actions -->
+          <td class="td-actions">
+            <div class="action-group">
+              <button class="action-btn btn-edit"
+                      (click)="editProduct(product.id)"
+                      title="Edit product">
+                <svg viewBox="0 0 16 16" fill="none" class="action-icon">
+                  <path d="M11.333 2a1.886 1.886 0 012.667 2.667L5.667
+                           13H3v-2.667L11.333 2z"
+                        stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Edit</span>
+              </button>
+              <button class="action-btn btn-delete"
+                      (click)="deleteProduct(product.id, product.name)"
+                      title="Delete product">
+                <svg viewBox="0 0 16 16" fill="none" class="action-icon">
+                  <path d="M2 4h12M5.333 4V2.667a1.333 1.333 0 011.334-1.334h2.666a1.333
+                           1.333 0 011.334 1.334V4m2 0l-.667 9.333a1.333 1.333 0
+                           01-1.333 1.334H5.333A1.333 1.333 0 014 13.333L3.333 4"
+                        stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Delete</span>
+              </button>
+            </div>
+          </td>
+
         </tr>
       </tbody>
     </table>
+
+    <!-- Table footer -->
+    <div class="table-footer">
+      <span class="footer-count">
+        Showing {{ products.length }}
+        product{{ products.length !== 1 ? 's' : '' }}
+      </span>
+    </div>
+
   </div>
 </div>

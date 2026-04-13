@@ -19,13 +19,24 @@ export class HomeComponent implements OnInit {
   searchQuery = '';
   cartSuccessId: number | null = null;
 
+  /**
+   * Inject required services:
+   * - ProductService: fetches products and taxonomy
+   * - CartService: manages cart operations
+   * - AuthService: provides authentication state
+   * - Router: handles navigation
+   */
   constructor(
-    private productService: ProductService,
+    public productService: ProductService,
     private cartService: CartService,
     public authService: AuthService,
     private router: Router,
   ) {}
 
+  /**
+   * Lifecycle hook: Initializes component state.
+   * Loads featured products and taxonomy data on component creation.
+   */
   ngOnInit(): void {
     // Load featured products — latest 8
     this.productService.getProducts({ limit: 8, page: 1 }).subscribe({
@@ -43,6 +54,10 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  /**
+   * Executes product search based on user query.
+   * Navigates to products page with search parameters.
+   */
   onSearch(): void {
     const q = this.searchQuery.trim();
     if (!q) return;
@@ -51,6 +66,10 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  /**
+   * Adds a product to the cart.
+   * Shows a temporary success indicator on the product card.
+   */
   onAddToCart(productId: number): void {
     this.cartService.addToCart(productId, 1).subscribe({
       next: () => {
@@ -62,21 +81,35 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  /**
+   * Navigates to products filtered by taxonomy type.
+   */
   browseByType(typeId: number): void {
     this.router.navigate(['/products'], { queryParams: { typeId } });
   }
 
+  /**
+   * Navigates to products filtered by category.
+   * Stops event propagation to prevent parent click handlers.
+   */
   browseByCategory(event: MouseEvent, categoryId: number): void {
     event.stopPropagation();
     this.router.navigate(['/products'], { queryParams: { categoryId } });
   }
 
+  /**
+   * Navigates to products filtered by subcategory.
+   * Stops event propagation to prevent parent click handlers.
+   */
   browseBySubCategory(event: MouseEvent, subCategoryId: number): void {
     event.stopPropagation();
     this.router.navigate(['/products'], { queryParams: { subCategoryId } });
   }
 
-  // Skeleton array for the loading state
+  /**
+   * Provides skeleton array for loading state.
+   * Used to render placeholder UI while data is loading.
+   */
   get skeletons(): number[] {
     return Array.from({ length: 8 }, (_, i) => i);
   }

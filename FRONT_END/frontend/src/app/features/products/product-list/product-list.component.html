@@ -1,145 +1,226 @@
 <div class="list-page">
 
-  <!-- Filters sidebar -->
-  <aside class="filters-sidebar">
-    <div class="filters-top">
-      <h3 class="filters-title">
-        Filters
-        <span class="filter-badge" *ngIf="activeFilterCount > 0">
-          {{ activeFilterCount }}
-        </span>
-      </h3>
-      <button
-        *ngIf="activeFilterCount > 0"
-        class="clear-btn"
-        (click)="clearFilters()"
-      >
-        Clear all
-      </button>
+  <div class="sidebar-overlay" 
+       [class.active]="sidebarOpen" 
+       (click)="sidebarOpen = false">
+  </div>
+
+  <aside class="filters-sidebar" [class.sidebar-open]="sidebarOpen">
+
+    <div class="filters-header">
+      <div class="filters-title-row">
+        <div class="filters-title-left">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="filter-icon-svg">
+            <path fill-rule="evenodd"
+                  d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12
+                     11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293
+                     6.707A1 1 0 013 6V3z"
+                  clip-rule="evenodd"/>
+          </svg>
+          <span class="filters-title">Filters</span>
+          <span class="filter-count-badge" *ngIf="activeFilterCount > 0">
+            {{ activeFilterCount }}
+          </span>
+        </div>
+
+        <button class="mobile-close-btn" (click)="sidebarOpen = false">✕</button>
+
+        <button *ngIf="activeFilterCount > 0"
+                class="clear-all-btn"
+                (click)="clearFilters()">
+          Clear all
+        </button>
+      </div>
     </div>
 
-    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters(); sidebarOpen = false">
 
-      <!-- Search -->
-      <div class="filter-section">
+      <div class="filter-group">
         <label class="filter-label">Search</label>
-        <input
-          type="text"
-          formControlName="search"
-          placeholder="Keywords..."
-          class="filter-input"
-        />
-      </div>
-
-      <!-- Type -->
-      <div class="filter-section">
-        <label class="filter-label">Type</label>
-        <select formControlName="typeId" class="filter-select">
-          <option value="">All types</option>
-          <option *ngFor="let t of taxonomy" [value]="t.id">
-            {{ t.name }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Category -->
-      <div class="filter-section" *ngIf="filterForm.value.typeId">
-        <label class="filter-label">Category</label>
-        <select formControlName="categoryId" class="filter-select">
-          <option value="">All categories</option>
-          <ng-container *ngFor="let t of taxonomy">
-            <ng-container *ngIf="t.id == filterForm.value.typeId">
-              <option *ngFor="let c of t.categories" [value]="c.id">
-                {{ c.name }}
-              </option>
-            </ng-container>
-          </ng-container>
-        </select>
-      </div>
-
-      <!-- Sub-category -->
-      <div class="filter-section" *ngIf="filterForm.value.categoryId">
-        <label class="filter-label">Sub-category</label>
-        <select formControlName="subCategoryId" class="filter-select">
-          <option value="">All sub-categories</option>
-          <ng-container *ngFor="let t of taxonomy">
-            <ng-container *ngFor="let c of t.categories">
-              <ng-container *ngIf="c.id == filterForm.value.categoryId">
-                <option *ngFor="let s of c.subCategories" [value]="s.id">
-                  {{ s.name }}
-                </option>
-              </ng-container>
-            </ng-container>
-          </ng-container>
-        </select>
-      </div>
-
-      <!-- Price range -->
-      <div class="filter-section">
-        <label class="filter-label">Price range (₹)</label>
-        <div class="price-inputs">
-          <input
-            type="number"
-            formControlName="minPrice"
-            placeholder="Min"
-            class="filter-input price-input"
-            min="0"
-          />
-          <span class="price-dash">–</span>
-          <input
-            type="number"
-            formControlName="maxPrice"
-            placeholder="Max"
-            class="filter-input price-input"
-            min="0"
-          />
+        <div class="filter-input-wrap">
+          <svg viewBox="0 0 16 16" fill="none" class="input-icon">
+            <circle cx="6.5" cy="6.5" r="4.5"
+                    stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10.5 10.5L14 14" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input type="text"
+                 formControlName="search"
+                 placeholder="Keywords..."
+                 class="filter-input"/>
         </div>
       </div>
 
-      <!-- In stock -->
-      <div class="filter-section">
-        <label class="filter-checkbox-label">
-          <input
-            type="checkbox"
-            formControlName="inStock"
-            class="filter-checkbox"
-          />
-          <span>In stock only</span>
+      <div class="filter-group">
+        <label class="filter-label">Type</label>
+        <div class="filter-select-wrap">
+          <select formControlName="typeId" class="filter-select">
+            <option value="">All types</option>
+            <option *ngFor="let t of taxonomy" [value]="t.id">
+              {{ t.name }}
+            </option>
+          </select>
+          <svg viewBox="0 0 16 16" fill="none" class="select-chevron">
+            <path d="M4 6l4 4 4-4" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="filter-group filter-animate"
+           *ngIf="filterForm.value.typeId">
+        <label class="filter-label">Category</label>
+        <div class="filter-select-wrap">
+          <select formControlName="categoryId" class="filter-select">
+            <option value="">All categories</option>
+            <ng-container *ngFor="let t of taxonomy">
+              <ng-container *ngIf="t.id == filterForm.value.typeId">
+                <option *ngFor="let c of t.categories" [value]="c.id">
+                  {{ c.name }}
+                </option>
+              </ng-container>
+            </ng-container>
+          </select>
+          <svg viewBox="0 0 16 16" fill="none" class="select-chevron">
+            <path d="M4 6l4 4 4-4" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="filter-group filter-animate"
+           *ngIf="filterForm.value.categoryId">
+        <label class="filter-label">Sub-category</label>
+        <div class="filter-select-wrap">
+          <select formControlName="subCategoryId" class="filter-select">
+            <option value="">All sub-categories</option>
+            <ng-container *ngFor="let t of taxonomy">
+              <ng-container *ngFor="let c of t.categories">
+                <ng-container *ngIf="c.id == filterForm.value.categoryId">
+                  <option *ngFor="let s of c.subCategories" [value]="s.id">
+                    {{ s.name }}
+                  </option>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </select>
+          <svg viewBox="0 0 16 16" fill="none" class="select-chevron">
+            <path d="M4 6l4 4 4-4" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Price range (₹)</label>
+        <div class="price-row">
+          <input type="number"
+                 formControlName="minPrice"
+                 placeholder="Min"
+                 class="filter-input price-input"
+                 min="0"/>
+          <span class="price-sep">—</span>
+          <input type="number"
+                 formControlName="maxPrice"
+                 placeholder="Max"
+                 class="filter-input price-input"
+                 min="0"/>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="toggle-label">
+          <div class="toggle-track"
+               [class.toggle-on]="filterForm.value.inStock">
+            <input type="checkbox"
+                   formControlName="inStock"
+                   class="toggle-input"/>
+            <div class="toggle-thumb"></div>
+          </div>
+          <span class="toggle-text">In stock only</span>
         </label>
       </div>
 
-      <button type="submit" class="btn btn-primary apply-btn">
+      <button type="submit" class="apply-btn">
+        <svg viewBox="0 0 16 16" fill="none" class="apply-icon">
+          <path d="M2 8h12M8 3l5 5-5 5" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
         Apply filters
       </button>
 
     </form>
   </aside>
 
-  <!-- Main content -->
   <main class="list-main">
 
-    <!-- Page heading -->
-    <div class="list-header">
-      <h1 class="list-title">{{ currentSearchLabel }}</h1>
+    <div class="list-topbar">
+      <div class="topbar-left">
+        <button class="mobile-filter-btn"
+                (click)="sidebarOpen = !sidebarOpen">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="mob-filter-icon">
+            <path fill-rule="evenodd"
+                  d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0
+                     01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0
+                     018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                  clip-rule="evenodd"/>
+          </svg>
+          Filters
+          <span class="mob-badge" *ngIf="activeFilterCount > 0">
+            {{ activeFilterCount }}
+          </span>
+        </button>
+        <h1 class="list-title">{{ currentSearchLabel }}</h1>
+      </div>
       <p class="results-count" *ngIf="!loading">
-        {{ pagination.total }} result{{ pagination.total !== 1 ? 's' : '' }}
+        <span class="results-num">{{ pagination.total }}</span>
+        result{{ pagination.total !== 1 ? 's' : '' }}
       </p>
     </div>
 
-    <!-- Loading skeleton -->
-    <div *ngIf="loading" class="products-grid">
-      <div
-        *ngFor="let s of skeletons"
-        class="skeleton-card"
-      ></div>
+    <div class="active-filters" *ngIf="activeFilterCount > 0">
+      <span class="active-filter-pill"
+            *ngIf="filterForm.value.search">
+        "{{ filterForm.value.search }}"
+        <button (click)="filterForm.patchValue({search:''});
+                         applyFilters()" class="pill-remove">✕</button>
+      </span>
+      <span class="active-filter-pill"
+            *ngIf="filterForm.value.minPrice || filterForm.value.maxPrice">
+        ₹{{ filterForm.value.minPrice || 0 }} –
+        ₹{{ filterForm.value.maxPrice || '∞' }}
+        <button (click)="filterForm.patchValue({minPrice:'',maxPrice:''});
+                         applyFilters()" class="pill-remove">✕</button>
+      </span>
+      <span class="active-filter-pill"
+            *ngIf="filterForm.value.inStock">
+        In stock only
+        <button (click)="filterForm.patchValue({inStock:false});
+                         applyFilters()" class="pill-remove">✕</button>
+      </span>
     </div>
 
-    <!-- Products grid -->
+    <div *ngIf="loading" class="products-grid">
+      <div *ngFor="let s of skeletons" class="skeleton-card">
+        <div class="sk-img"></div>
+        <div class="sk-body">
+          <div class="sk-line sk-w40"></div>
+          <div class="sk-line sk-w80"></div>
+          <div class="sk-line sk-w60"></div>
+        </div>
+      </div>
+    </div>
+
     <div *ngIf="!loading && products.length > 0" class="products-grid">
       <div
-        *ngFor="let product of products"
+        *ngFor="let product of products; let i = index"
         class="product-card-wrap"
-        [class.added]="cartSuccessId === product.id"
+        [class.card-added]="cartSuccessId === product.id"
+        [style.animation-delay]="(i % 12 * 0.04) + 's'"
       >
         <app-product-card
           [product]="product"
@@ -149,47 +230,63 @@
       </div>
     </div>
 
-    <!-- Empty state -->
     <div *ngIf="!loading && products.length === 0" class="empty-state">
-      <div class="empty-icon">🔍</div>
+      <div class="empty-visual">
+        <svg viewBox="0 0 80 80" fill="none" class="empty-svg">
+          <circle cx="34" cy="34" r="22"
+                  stroke="rgba(6,182,212,0.2)" stroke-width="3"/>
+          <circle cx="34" cy="34" r="22"
+                  stroke="#06b6d4" stroke-width="3"
+                  stroke-dasharray="138"
+                  stroke-dashoffset="100"
+                  stroke-linecap="round"/>
+          <path d="M50 50l14 14" stroke="#06b6d4"
+                stroke-width="3" stroke-linecap="round"/>
+          <path d="M27 34h14M34 27v14" stroke="rgba(6,182,212,0.4)"
+                stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
       <h2>No products found</h2>
-      <p>Try adjusting your search or filters.</p>
-      <button class="btn btn-secondary" (click)="clearFilters()">
+      <p>Try adjusting your filters or search terms</p>
+      <button class="empty-clear-btn" (click)="clearFilters()">
         Clear all filters
       </button>
     </div>
 
-    <!-- Pagination -->
-    <nav
-      class="pagination"
-      *ngIf="!loading && pagination.totalPages > 1"
-      aria-label="Product pages"
-    >
-      <button
-        class="page-btn prev-next"
-        (click)="goToPage(pagination.page - 1)"
-        [disabled]="pagination.page === 1"
-      >← Prev</button>
+    <nav class="pagination"
+         *ngIf="!loading && pagination.totalPages > 1">
+
+      <button class="page-btn page-prev"
+              (click)="goToPage(pagination.page - 1)"
+              [disabled]="pagination.page === 1">
+        <svg viewBox="0 0 16 16" fill="none">
+          <path d="M10 4L6 8l4 4" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
+      </button>
 
       <ng-container *ngFor="let p of pageNumbers">
-        <span *ngIf="p === -1" class="page-ellipsis">…</span>
-        <button
-          *ngIf="p !== -1"
-          class="page-btn"
-          [class.active]="p === pagination.page"
-          (click)="goToPage(p)"
-        >{{ p }}</button>
+        <span *ngIf="p === -1" class="page-ellipsis">···</span>
+        <button *ngIf="p !== -1"
+                class="page-btn"
+                [class.page-active]="p === pagination.page"
+                (click)="goToPage(p)">
+          {{ p }}
+        </button>
       </ng-container>
 
-      <button
-        class="page-btn prev-next"
-        (click)="goToPage(pagination.page + 1)"
-        [disabled]="pagination.page === pagination.totalPages"
-      >Next →</button>
+      <button class="page-btn page-next"
+              (click)="goToPage(pagination.page + 1)"
+              [disabled]="pagination.page === pagination.totalPages">
+        <svg viewBox="0 0 16 16" fill="none">
+          <path d="M6 4l4 4-4 4" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round"/>
+        </svg>
+      </button>
+
     </nav>
 
   </main>
 </div>
-
-
-

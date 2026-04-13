@@ -24,6 +24,18 @@ export class ProductListComponent implements OnInit, OnDestroy {
   private paramsSub!: Subscription;
   private searchSub!: Subscription;
 
+  // ADD THESE TWO LINES:
+  sidebarOpen = false; // Fixes the "Property does not exist" error
+  
+  /**
+   * Inject required services:
+   * - ProductService: fetches products and taxonomy
+   * - CartService: manages cart operations
+   * - AuthService: provides authentication state
+   * - ActivatedRoute: reads query parameters
+   * - Router: handles navigation
+   * - FormBuilder: builds reactive forms
+   */
   constructor(
     private productService: ProductService,
     private cartService: CartService,
@@ -43,6 +55,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Lifecycle hook: Initializes component state.
+   * Loads taxonomy and reacts to query parameter changes.
+   */
   ngOnInit(): void {
     // Load taxonomy for sidebar filters
     this.productService.getTaxonomy().subscribe({
@@ -65,11 +81,17 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Lifecycle hook: Cleans up subscriptions on destroy.
+   */
   ngOnDestroy(): void {
     this.paramsSub?.unsubscribe();
     this.searchSub?.unsubscribe();
   }
 
+  /**
+   * Loads products based on current filter form values and pagination.
+   */
   loadProducts(): void {
     this.loading = true;
     const v = this.filterForm.value;
@@ -98,6 +120,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Applies filters by updating query parameters.
+   */
   applyFilters(): void {
     const v = this.filterForm.value;
     const qp: any = { page: 1 };
@@ -111,10 +136,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/products'], { queryParams: qp });
   }
 
+  /** Clears all filters and resets product list */
   clearFilters(): void {
     this.router.navigate(['/products']);
   }
 
+  /**
+   * Navigates to a specific page in pagination.
+   */
   goToPage(page: number): void {
     if (page < 1 || page > this.pagination.totalPages) return;
     this.router.navigate(['/products'], {
@@ -125,6 +154,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Adds a product to the cart.
+   * Shows a temporary success indicator on the product card.
+   */
   onAddToCart(productId: number): void {
     this.cartService.addToCart(productId, 1).subscribe({
       next: () => {
@@ -135,6 +168,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Generates page numbers for pagination display.
+   * Includes ellipsis (-1) for skipped ranges.
+   */
   get pageNumbers(): number[] {
     const total = this.pagination.totalPages;
     const current = this.pagination.page;
@@ -151,6 +188,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     return pages;
   }
 
+  /** Counts active filters applied by the user */
   get activeFilterCount(): number {
     const v = this.filterForm.value;
     return [v.search, v.typeId, v.categoryId, v.subCategoryId,
@@ -158,6 +196,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       .filter(Boolean).length;
   }
 
+  /** Returns a label describing current search/filter context */
   get currentSearchLabel(): string {
     const params = this.route.snapshot.queryParams;
     if (params['search']) return `Results for "${params['search']}"`;
@@ -167,6 +206,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     return 'All Products';
   }
 
+  /** Returns a label describing current search/filter context */
   get skeletons(): number[] {
     return Array.from({ length: 12 }, (_, i) => i);
   }

@@ -3,7 +3,7 @@ export interface User{
     email: string,
     role: 'customer' | 'admin',
     isLocked: boolean,
-    createdAt: string
+    createdAt: string | Date;
 }
 
 export interface Product {
@@ -104,6 +104,7 @@ export interface Order {
     id: number;
     name: string;
     email: string;
+    createdAt: string | Date;
   };
 }
 

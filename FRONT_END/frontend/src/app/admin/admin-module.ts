@@ -11,6 +11,8 @@ import { AdminCustomersComponent } from './components/admin-customer/admin-custo
 import { OrderDetailComponent } from '../features/orders/order-detail/order-detail.component';
 import { OrdersModule } from '../features/orders/orders-module';
 import { AdminOrderDetailComponent } from './components/admin-order-detail/admin-order-detail.component';
+import { FilterActivePipe } from '../shared/Pipes/filter-active.pipe';
+import { FilterLockedPipe } from '../shared/Pipes/filter-locked.pipe';
 
 /**
  * AdminModule is lazy loaded — its code is only downloaded
@@ -24,7 +26,9 @@ import { AdminOrderDetailComponent } from './components/admin-order-detail/admin
     AdminProductFormComponent,
     AdminCustomersComponent,
     AdminOrderComponent,
-    AdminOrderDetailComponent
+    AdminOrderDetailComponent,
+    FilterActivePipe,
+    FilterLockedPipe
   ],
   imports: [
     CommonModule,
