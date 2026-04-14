@@ -294,4 +294,128 @@ Pagination
         }
     }
 
+Interpolation
+    interpolation is the process of estimating a value between two known points. 
+    In your world of development (specifically Angular and Web Dev), it’s the most common 
+    way to display data from your TypeScript code onto your HTML screen.
+    In Angular (Data Binding)
+    Interpolation allows you to incorporate dynamic text into your HTML templates. It uses the "double curly brace" syntax: {{ }}.
+    How it works: Angular replaces the variable inside the braces with the string value of the corresponding component property.
+    Example:
+    TS: userName = 'Sahil';
+    HTML: <h1>Welcome, {{ userName }}!</h1>
+    Rendered: Welcome, Sahil!
+    It’s not just for variables; you can also perform math or call simple methods:
+    {{ 1 + 1 }} renders 2.
+    {{ user.getName() }} renders the result of that function.
+
+ng-content (The "Mailbox")
+    Purpose: Used inside a component to create a "placeholder" where a parent can drop any HTML they want.
+    Child Component
+    <div class="card">
+        <h3>Card Header</h3>
+        <ng-content></ng-content>
+    </div>
+    Parent Component
+    <app-card>
+        <p>This is my custom content inside the card!</p>
+    </app-card>
+
+ng-container (The "Invisible Wrapper")
+    Purpose: Use this when you need to use a structural directive (like *if or *for) but you don't 
+        want to add an extra <div> to your HTML.
+    <ng-container *ngIf="userLoggedIn">
+        <span>Welcome, User!</span>
+        <button>Logout</button>
+    </ng-container>
+
+ng-template (The "Blueprint")
+    Purpose: It defines a block of HTML that is not rendered by default. 
+        It only appears when you explicitly tell it to (e.g., using an else in an *ngIf).
+    <ng-container *ngIf="dataAvailable; else noData">
+        <div class="container">
+            <ng-content></ng-content>
+        </div>
+    </ng-container>
+
+    <ng-template #noData>
+        <p>Sorry, nothing to show.</p>
+    </ng-template>
+
+Modern Way
+    @if (user.role === 'admin') {
+    <div class="admin-panel">...</div>
+    } @else {
+    <ng-container *ngTemplateOutlet="userView"></ng-container>
+    }
+
+    <ng-template #userView>
+        <div class="standard-profile">
+            <p>Standard User Dashboard</p>
+        </div>
+    </ng-template>
+
+Feature         ng-container                                        ng-template
+Visibility      Renders its content immediately (if condition met)  Does nothing until referenced.
+DOM Impact      Leaves no trace in the final HTML                   Leaves no trace (unless rendered).
+Common Use      Wrapping @if or @for without extra divs             "Reusable snippets, Modals, or Loaders."
+
+Event Loop
+    The Event Loop is the secret sauce that allows Node.js and 
+    JavaScript to be "non-blocking" and handle thousands of concurrent connections, 
+    even though JavaScript is single-threaded
+    1. The Priority Rule: Micro vs. Macro
+        Code: 
+            console.log("Step 1: Synchronous");
+
+            setTimeout(() => {
+            console.log("Step 2: Macrotask (Timeout)");
+            }, 0);
+
+            Promise.resolve().then(() => {
+            console.log("Step 3: Microtask (Promise 1)");
+            }).then(() => {
+            console.log("Step 4: Microtask (Promise 2) - Still Priority!");
+            });
+
+            console.log("Step 5: Synchronous End");
+
+        Output: 1 → 5 → 3 → 4 → 2
+
+    2. Async/Await: Just Syntactic Sugar
+        Code:
+            async function eventLoopTest() {
+            console.log("A: Inside Async Function"); // Runs immediately
+            
+            await Promise.resolve(); // The "Pause" button
+            
+            console.log("B: After Await"); // This is now a Microtask!
+            }
+
+            console.log("C: Global Start");
+            eventLoopTest();
+            console.log("D: Global End");
+        
+        Outout: C -> A -> D -> B 
+    
+Task Type       Source                                          Priority
+Synchronous     "Console logs, variable 
+                assignments, loops."                    Highest (Immediate)
+Microtasks      "Promise.then, MutationObserver, 
+                queueMicrotask."                        High (Runs before next Macrotask)
+Macrotasks      "setTimeout, setInterval, 
+                setImmediate, I/O, UI Rendering."       Low (One at a time)
+
+User -> Cart and Order
+Cart -> User and Product 
+Product -> SubCategory
+SubCategory -> Category and Product
+Category -> ProductType and SubCategory
+ProductType -> Category
+Order -> User and OrderItem
+OrderItem -> Product and Order
+ResetCode -> User
+
+
+
 
