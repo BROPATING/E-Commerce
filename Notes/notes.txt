@@ -1,0 +1,297 @@
+@Input and @Output Implementation
+    import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+    @Component({
+    selector: 'app-child',
+    template: `
+        <div style="border: 1px solid blue; padding: 10px;">
+        <h4>Child Component</h4>
+        <p>Message from Parent: <b>{{ parentMessage }}</b></p>
+        
+        <button (click)="sendMessage()">Reply to Parent</button>
+        </div>
+    `
+    })
+    export class ChildComponent {
+    @Input() parentMessage: string = ''; // Received from Parent
+    @Output() replyEvent = new EventEmitter<string>(); // Sent to Parent
+
+    sendMessage() {
+        this.replyEvent.emit('Hey Parent, I got your message!');
+    }
+    }
+
+    import { Component } from '@angular/core';
+
+    @Component({
+    selector: 'app-parent',
+    template: `
+        <div style="border: 1px solid green; padding: 20px;">
+        <h1>Parent Component</h1>
+        <p>Child says: {{ childReply }}</p>
+
+        <hr>
+
+        <app-child 
+            [parentMessage]="messageToSend" 
+            (replyEvent)="handleReply($event)">
+        </app-child>
+        </div>
+    `
+    })
+    export class ParentComponent {
+    messageToSend = "Go clean your room!";
+    childReply = "Waiting...";
+
+    handleReply(eventData: string) {
+        this.childReply = eventData; // 'eventData' is what the child .emit()ed
+    }
+    }
+
+Observable Implementation
+    import { Injectable } from '@angular/core';
+    import { BehaviorSubject } from 'rxjs';
+
+    @Injectable({ providedIn: 'root' })
+    export class DataService {
+    // 1. Initialize with a starting value
+    private userSource = new BehaviorSubject<string>("Guest");
+    
+    // 2. Expose as an Observable (for components to subscribe)
+    currentUser$ = this.userSource.asObservable();
+
+    // 3. Method to update the value
+    updateUser(newName: string) {
+        this.userSource.next(newName);
+    }
+    }
+
+    import { Component, OnInit } from '@angular/core';
+    import { DataService } from './data.service';
+
+    @Component({
+    selector: 'app-root',
+    template: `
+        <h1>Current User: {{ user }}</h1>
+        <button (click)="login()">Login as Admin</button>
+    `
+    })
+    export class AppComponent implements OnInit {
+    user: string = '';
+
+    constructor(private dataService: DataService) {}
+
+    ngOnInit() {
+        // 4. Subscribe to the observable
+        this.dataService.currentUser$.subscribe(name => {
+        this.user = name;
+        });
+    }
+
+    login() {
+        // 5. Update the value in the service
+        this.dataService.updateUser("Admin_User_77");
+    }
+    }
+
+Hooks Implementation
+    export class UserListComponent implements OnInit {
+    users: string[] = [];
+
+    // Inject the service in the constructor
+    constructor(private dataService: DataService) {}
+
+    ngOnInit(): void {
+        // This runs automatically when the component starts
+        this.loadData();
+    }
+
+    loadData() {
+        this.dataService.getUsers().subscribe({
+        next: (data) => {
+            this.users = data;      // Set the values
+        },
+        error: (err) => {
+            console.error('Failed to load', err);
+            this.isLoading = false;
+        }
+        });
+    }
+    } 
+
+    export class ChildComponent implements OnChanges {
+    @Input() myCount: number = 0;
+    message: string = '';
+
+    // This fires BEFORE ngOnInit and every time myCount changes
+    ngOnChanges(changes: SimpleChanges) {
+        // 'changes' contains the current and previous values of all @Inputs
+        const countChange = changes['myCount'];
+
+        if (countChange) {
+        const prev = countChange.previousValue;
+        const curr = countChange.currentValue;
+
+        this.message = `Changed from ${prev} to ${curr}`;
+        
+        // You can trigger specific logic here
+        this.performCalculation(curr);
+        }
+    }
+    }
+
+    export class ViewInitDemoComponent implements AfterViewInit {
+
+    // 2. Link the template variable to this class variable
+    @ViewChild('nameInput') nameInputRef!: ElementRef;
+
+    constructor() {
+        // This would log 'undefined' because the HTML doesn't exist yet
+        console.log('Constructor: Input is', this.nameInputRef);
+    }
+
+    // 3. This hook fires AFTER the template is rendered
+    ngAfterViewInit() {
+        console.log('ngAfterViewInit: HTML is ready!');
+        
+        // Now we can safely access the DOM element
+        this.nameInputRef.nativeElement.focus();
+        this.nameInputRef.nativeElement.style.backgroundColor = '#f0f0f0';
+    }
+    }
+
+    export class TimerComponent implements OnInit, OnDestroy {
+    
+    // 1. Create a variable to hold the subscription
+    private mySub!: Subscription;
+
+    ngOnInit() {
+        // 2. Start a timer that ticks every second
+        this.mySub = interval(1000).subscribe(val => {
+        console.log('Timer ticking:', val);
+        });
+    }
+
+    // 3. This fires when the component is removed (e.g., user navigates away)
+    ngOnDestroy() {
+        console.log('Component being destroyed! Cleaning up...');
+        
+        // 4. STOP the subscription
+        if (this.mySub) {
+        this.mySub.unsubscribe();
+        }
+    }
+    }
+
+Pipe Implementation
+    import { Pipe, PipeTransform } from '@angular/core';
+
+    @Pipe({
+    name: 'reverse',
+    standalone: true // Set to true if you are using Standalone Components
+    })
+    export class ReversePipe implements PipeTransform {
+
+    transform(value: string): string {
+        if (!value) return '';
+        
+        // 1. Split into array: "abc" -> ["a", "b", "c"]
+        // 2. Reverse array: ["c", "b", "a"]
+        // 3. Join back: "cba"
+        return value.split('').reverse().join('');
+    }
+
+    }
+
+Directive Implementation
+    import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+
+    @Directive({
+    selector: '[appHighlight]',
+    standalone: true
+    })
+    export class HighlightDirective {
+    // Allow the user to pass a color, default to 'red'
+    @Input() appHighlight = 'red';
+
+    constructor(private el: ElementRef) {}
+
+    // Change color on Mouse Enter
+    @HostListener('mouseenter') onMouseEnter() {
+        this.changeColor(this.appHighlight);
+    }
+
+    // Reset color on Mouse Leave
+    @HostListener('mouseleave') onMouseLeave() {
+        this.changeColor('');
+    }
+
+    private changeColor(color: string) {
+        this.el.nativeElement.style.color = color;
+    }
+    }
+
+    <p appHighlight>Hover over me to turn red!</p>
+    <p [appHighlight]="'blue'">Hover over me to turn blue!</p>
+
+Type        Purpose                     Example                        Key Decorators/Tokens
+Component   Create a reusable UI 
+            piece with logic + HTML     <app-product-list>              @Component
+Structural  Add or remove elements 
+            from the DOM                *ngIf="isLoggedIn"              TemplateRef, ViewContainerRef
+Attribute   Modify the style or 
+            behavior of an element      [ngStyle]="{ 'color': 'red' }"  @HostListener, @HostBinding
+
+Debounce
+    export class SearchComponent implements OnInit {
+    searchControl = new FormControl('');
+
+    ngOnInit() {
+        this.searchControl.valueChanges.pipe(
+        debounceTime(400),       // Wait for 400ms pause in typing
+        distinctUntilChanged()   // Only move forward if the text actually changed
+        ).subscribe(value => {
+        console.log('Search API called with:', value);
+        // Call your service here: this.productService.search(value)
+        });
+    }
+    }
+
+Rate Limiter=
+    // Strict limiter for Auth/Login to prevent Brute Force
+    const loginLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // Only 5 failed attempts per hour
+    message: 'Too many login attempts from this IP, please try again after an hour'
+    });
+
+    // Apply to specific routes
+    app.use('/api/auth/login', loginLimiter);
+    app.use('/api/auth/change-password', loginLimiter);
+
+Feature         Hard Delete                     Soft Delete
+SQL Command     DELETE FROM users WHERE id = 1  UPDATE users SET deleted_at = NOW() WHERE id = 1
+Storage         Record is gone from the disk    Record stays in the same table.
+Visibility      Vanishes immediately            Hidden via WHERE deleted_at IS NULL filters.
+Recovery        Must use backups/logs           Just set the flag back to NULL.
+
+Pagination
+    allData = [];
+    currentPage = 1;
+    pageSize = 5; // How many items per page
+
+    get paginatedData() {
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        return this.allData.slice(start, end);
+    }
+    get totalPages() {
+    return Math.ceil(this.allData.length / this.pageSize);
+    }
+    setPage(page: number) {
+        if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+        }
+    }
+
+

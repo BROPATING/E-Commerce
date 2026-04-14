@@ -102,7 +102,7 @@ export class AuthService {
    */
   changePassword(currentPassword: string, newPassword: string): Observable<any> {
     return this.http.patch(
-      `${this.apiUrl}/auth/change-password`,
+      `${this.apiUrl}/profile/changePassword`,
       { currentPassword, newPassword },
       { withCredentials: true },
     );
@@ -117,7 +117,7 @@ export class AuthService {
    */
   updateProfile(name: string, email: string): Observable<{ message: string; user: User }> {
     return this.http.patch<{ message: string; user: User }>(
-      `${this.apiUrl}/auth/profile`,
+      `${this.apiUrl}/profile/update`,
       { name, email },
       { withCredentials: true },
     ).pipe(
