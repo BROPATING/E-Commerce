@@ -450,6 +450,11 @@
   animation: blink-dot 1.5s ease-in-out infinite;
 }
 
+.swal2-popup {
+  font-family: 'Inter', sans-serif; /* Use your app's font */
+  border-radius: 12px;
+}
+
 @keyframes blink-dot {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.3; }

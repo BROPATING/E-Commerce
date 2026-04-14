@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { CartService } from '../../../core/services/cart.service';
 import { ProductService } from '../../../core/services/product.service';
 import { Router } from '@angular/router';
-
+import Swal from 'sweetalert2';
 /**
  * CartPageComponent
  * -----------------
@@ -87,13 +87,40 @@ export class CartPageComponent implements OnInit, OnDestroy {
    * @param productId product identifier
    * @param quantity new quantity
    */
+  // updateQuantity(productId: number, quantity: number): void {
+  //   this.updatingItems.add(productId);
+  //   this.cartService.updateItem(productId, quantity).subscribe({
+  //     next: () => { this.updatingItems.delete(productId); },
+  //     error: err => {
+  //       this.updatingItems.delete(productId);
+  //       alert(err.error?.error || 'Could not update quantity');
+  //     }
+  //   });
+  // }
   updateQuantity(productId: number, quantity: number): void {
     this.updatingItems.add(productId);
     this.cartService.updateItem(productId, quantity).subscribe({
-      next: () => { this.updatingItems.delete(productId); },
+      next: () => { 
+        this.updatingItems.delete(productId); 
+        // Optional: Toast notification for success
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true
+        });
+        Toast.fire({ icon: 'success', title: 'Quantity updated' });
+      },
       error: err => {
         this.updatingItems.delete(productId);
-        alert(err.error?.error || 'Could not update quantity');
+        // 2. Error Alert
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: err.error?.error || 'Could not update quantity',
+          confirmButtonColor: '#06b6d4'
+        });
       }
     });
   }
@@ -102,13 +129,45 @@ export class CartPageComponent implements OnInit, OnDestroy {
    * Remove item from cart
    * @param productId product identifier
    */
+  // removeItem(productId: number): void {
+  //   this.updatingItems.add(productId);
+  //   this.cartService.removeItem(productId).subscribe({
+  //     next: () => { this.updatingItems.delete(productId); },
+  //     error: err => {
+  //       this.updatingItems.delete(productId);
+  //       alert(err.error?.error || 'Could not remove item');
+  //     }
+  //   });
+  // }
   removeItem(productId: number): void {
-    this.updatingItems.add(productId);
-    this.cartService.removeItem(productId).subscribe({
-      next: () => { this.updatingItems.delete(productId); },
-      error: err => {
-        this.updatingItems.delete(productId);
-        alert(err.error?.error || 'Could not remove item');
+    // 3. Confirmation Dialog
+    Swal.fire({
+      title: 'Remove item?',
+      text: "Are you sure you want to remove this product from your cart?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#06b6d4',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.updatingItems.add(productId);
+        this.cartService.removeItem(productId).subscribe({
+          next: () => { 
+            this.updatingItems.delete(productId);
+            Swal.fire({
+              title: 'Removed!',
+              text: 'The item has been removed.',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            });
+          },
+          error: err => {
+            this.updatingItems.delete(productId);
+            Swal.fire('Error', 'Could not remove item', 'error');
+          }
+        });
       }
     });
   }
