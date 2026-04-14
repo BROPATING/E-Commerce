@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { AuthService} from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { User } from '../../../shared/Interface';
-
+import Swal from 'sweetalert2';
 // ── Custom validator ──────────────────────────────────────────────────────────
 
 /**
@@ -34,16 +34,25 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   profileForm: FormGroup;
   profileLoading = false;
   profileSuccess = '';
-  profileError   = '';
+  profileError = '';
 
   // ── Password form ─────────────────────────────────────────────────────────
   passwordForm: FormGroup;
   passwordLoading = false;
   passwordSuccess = '';
-  passwordError   = '';
-  showCurrentPwd  = false;
-  showNewPwd      = false;
-  showConfirmPwd  = false;
+  passwordError = '';
+  showCurrentPwd = false;
+  showNewPwd = false;
+  showConfirmPwd = false;
+
+  // Config for a reusable Toast notification
+  private Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+  });
 
   constructor(
     private fb: FormBuilder,
@@ -51,13 +60,13 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {
     this.profileForm = this.fb.group({
-      name:  ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
     });
 
     this.passwordForm = this.fb.group({
       currentPassword: ['', [Validators.required]],
-      newPassword:     ['', [
+      newPassword: ['', [
         Validators.required,
         Validators.minLength(8),
         Validators.pattern(/[A-Z]/),
@@ -73,7 +82,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
       this.currentUser = user;
       if (user) {
         this.profileForm.patchValue({
-          name:  user.name,
+          name: user.name,
           email: user.email,
         });
       }
@@ -86,10 +95,10 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
 
   // ── Getters ───────────────────────────────────────────────────────────────
 
-  get pName()           { return this.profileForm.get('name')!; }
-  get pEmail()          { return this.profileForm.get('email')!; }
+  get pName() { return this.profileForm.get('name')!; }
+  get pEmail() { return this.profileForm.get('email')!; }
   get currentPassword() { return this.passwordForm.get('currentPassword')!; }
-  get newPassword()     { return this.passwordForm.get('newPassword')!; }
+  get newPassword() { return this.passwordForm.get('newPassword')!; }
   get confirmPassword() { return this.passwordForm.get('confirmPassword')!; }
 
   get userInitials(): string {
@@ -104,16 +113,16 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   get passwordStrength(): { label: string; level: number; color: string } {
     const pwd = this.newPassword.value ?? '';
     let score = 0;
-    if (pwd.length >= 8)   score++;
-    if (pwd.length >= 12)  score++;
+    if (pwd.length >= 8) score++;
+    if (pwd.length >= 12) score++;
     if (/[A-Z]/.test(pwd)) score++;
     if (/[0-9]/.test(pwd)) score++;
     if (/[^A-Za-z0-9]/.test(pwd)) score++;
 
-    if (score <= 1) return { label: 'Weak',   level: 1, color: '#ef4444' };
-    if (score <= 2) return { label: 'Fair',   level: 2, color: '#f59e0b' };
-    if (score <= 3) return { label: 'Good',   level: 3, color: '#3b82f6' };
-    return            { label: 'Strong', level: 4, color: '#16a34a' };
+    if (score <= 1) return { label: 'Weak', level: 1, color: '#ef4444' };
+    if (score <= 2) return { label: 'Fair', level: 2, color: '#f59e0b' };
+    if (score <= 3) return { label: 'Good', level: 3, color: '#3b82f6' };
+    return { label: 'Strong', level: 4, color: '#16a34a' };
   }
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -125,8 +134,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     }
 
     this.profileLoading = true;
-    this.profileSuccess = '';
-    this.profileError   = '';
 
     this.authService.updateProfile(
       this.pName.value.trim(),
@@ -134,12 +141,21 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: () => {
         this.profileLoading = false;
-        this.profileSuccess = 'Profile updated successfully.';
-        setTimeout(() => { this.profileSuccess = ''; }, 4000);
+        // Success Toast
+        this.Toast.fire({
+          icon: 'success',
+          title: 'Profile updated successfully'
+        });
       },
       error: err => {
         this.profileLoading = false;
-        this.profileError = err.error?.error || 'Update failed. Please try again.';
+        // Error Modal
+        Swal.fire({
+          icon: 'error',
+          title: 'Update Failed',
+          text: err.error?.error || 'Please try again.',
+          confirmButtonColor: '#06b6d4'
+        });
       }
     });
   }
@@ -151,8 +167,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     }
 
     this.passwordLoading = true;
-    this.passwordSuccess = '';
-    this.passwordError   = '';
 
     this.authService.changePassword(
       this.currentPassword.value,
@@ -160,18 +174,31 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: () => {
         this.passwordLoading = false;
-        this.passwordSuccess = 'Password changed successfully. Redirecting to login...';
-        this.passwordForm.reset();
 
-        // Backend invalidates session — log out after 2s
-        setTimeout(() => {
+        // Detailed Success Modal
+        Swal.fire({
+          title: 'Password Changed!',
+          text: 'For security, you will be redirected to login.',
+          icon: 'success',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true
+        }).then(() => {
           this.authService.setUser(null);
           this.router.navigate(['/auth/login']);
-        }, 2000);
+        });
+
+        this.passwordForm.reset();
       },
       error: err => {
         this.passwordLoading = false;
-        this.passwordError = err.error?.error || 'Password change failed. Please try again.';
+        Swal.fire({
+          icon: 'error',
+          title: 'Change Failed',
+          text: err.error?.error || 'Check your current password and try again.',
+          confirmButtonColor: '#06b6d4'
+        });
       }
     });
   }
@@ -180,8 +207,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
     // Clear messages when switching tabs
     this.profileSuccess = '';
-    this.profileError   = '';
+    this.profileError = '';
     this.passwordSuccess = '';
-    this.passwordError   = '';
+    this.passwordError = '';
   }
 }

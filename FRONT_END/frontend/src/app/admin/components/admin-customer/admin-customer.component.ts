@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Customer, User } from '../../../shared/Interface';
 import { AdminService } from '../../../core/services/admin.service';
+import Swal from 'sweetalert2';
 
 /**
  * AdminCustomersComponent
@@ -31,8 +32,8 @@ export class AdminCustomersComponent implements OnInit {
    * Lifecycle hook: OnInit
    * - Loads customers on component initialization
    */
-  ngOnInit(): void { 
-    this.loadCustomers(); 
+  ngOnInit(): void {
+    this.loadCustomers();
   }
 
   /**
@@ -63,17 +64,46 @@ export class AdminCustomersComponent implements OnInit {
    * - Updates customer state on success
    * @param customer customer object
    */
+  // 
   toggleLock(customer: Customer): void {
     const action = customer.isLocked ? 'unlock' : 'lock';
-    if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} ${customer.name}?`)) return;
+    const actionColor = customer.isLocked ? '#10b981' : '#ef4444'; // Green for unlock, Red for lock
 
-    this.adminService.toggleLock(customer.id).subscribe({
-      next: res => {
-        customer.isLocked = res.isLocked;
-        // Force change detection by reassigning array
-        this.customers = [...this.customers];
-      },
-      error: err => alert(err.error?.error || 'Action failed'),
+    // 2. Replace window.confirm with Swal.fire
+    Swal.fire({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} user?`,
+      text: `Are you sure you want to ${action} ${customer.name}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: actionColor,
+      cancelButtonColor: '#64748b',
+      confirmButtonText: `Yes, ${action} it!`,
+      reverseButtons: true // Puts "Cancel" on the left
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Proceed with API call
+        this.adminService.toggleLock(customer.id).subscribe({
+          next: res => {
+            customer.isLocked = res.isLocked;
+            this.customers = [...this.customers];
+
+            // 3. Success Toast
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'success',
+              title: `User ${customer.isLocked ? 'locked' : 'unlocked'} successfully`,
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true
+            });
+          },
+          error: err => {
+            // 4. Error Alert
+            Swal.fire('Failed', err.error?.error || 'Action failed', 'error');
+          }
+        });
+      }
     });
   }
 
