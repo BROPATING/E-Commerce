@@ -239,6 +239,29 @@ Pipe More than One value
     <p>{{ 'Angular' | reverse : true }}</p>
     <p>{{ 'Angular' | reverse : true : '!!!' }}</p>
 
+    import { Pipe, PipeTransform } from '@angular/core';
+
+    @Pipe({
+        name: 'calculateTax',
+        standalone: true // Use standalone for modern Angular (2026)
+    })
+    export class CalculateTaxPipe implements PipeTransform {
+
+        // val: The main data (e.g., price)
+        // taxRate: The first input
+        // currencySymbol: The second input
+        transform(val: number, taxRate: number, currencySymbol: string): string {
+            if (!val) return '';
+            
+            const total = val + (val * (taxRate / 100));
+            return `${currencySymbol}${total.toFixed(2)}`;
+        }
+    }
+
+    <p>
+        Final Amount: {{ 100 | calculateTax : 18 : '₹' }}
+    </p>
+
 Directive Implementation
     import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
@@ -413,6 +436,18 @@ Feature         ng-container                                        ng-template
 Visibility      Renders its content immediately (if condition met)  Does nothing until referenced.
 DOM Impact      Leaves no trace in the final HTML                   Leaves no trace (unless rendered).
 Common Use      Wrapping @if or @for without extra divs             "Reusable snippets, Modals, or Loaders."
+
+Why ng-container ?
+    Becasue If you try to do <div *ngIf="condition" *ngFor="let item of list">, Angular will throw 
+    an error because You cannot put two structural directives on the same element.
+    The Solution: <ng-container>
+    <ul>
+        <ng-container *ngFor="let user of users">
+            <li *ngIf="user.isActive">
+            {{ user.name }}
+            </li>
+        </ng-container>
+    </ul>   
 
 Event Loop
     The Event Loop is the secret sauce that allows Node.js and 
@@ -717,10 +752,11 @@ TRANSACTION
         }
     }
 
-Strategy    Direction       Use Case
-@Input()    Parent → Child  Passing data (like a user object or a configuration).
-@Output()   Child → Parent  Notifying the parent that something happened (like a click).
-@ViewChild  Parent → Child  Imperative control (calling a method or commanding the child).
+Strategy    Direction           Use Case
+@Input()    Parent → Child      Passing data (like a user object or a configuration).
+@Output()   Child → Parent      Notifying the parent that something happened (like a click).
+@ViewChild  Parent → Child      Imperative control (calling a method or commanding the child).
+@ViewChildren Parent -> Child   Access multiple child components
 
 Hook	    When it Runs	                                                Common Use
 ngOnInit	After the component is created and inputs are set	            Initialize data, call APIs
@@ -882,5 +918,232 @@ Scalability Becomes messy with many fields      Very organized and scalable.
 
 Constructor: Runs when the JavaScript class is created.
 ngOnInit: Runs when Angular finishes setting up the component inputs.
+
+Feature     Cold Observable                 Hot Observable
+Data Source Created inside the observable   Created outside the observable.
+Start Time  Starts when you subscribe       Runs even without subscribers.
+Sharing     Unicast (One-to-one)            Multicast (One-to-many).
+Key Example of([1,2,3]), http.get()         EventEmitter, Subject, fromEvent
+
+<!-- ❌ INVALID -->
+<div *ngIf="condition" *ngFor="let item of items"></div>
+
+    <ng-template [ngIf]="condition">
+        <ng-template ngFor let-item [ngForOf]="items">
+            <div></div>
+        </ng-template>
+    </ng-template>
+
+Directive
+    @Directive({
+        selector: '[appClickable]',
+        standalone: true,
+        host: {   // Depth
+        '[class.clickable]': 'true',
+        '[style.cursor]': '"pointer"',
+        '[style.userSelect]': '"none"',
+        '[tabindex]': '0',
+        '(click)': 'onClick($event)',
+        '(keydown.enter)': 'onEnter($event)',
+        '(keydown.space)': 'onSpace($event)'
+        }
+    })
+    export class ClickableDirective {
+    @Output() appClickable = new EventEmitter<MouseEvent | KeyboardEvent>();
+        onClick(event: MouseEvent) {
+            this.appClickable.emit(event);
+        }
+        onEnter(event: KeyboardEvent) {
+            event.preventDefault();
+            this.appClickable.emit(event);
+        }
+        onSpace(event: KeyboardEvent) {
+            event.preventDefault();
+            this.appClickable.emit(event);
+        }
+    }
+
+    @Component({
+        selector: 'app-root',
+        standalone: true,
+        imports: [ClickableDirective],
+        template: `
+        <div appClickable (appClickable)="handleClick($event)">
+        Click me or press Enter/Space
+        </div>
+        `,
+        styles: [`
+            .clickable {
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            display: inline-block;
+            }
+            .clickable:hover {
+            background: #bbdefb;
+            }
+        `]
+    })
+    export class AppComponent {
+        handleClick(event: MouseEvent | KeyboardEvent) {
+        console.log('Clicked!', event.type);
+        }
+    }
+
+If userId !: number;
+    If want to remove that ! then Modify in tsconfig
+        strictPropertyInitialization: false
+
+Chaining
+    Child
+        @Component({
+            selector: 'app-child',
+            template: `<button (click)="sendToParent()">Click Me</button>`
+        })
+        export class ChildComponent {
+            @Output() childEvent = new EventEmitter<string>();
+
+            sendToParent() {
+                this.childEvent.emit('Hello from the Child!');
+            }
+        }
+    
+    Parent
+        @Component({
+            selector: 'app-parent',
+            template: `<app-child (childEvent)="passItUp($event)"/>`
+        })
+        export class ParentComponent {
+            @Output() parentEvent = new EventEmitter<string>();
+
+            passItUp(data: string) {
+                this.parentEvent.emit(data); // Re-emitting the data to the Grandparent
+            }
+        }
+
+    GrandParent 
+    @Component({
+        selector: 'app-Gparent',
+        template: `
+            <h2> Msg from child -> parent -> Gparent </h2>
+            <h4>{{msgFromParent}}</h4>
+            <app-parent (passItUp)="fileHandle($event)"/>
+        `
+    })
+    export class ParentComponent {
+        msgFromParent: string = '';
+
+        fileHandle(data: string) {
+            this.msgFromParent = data; // Re-emitting the data to the Grandparent
+        }
+    }
+    
+@NgModule({      // Brain" of an Angular module
+declarations: [],   // internal tools i.e Component
+imports: [],       // Other modules (like CommonModule, FormsModule, or your own custom SharedModule)
+exports: [],       // public interface of your module that can be used by other module
+providers: [],     // This is for Services Classes that handle data or logic (e.g., UserService, ApiService)
+                   // But require @Injectable({provided: true})
+bootstrap: []      // This is the starting point. AppComponent
+})
+
+Sample
+@NgModule({
+  declarations: [
+    MyComponent,      // I made this
+    HighlightDirective // I made this too
+  ],
+  imports: [
+    CommonModule,     // I need *ngIf and *ngFor (Standard Angular tools)
+    ReactiveFormsModule // I need to build a form
+  ],
+  exports: [
+    MyComponent       // I want other modules to use this component
+  ],
+  providers: [
+    DataService       // Shared logic
+  ],
+  bootstrap: [AppComponent] // Only in the main AppModule!
+})
+export class UserModule { }
+
+When you write req.cookie?.token, the computer reads it like this:
+    Look at req.cookie.
+    Is it null or undefined?
+        YES: Stop right there and return undefined. Don't even try to look for .token.
+        NO: Go ahead and look for the .token property inside it.
+
+Input Transform
+    Angular 16+ allows you to transform input values automatically using the transform option
+    Built-in Transform Functions:
+        import { Component, Input, booleanAttribute, numberAttribute } from '@angular/core';
+        export class ConfigComponent {
+            // Transform string to boolean
+            @Input({ transform: booleanAttribute }) enabled: boolean = false;
+            // Transform string to number
+            @Input({ transform: numberAttribute }) count: number = 0;
+        }
+    Parent Template:
+        <app-config enabled="true" count="42"></app-config>
+
+    Custom Transform
+        export class PriceComponent {
+            @Input({ 
+                transform: (value: string | number) => {
+                    return typeof (value === 'string') ? parseFloat(value) : value;
+                }
+            }) 
+            price: number = 0;
+        } 
+
+<div #container></div>
+@ViewChild('container', { read: ViewContainerRef }) 
+  container!: ViewContainerRef;
+    const componentRef = this.container.createComponent(MessageComponent);
+    // Set inputs
+    componentRef.instance.text = 'Hello from dynamic component!';
+    componentRef.instance.close = () => componentRef.destroy();
+
+@ViewChild('myTemplate', { read: TemplateRef }) 
+    template!: TemplateRef<any>;
+    const view = this.container.createEmbeddedView(this.template, {
+        name: 'John Doe',
+        age: 30
+    });
+
+FormsModule
+    <form #myForm="ngForm">
+        <input [(ngModel)]="username" name="username">
+    </form>
+    <pre>{{ myForm.value | json }}</pre>
+
+    <form #f="ngForm">
+        <input [(ngModel)]="email" name="email">
+    </form>
+    <p>Form Value: {{ f.value | json }}</p>
+    <p>Valid: {{ f.valid }}</p>
+    <p>Touched: {{ f.touched }}</p>
+    <p>Dirty: {{ f.dirty }}</p>
+
+| Property |  Value/Type  |  Description  |
+| --- | --- | --- |
+|  value  | Object | Object containing all form values |
+|  valid  | Boolean | True if the form passes validation |
+|  touched  | Boolean | True if the user has interacted with the form |
+|  dirty  | Boolean | True if the user has changed any value |
+|  pristine  | Boolean | True if the form is unchanged (opposite of dirty) |
+
+<a routerLink="/home">Home</a>
+<a [routerLink]="['/user', userId]" --> apiURL/user/42
+    routerLinkActive="active-link">Profile</a> 
+>
+-> that don't reload the page unlike href
+
+<router-outlet/> is the placeholder where Angular dynamically loads the component associated with your link
+
+
+
+
+
 
 
