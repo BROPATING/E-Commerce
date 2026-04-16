@@ -94,6 +94,14 @@ Observable Implementation
     }
     }
 
+@Injectable({provided: 'root'})
+    Create one single instance of this service and make it available everywhere in 
+    the entire application.
+    @Injectable(): This decorator marks the class as a service that can be 
+        "injected" into  components, pipes, or other services.
+    providedIn: 'root': This tells Angular's Dependency Injection (DI) system to 
+        register this service at the top-level (root) of the application.
+
 Hooks Implementation
     export class UserListComponent implements OnInit {
     users: string[] = [];
@@ -202,6 +210,34 @@ Pipe Implementation
     }
 
     }
+
+Pipe More than One value
+    import { Pipe, PipeTransform } from '@angular/core';
+
+    @Pipe({
+    name: 'reverse',
+    standalone: true
+    })
+    export class ReversePipe implements PipeTransform {
+
+    // 'value' is the string to reverse
+    // 'isUpper' and 'suffix' are our two custom parameters
+    transform(value: string, isUpper: boolean = false, suffix: string = ''): string {
+        if (!value) return '';
+
+        let reversed = value.split('').reverse().join('');
+
+        if (isUpper) {
+        reversed = reversed.toUpperCase();
+        }
+
+        return reversed + suffix;
+    }
+    }
+
+    <p>{{ 'Angular' | reverse }}</p> 
+    <p>{{ 'Angular' | reverse : true }}</p>
+    <p>{{ 'Angular' | reverse : true : '!!!' }}</p>
 
 Directive Implementation
     import { Directive, ElementRef, HostListener, Input } from '@angular/core';
@@ -355,6 +391,24 @@ Modern Way
         </div>
     </ng-template>
 
+*ngTemplateOutlet
+    *ngTemplateOutlet as a "Portkey" or a "Placeholder" in Angular. It allows you to define a piece of HTML 
+        once (inside an <ng-template>) and then "stamp" it out in multiple different locations across your page.
+    The Template (<ng-template>): This is your "blueprint." It doesn't show up on the screen by default.
+    The Outlet (*ngTemplateOutlet): This is the spot where you want the blueprint to appear.
+    <ng-template #userCard let-name="userName" let-role="userRole">
+    <div class="card">
+        <h3>{{ name }}</h3>
+        <p>Role: {{ role }}</p>
+    </div>
+    </ng-template>
+
+    <ng-container *ngTemplateOutlet="userCard; context: { userName: 'Gemini', userRole: 'AI' }">
+    </ng-container>
+
+    <ng-container *ngTemplateOutlet="userCard; context: { userName: 'You', userRole: 'Developer' }">
+    </ng-container>
+
 Feature         ng-container                                        ng-template
 Visibility      Renders its content immediately (if condition met)  Does nothing until referenced.
 DOM Impact      Leaves no trace in the final HTML                   Leaves no trace (unless rendered).
@@ -416,6 +470,381 @@ Order -> User and OrderItem
 OrderItem -> Product and Order
 ResetCode -> User
 
+RXJS
+    RxJS is a library for composing asynchronous and event-based programs by using observable sequences.
+    Observable (The Pipe): The source of data.
+    Observer (The Tap): The thing that "subscribes" to the data to use it.
+    Subscription: User who subscribe and unsubscribe the event.
+    Operators (The Filters): Functions like map, filter, or switchMap that transform the data while it's in the pipe.
 
+Feature         Synchronous                 Asynchronous
+Execution       Sequential (one by one)     Concurrent (multi-tasking).
+Blocking        Blocks the Main Thread      Does not block the main thread.
+Performance     Slower for I/O tasks        Faster/Smoother for I/O tasks.
+User Experience Can cause UI freezing       Keeps UI responsive.
+Handling        Straightforward logic       Uses Callbacks, Promises, or Async/Await.
+
+Feature         .find()                                 QueryBuilder
+Complexity      Simple queries only.                    Complex logic, subqueries, and joins.
+Performance     Can be slower (fetches all columns)     Faster (you can select only 2 columns).
+Readability     High (looks like a configuration)       Moderate (looks like SQL).
+Relationships   Uses relations array                    Uses .leftJoin() or .innerJoin().
+Best For        Standard CRUD operations                Reports, Dashboards, and complex filters.
+
+ngClass
+    .text-danger { color: red; font-weight: bold; }
+    .text-success { color: green; }
+    <span [ngClass]="{
+        'text-danger': product.stock === 0,
+        'text-success': product.stock > 0
+        }">
+        {{ product.stock === 0 ? 'Out of Stock' : 'In Stock' }}
+    </span>
+
+    OR
+
+    <span [class.node-pending]="step < 3" />
+
+ngStyle
+    <div class="progress-bar" 
+        [ngStyle]="{
+            'width': (product.currentStock / product.maxStock * 100) + '%',
+            'background-color': product.currentStock < 10 ? 'orange' : 'blue'
+        }">
+    </div>
+
+CTE 
+    A CTE is a temporary result set that you can reference within a SELECT, INSERT, UPDATE, or DELETE statement.
+    WITH SeniorEmployees AS (
+        SELECT Name, Salary 
+        FROM Employees 
+        WHERE Age > 50
+    )
+    SELECT * FROM SeniorEmployees;
+
+Procedure
+    A Procedure is a prepared piece of SQL code that you can save and reuse.
+    CREATE PROCEDURE GetEmpByDept @DeptName NVARCHAR(50)
+    AS
+    BEGIN
+        SELECT * FROM Employees WHERE Department = @DeptName;
+    END;
+
+    -- To run it:
+    EXEC GetEmpByDept @DeptName = 'Sales';
+
+Trigger
+    A Trigger is a script that automatically runs (or "fires") when a specific event occurs, such as inserting or deleting a row.
+    CREATE TRIGGER NotifyNewEmployee
+    ON Employees
+    AFTER INSERT
+    AS
+    BEGIN
+        PRINT 'A new employee record has been added successfully.';
+    END;
+
+View
+    A View is a "virtual table." It doesn't store data itself but displays data stored in other tables based on a predefined query.
+    CREATE VIEW EmployeeContactList AS
+    SELECT Name, Email
+    FROM Employees
+    WHERE Status = 'Active';
+
+    -- To use it:
+    SELECT * FROM EmployeeContactList;
+
+Index
+    -- Great for columns you search frequently (like Last Name)
+    CREATE INDEX IX_Employees_LastName
+    ON Employees(LastName);
+
+    Types
+    Clustered: Usually created automatically with a PRIMARY KEY.
+    Non-Clustered: CREATE INDEX idx_name ON Table(Column);
+    Unique: CREATE UNIQUE INDEX idx_unique_email ON Users(Email);
+    Composite: CREATE INDEX idx_full_name ON Users(LastName, FirstName);
+
+Feature         CTE (Common Table Expression)                                   View
+Persistence     Temporary. Exists only during the execution of a single query   Permanent. Saved in the database like a virtual table.
+Storage         Not stored in the database metadata                             Stored in the database schema/metadata.
+Reusability     Can only be used by the query immediately following it          Can be used by any user or query at any time.
+Primary Use     Breaking up complex logic or handling recursion                 Providing a consistent, simplified interface for users.
+Security        None (defined within the script)                                Can be used to restrict access to specific columns or rows.
+
+Window Function
+    Window Function performs a calculation across a set of table rows that are somehow related to the current row
+    SELECT Name, Dept, 
+       ROW_NUMBER() OVER(PARTITION BY Dept ORDER BY Salary DESC) as Rank
+    FROM Employees;
+
+RANK() vs DENSE_RANK()
+    Used for ranking items. If two people have the same salary:
+    RANK(): Skips the next number (1, 2, 2, 4).
+    DENSE_RANK(): Does not skip (1, 2, 2, 3).
+
+Promise()
+    const singleTask = new Promise((resolve, reject) => {
+        setTimeout(() => resolve("Task 1 Done!"), 1000);
+    });
+
+singleTask.then(result => console.log(result)); // "Task 1 Done!"
+
+Promise.all()
+    const p1 = Promise.resolve("User Data");
+    const p2 = Promise.resolve("Posts");
+    const p3 = Promise.resolve("Settings");
+
+    Promise.all([p1, p2, p3])
+    .then(results => {
+        console.log(results); // ["User Data", "Posts", "Settings"]
+    })
+        .catch(err => console.log("One failed, so all failed!"));
+
+Feature                 Raw Query                                       QueryBuilder
+Readability             High for SQL experts; messy for long strings    High for developers; looks like clean code.
+Security                Manual (Risk of SQL Injection)                  Built-in protection (Auto-parameterization).
+Dynamic Logic           Hard (requires string concatenation)            Easy (conditional .where() calls).
+Maintenance             Harder to refactor if table names change        Easier; often integrated with IDE autocomplete.
+Database Portability    Low (SQL syntax varies by DB)                   High (Abstracts syntax differences).
+
+Promise.race()
+    const slow = new Promise(resolve => setTimeout(() => resolve('Slow'), 2000));
+    const fast = new Promise(resolve => setTimeout(() => resolve('Fast'), 500));
+
+    Promise.race([slow, fast])
+    .then(value => console.log(value)); // Result: "Fast"
+
+switchMap (The "Latest" Map)
+    When a new value arrives, it cancels the previous inner Observable and switches to the new one.
+    Analogy: A search bar. As you type "A", "AB", "ABC", you only care about the results for "ABC". 
+        The previous searches are cancell
+
+mergeMap (The "Parallel" Map)
+    It triggers an inner  for every value and lets them all run at the same time. Nothing is cancelled.
+    Analogy: A busy restaurant. Multiple orders are placed, and they are served as soon as they are ready, 
+        regardless of the order they were placed in.
+
+concatMap (The "Serial" Map)
+    It queues the inner Observables. It waits for the current one to finish before starting the next one.
+    Analogy: An ATM line. You must finish your transaction before the next person can start theirs.
+
+exhaustMap (The "Ignore" Map)
+    It ignores all new values until the current inner Observable has finished.
+    Analogy: An elevator button. Once you press it and the elevator is moving, 
+        pressing it ten more times does absolutely nothing.
+
+Operator    Strategy    Handling New Values
+switchMap   Switch      Cancels the old, starts the new.
+mergeMap    Parallel    Runs everything at the same time.
+concatMap   Queue       Waits for current to finish, then starts next.
+exhaustMap  Ignore      Ignores new values until current is done.
+
+Feature         Primary Key                         Unique Key
+Purpose         Uniquely identifies a row           Prevents duplicate values in a column.
+Quantity        Only one per table                  Multiple are allowed.
+Null Values     Cannot be NULL                      Can have one NULL (usually).
+Clustered Index Yes (Default)                       No (Default is Non-Clustered).
+Usage           Used as a target for Foreign Keys   Used to prevent duplicates in non-ID fields.
+
+TRANSACTION
+    BEGIN TRANSACTION;
+
+    DECLARE @CurrentBalance DECIMAL;
+    SELECT @CurrentBalance = Balance FROM Accounts WHERE ID = 'A';
+
+    IF @CurrentBalance >= 500
+    BEGIN
+        UPDATE Accounts SET Balance = Balance - 500 WHERE ID = 'A';
+        UPDATE Accounts SET Balance = Balance + 500 WHERE ID = 'B';
+        COMMIT;
+        PRINT 'Transfer Successful';
+    END
+    ELSE
+    BEGIN
+        ROLLBACK;
+        PRINT 'Insufficient Funds';
+    END
+
+@ViewChild
+    // child.component.ts
+    import { Component } from '@angular/core';
+
+    @Component({
+        selector: 'app-child-timer',
+        standalone: true,
+        template: `<p>Timer: {{ counter }}</p>`
+    })
+    export class ChildTimerComponent {
+        counter = 0;
+        interval: any;
+
+        start() {
+            this.interval = setInterval(() => this.counter++, 1000);
+        }
+
+        stop() {
+            clearInterval(this.interval);
+        }
+    }
+
+    // parent.component.ts
+    import { Component, ViewChild, AfterViewInit } from '@angular/core';
+    import { ChildTimerComponent } from './child-timer.component';
+
+    @Component({
+        selector: 'app-parent',
+        standalone: true,
+        imports: [ChildTimerComponent],
+        template: `
+            <h2>Parent Controller</h2>
+            <button (click)="startChildTimer()">Start Child Timer</button>
+            <button (click)="stopChildTimer()">Stop Child Timer</button>
+            <hr>
+            <app-child-timer></app-child-timer>
+        `
+    })
+    export class ParentComponent {
+        // We reference the Child component class directly
+        @ViewChild(ChildTimerComponent) timerComp!: ChildTimerComponent;
+
+        startChildTimer() {
+            // Calling the child's method directly!
+            this.timerComp.start();
+        }
+
+        stopChildTimer() {
+            this.timerComp.stop();
+        }
+    }
+
+Strategy    Direction       Use Case
+@Input()    Parent → Child  Passing data (like a user object or a configuration).
+@Output()   Child → Parent  Notifying the parent that something happened (like a click).
+@ViewChild  Parent → Child  Imperative control (calling a method or commanding the child).
+
+Hook	    When it Runs	                                                Common Use
+ngOnInit	After the component is created and inputs are set	            Initialize data, call APIs
+ngOnChanges	Whenever input properties change	                            React to new values from parent
+ngDoCheck	On every change detection cycle	                                Custom change detection logic
+ngAfterContentInit	After content (like ) is projected	                    Setup projected content
+ngAfterContentChecked	After projected content is checked	                Respond to content changes
+ngAfterViewInit	After the component’s view and child views are initialized	Access @ViewChild elements
+ngAfterViewChecked	After the view is checked	                            Respond to view changes
+ngOnDestroy	Just before the component is removed	                        Cleanup (unsubscribe, clear timers)
+
+Hook sequence
+    constructor() (Technically a class feature, but starts the process)
+        |
+    ngOnChanges()
+        |
+    ngOnInit()
+        |
+    ngDoCheck()
+        |
+    ngAfterContentInit()
+        |
+    ngAfterContentChecked()
+        |
+    ngAfterViewInit()
+        |
+    ngAfterViewChecked()
+        |
+    ngOnDestroy()
+
+TrackBy
+    trackBy is a performance optimization for the *ngFor directive.
+    Without trackBy: If you refresh a list of 1,000 items, Angular destroys 
+        1,000 DOM elements and creates 1,000 new ones.
+    With trackBy: Angular compares the unique IDs. If the IDs are the same, it keeps the existing 
+        DOM elements and only updates the content that changed.
+
+[class.active](Class Binding) and [ngClass] (Directive)
+    import { Component } from '@angular/core';
+
+    @Component({
+    selector: 'app-root',
+    templateUrl: `
+        <div class="container">
+        <button (click)="toggleLogin()">
+            {{ isLoggedIn ? 'Log Out' : 'Log In' }}
+        </button>
+
+        <hr>
+
+        <div [class.active]="isLoggedIn" class="box">
+            Using [class.active]: I am highlighted when logged in.
+        </div>
+
+        <div [ngClass]="{'active': isLoggedIn, 'logged-out': !isLoggedIn}" class="box">
+            Using [ngClass]: My color changes based on status.
+        </div>
+        </div>`,
+        styleUrls: ['./app.component.css']
+    })
+    export class AppComponent {
+        isLoggedIn: boolean = false;
+
+        toggleLogin() {
+            this.isLoggedIn = !this.isLoggedIn;
+        }
+    }
+
+FormControl: A single input field.
+FormGroup: A collection of inputs (like your passwordForm).
+FormArray: A dynamic list of inputs.
+AbstractControl: The "DNA" they all share (methods like .get(), .value, .valid, .status).
+
+*ngFor="let product of products; let i = index; trackBy: trackByProductId"
+    let product of products: Gives you access to the data.
+    let i = index: Allows you to show row numbers or handle logic based on position.
+    trackBy: trackByProductId: Ensures that if you add or remove a product, Angular doesn't 
+        destroy the entire DOM list—it only touches the item that changed.
+
+Dependency Injection
+    Dependency Injection (DI) is a design pattern where a class does not create the objects it 
+    needs (its dependencies) itself. Instead, those objects are "injected" into it—usually through the constructor.
+    Old way: 
+        constructor(private authService: AuthService){}
+    Modern way: 
+        private authService = inject(AuthService);
+    
+* define
+    When Angular sees the *, it is actually a "syntactic sugar" (a shortcut). 
+    It wraps your element in an <ng-template>.
+    * = Structural Directive.
+    With *ngIf:
+        <div *ngFor="let item of items">
+            {{ item }}
+        </div>
+    What Angular actually renders:
+        <ng-template ngFor [ngForOf]="items" let-item>
+            <div>{{ item }}</div>
+        </ng-template>
+    
+Cookie-Parser
+    cookie-parser is a middleware for Express.js (and other Node.js servers) that simplifies handling cookies.
+    Without cookie-parser:
+        If you want to see a user's theme preference, you'd have to manually parse a string like this:
+        req.headers.cookie ⮕ "theme=dark; sessionId=abc123; user=John"
+    With cookie-parser:
+        It does the work for you. You can just access it like this:
+        req.cookies.theme ⮕ "dark"
+
+Resolver
+    A Resolver (or ResolveFn) is a special type of middleware that fetches data before a component is even loaded.
+    // user.resolver.ts
+    export const userResolver: ResolveFn<User> = (route, state) => {
+        const userService = inject(UserService);
+        const id = route.paramMap.get('id')!;
+        
+        // Return the Observable; the Router will "wait" for it to finish
+        return userService.getUserById(id);
+    };
+    {
+    path: 'profile/:id',
+        component: UserProfileComponent,
+        resolve: { userData: userResolver } // This name 'userData' is key!
+    }
+    
 
 

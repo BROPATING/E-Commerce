@@ -119,6 +119,13 @@ The Objective
     and the complete admin panel (product CRUD, customer management, order viewing). 
     This completes the Angular frontend. After this step, every rubric item has a working UI.
 
+Step 19: Building the Project
+The Objective 
+    We're using the build command for the frontend and backend folder to create dist folder such that 
+    to run both the frontend and backed on one port i.e on http://localhost:3000
+    Setting the project to Production Grade
+
+
 
 
 

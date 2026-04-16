@@ -217,7 +217,7 @@ Runtime	          Could be an object, string, etc.	    Is literally the value un
 Analogy     	  A box that could contain anything.	An empty spot where a box should be.
 
 next(err) in auth.controllers
-    It passes the global error i.e declare in 
+    It passes the global error i.e declare in app.ts
 
 getManyAndCount() in product.service
     This is a powerful TypeORM method that executes two SQL queries at once:
@@ -453,6 +453,11 @@ of protection covers the entire surface area.
     The public product endpoints (GET /api/products) still exist
     and are accessible to everyone. These admin endpoints sit
     under /api/admin/products for clear separation of concerns.
+
+tsconfig
+    tsconfig.json file. It is the brain of your TypeScript project. It tells the TypeScript compiler ($tsc$) 
+    exactly how to transform your modern .ts files into the .js files that Node.js or a browser can actually execute.
+
 
 
  
