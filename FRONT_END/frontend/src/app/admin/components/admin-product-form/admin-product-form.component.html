@@ -76,7 +76,7 @@
                                    form.get('subCategoryId')!.touched"
             >
               <option value="">Select sub-category</option>
-              <option *ngFor="let sub of allSubCategories" [value]="sub.id">
+              <option *ngFor="let sub of allSubCategories; track: trackByIndex" [value]="sub.id">
                 {{ sub.label }}
               </option>
             </select>

@@ -54,4 +54,8 @@ export class OrderListComponent implements OnInit {
   getItemCount(order: Order): number {
     return order.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
   }
+
+  trackByIndex(index: number):number{
+    return index;
+  }
 }

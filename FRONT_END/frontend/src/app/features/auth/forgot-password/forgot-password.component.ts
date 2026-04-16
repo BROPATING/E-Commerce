@@ -31,30 +31,22 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ]
 })
 export class ForgotPasswordComponent {
-  /** Current step in flow (1 = request code, 2 = reset password, 3 = success) */
   step = 1;
 
-  /** Form for requesting reset code */
   emailForm: FormGroup;
 
-  /** Form for submitting reset code + new password */
   resetForm: FormGroup;
 
-  /** Error messages split by step for better UX */
   emailError = '';
   resetError = '';
 
-  /** Loading flags split by step */
   emailLoading = false;
   resetLoading = false;
 
-  /** Reset code returned by mock flow (for demo purposes) */
   displayedCode = '';
 
-  /** Email submitted in step 1 */
   submittedEmail = '';
 
-  /** Flags for toggling password visibility */
   showNewPwd = false;
   showConfirmPwd = false;
 
@@ -63,7 +55,6 @@ export class ForgotPasswordComponent {
     private authService: AuthService,
     private router: Router,
   ) {
-    // Initialize email form
     this.emailForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
@@ -176,5 +167,9 @@ export class ForgotPasswordComponent {
   /** Navigate to login page */
   goToLogin(): void {
     this.router.navigate(['/auth/login']);
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

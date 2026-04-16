@@ -22,7 +22,7 @@
   <!-- Loading -->
   <div *ngIf="loading" class="loading-state">
     <div class="loading-rows">
-      <div *ngFor="let s of [1,2,3,4,5]" class="skeleton-row">
+      <div *ngFor="let s of [1,2,3,4,5]; track: trackByIndex" class="skeleton-row">
         <div class="sk-thumb"></div>
         <div class="sk-lines">
           <div class="sk-line sk-w60"></div>
@@ -84,7 +84,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of products; let i = index"
+        <tr *ngFor="let product of products; let i = index; track: trackByIndex"
             class="product-row"
             [style.animation-delay]="(i * 0.04) + 's'">
 

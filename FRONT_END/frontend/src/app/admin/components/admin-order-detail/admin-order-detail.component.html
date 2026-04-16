@@ -173,7 +173,7 @@
     <div class="order-items">
       <div
         class="order-item"
-        *ngFor="let item of order.items; let i = index"
+        *ngFor="let item of order.items; let i = index; track: trackByIndex"
         [style.animation-delay]="(i * 0.06) + 's'"
       >
         <!-- Left accent bar -->

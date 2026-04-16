@@ -71,21 +71,12 @@ export class CheckoutComponent implements OnInit {
       }
     });
   }
-  /** Getter for payment method form control */
   get paymentMethod() { return this.form.get('paymentMethod')!; }
 
-  /**
-   * Utility: Get product image URL
-   * @param imagePath relative path or null
-   */
   getImageUrl(imagePath: string | null): string {
     return this.productService.getImageUrl(imagePath);
   }
-
-  /**
-   * Select a payment method programmatically
-   * @param value chosen payment method
-   */
+  
   selectMethod(value: string): void {
     this.form.patchValue({ paymentMethod: value });
   }
@@ -115,5 +106,9 @@ export class CheckoutComponent implements OnInit {
         this.errorMessage = err.error?.error || 'Checkout failed. Please try again.';
       }
     });
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

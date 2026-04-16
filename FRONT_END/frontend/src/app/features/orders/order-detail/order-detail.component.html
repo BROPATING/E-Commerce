@@ -47,7 +47,7 @@
         </div>
 
         <div class="order-items">
-          <div class="order-item" *ngFor="let item of order.items">
+          <div class="order-item" *ngFor="let item of order.items; track: trackByIndex">
             <a [routerLink]="['/products', item.product.id]" class="item-img-link">
               <img [src]="getImageUrl(item.product.imagePath ?? null)" [alt]="item.product.name" class="item-img" />
             </a>

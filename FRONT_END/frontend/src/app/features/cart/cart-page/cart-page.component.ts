@@ -50,7 +50,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Lifecycle hook: OnDestroy
    * - Unsubscribes from cart observable to prevent memory leaks
    */
   ngOnDestroy(): void {
@@ -63,9 +62,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
 
   /**
    * Increment item quantity by 1
-   * @param productId product identifier
-   * @param currentQty current quantity
-   * @param stock available stock
    */
   increment(productId: number, currentQty: number, stock: number): void {
     if (currentQty >= stock) return;
@@ -74,8 +70,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
 
   /**
    * Decrement item quantity by 1
-   * @param productId product identifier
-   * @param currentQty current quantity
    */
   decrement(productId: number, currentQty: number): void {
     if (currentQty <= 1) return;
@@ -172,16 +166,10 @@ export class CartPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Check if item is currently being updated
-   * @param productId product identifier
-   */
   isUpdating(productId: number): boolean {
     return this.updatingItems.has(productId);
   }
-  /**
-   * Navigate to checkout page
-   */
+
   proceedToCheckout(): void {
     this.router.navigate(['/cart/checkout']);
   }
@@ -194,5 +182,9 @@ export class CartPageComponent implements OnInit, OnDestroy {
    */
   getLineTotal(price: number, qty: number): number {
     return Number((price * qty).toFixed(2));
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

@@ -19,10 +19,8 @@ import { Product } from '../../../shared/Interface';
   styleUrl: './admin-products.component.css'
 })
 export class AdminProductsComponent implements OnInit {
-  /** List of products loaded from backend */
   products: Product[] = [];
 
-  /** Loading flag for initial data fetch */
   loading = true;
 
   /** Injected services */
@@ -40,8 +38,6 @@ export class AdminProductsComponent implements OnInit {
 
   /**
    * Fetch all products from backend
-   * - Updates products list
-   * - Handles loading state
    */
   loadProducts(): void {
     this.adminService.getAllProducts().subscribe({
@@ -57,7 +53,6 @@ export class AdminProductsComponent implements OnInit {
 
   /**
    * Utility: Get product image URL
-   * @param imagePath relative path or null
    */
   getImageUrl(imagePath: string | null): string {
     return this.productService.getImageUrl(imagePath);
@@ -65,7 +60,6 @@ export class AdminProductsComponent implements OnInit {
 
   /**
    * Navigate to product edit page
-   * @param id product identifier
    */
   editProduct(id: number): void {
     this.router.navigate(['/admin/products', id, 'edit']);
@@ -73,11 +67,6 @@ export class AdminProductsComponent implements OnInit {
 
   /**
    * Delete product
-   * - Confirms action with user
-   * - Calls AdminService.deleteProduct
-   * - Reloads product list on success
-   * @param id product identifier
-   * @param name product name (for confirmation message)
    */
   deleteProduct(id: number, name: string): void {
     if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
@@ -85,5 +74,9 @@ export class AdminProductsComponent implements OnInit {
       next: () => this.loadProducts(),
       error: err => alert(err.error?.error || 'Delete failed'),
     });
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

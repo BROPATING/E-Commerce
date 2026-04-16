@@ -20,13 +20,10 @@ import { FormBuilder } from '@angular/forms';
   styleUrls: ['./admin-order-detail.component.css'],
 })
 export class AdminOrderDetailComponent implements OnInit {
-  /** Current order being viewed */
   order: Order | null = null;
 
-  /** Loading flag for data fetch */
   loading = true;
 
-  /** Error message displayed on failure */
   errorMessage = '';
 
   /** Injected services */
@@ -36,12 +33,6 @@ export class AdminOrderDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  /**
-   * Lifecycle hook: OnInit
-   * - Reads order ID from route
-   * - Validates ID
-   * - Fetches order details
-   */
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = Number(params.get('id'));
@@ -57,7 +48,6 @@ export class AdminOrderDetailComponent implements OnInit {
 
   /**
    * Fetch order details from backend
-   * @param id order identifier
    */
   fetchOrder(id: number): void {
     this.loading      = true;
@@ -80,7 +70,6 @@ export class AdminOrderDetailComponent implements OnInit {
 
   /**
    * Utility: Get product image URL
-   * @param imagePath relative path or null
    */
   getImageUrl(imagePath: string | null): string {
     return this.productService.getImageUrl(imagePath);
@@ -88,9 +77,6 @@ export class AdminOrderDetailComponent implements OnInit {
 
   /**
    * Calculate line total for an item
-   * @param price unit price
-   * @param qty quantity
-   * @returns line total rounded to 2 decimals
    */
   getLineTotal(price: number, qty: number): number {
     return Number((price * qty).toFixed(2));
@@ -110,5 +96,9 @@ export class AdminOrderDetailComponent implements OnInit {
    */
   goBack(): void {
     this.router.navigate(['/admin/orders']);
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

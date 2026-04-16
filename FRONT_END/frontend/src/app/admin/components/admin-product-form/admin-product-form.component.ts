@@ -141,4 +141,8 @@ export class AdminProductFormComponent implements OnInit {
     }
     return result;
   }
+
+  trackByIndex(index: number):number{
+    return index;
+  }
 }
