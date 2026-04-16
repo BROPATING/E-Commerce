@@ -19,13 +19,6 @@ export class HomeComponent implements OnInit {
   searchQuery = '';
   cartSuccessId: number | null = null;
 
-  /**
-   * Inject required services:
-   * - ProductService: fetches products and taxonomy
-   * - CartService: manages cart operations
-   * - AuthService: provides authentication state
-   * - Router: handles navigation
-   */
   constructor(
     public productService: ProductService,
     private cartService: CartService,
@@ -81,36 +74,25 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  /**
-   * Navigates to products filtered by taxonomy type.
-   */
   browseByType(typeId: number): void {
     this.router.navigate(['/products'], { queryParams: { typeId } });
   }
 
-  /**
-   * Navigates to products filtered by category.
-   * Stops event propagation to prevent parent click handlers.
-   */
   browseByCategory(event: MouseEvent, categoryId: number): void {
     event.stopPropagation();
     this.router.navigate(['/products'], { queryParams: { categoryId } });
   }
 
-  /**
-   * Navigates to products filtered by subcategory.
-   * Stops event propagation to prevent parent click handlers.
-   */
   browseBySubCategory(event: MouseEvent, subCategoryId: number): void {
     event.stopPropagation();
     this.router.navigate(['/products'], { queryParams: { subCategoryId } });
   }
 
-  /**
-   * Provides skeleton array for loading state.
-   * Used to render placeholder UI while data is loading.
-   */
   get skeletons(): number[] {
     return Array.from({ length: 8 }, (_, i) => i);
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

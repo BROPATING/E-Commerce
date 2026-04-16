@@ -24,18 +24,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
   private paramsSub!: Subscription;
   private searchSub!: Subscription;
 
-  // ADD THESE TWO LINES:
-  sidebarOpen = false; // Fixes the "Property does not exist" error
+  sidebarOpen = false;
 
-  /**
-   * Inject required services:
-   * - ProductService: fetches products and taxonomy
-   * - CartService: manages cart operations
-   * - AuthService: provides authentication state
-   * - ActivatedRoute: reads query parameters
-   * - Router: handles navigation
-   * - FormBuilder: builds reactive forms
-   */
   constructor(
     private productService: ProductService,
     private cartService: CartService,
@@ -56,17 +46,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Lifecycle hook: Initializes component state.
    * Loads taxonomy and reacts to query parameter changes.
    */
   ngOnInit(): void {
-    // Step 1 — load taxonomy for the filter dropdowns
     this.productService.getTaxonomy().subscribe({
       next: res => { this.taxonomy = res.taxonomy ?? []; },
       error: () => { }
     });
 
-    // Step 2 — subscribe to URL query params
     // This fires on EVERY navigation: /products?categoryId=2, ?typeId=1, ?search=phone
     this.route.queryParams.subscribe(params => {
 
@@ -225,5 +212,28 @@ export class ProductListComponent implements OnInit, OnDestroy {
   /** Returns a label describing current search/filter context */
   get skeletons(): number[] {
     return Array.from({ length: 12 }, (_, i) => i);
+  }
+
+  trackByProductId(index: number, product: Product): number {
+    return product.id; // Tracking by ID is always safe
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  // Track by taxonomy ID
+  trackByTaxonomy(index: number, taxonomy: any): number {
+    return taxonomy.id;
+  }
+
+  // Track by Category ID
+  trackByCategory(index: number, category: any): number {
+    return category.id;
+  }
+
+  // Track by Sub-category ID
+  trackBySubCategory(index: number, sub: any): number {
+    return sub.id;
   }
 }

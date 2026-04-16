@@ -246,7 +246,7 @@
               <div class="strength-bar-wrap" *ngIf="newPassword.value">
                 <div class="strength-bars">
                   <div
-                    *ngFor="let i of [1,2,3,4]"
+                    *ngFor="let i of [1,2,3,4]; track i"
                     class="strength-segment"
                     [style.background]="i <= passwordStrength.level
                       ? passwordStrength.color : 'rgba(255,255,255,0.08)'"

@@ -18,10 +18,8 @@ import { Order } from '../../../shared/Interface';
   styleUrl: './admin-order.component.css'
 })
 export class AdminOrderComponent implements OnInit {
-  /** List of orders loaded from backend */
   orders: Order[] = [];
 
-  /** Loading flag for initial data fetch */
   loading = true;
 
   /** Injected services */
@@ -46,10 +44,12 @@ export class AdminOrderComponent implements OnInit {
 
   /**
    * Navigate to order detail view
-   * @param orderId order identifier
-   * Uses relative navigation to append ID to current route
    */
   viewOrder(orderId: number): void {
     this.router.navigate([orderId], { relativeTo: this.route });
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

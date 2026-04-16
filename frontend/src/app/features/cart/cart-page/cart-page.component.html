@@ -86,7 +86,7 @@
         </div>
 
         <div
-          *ngFor="let item of cart.items; let i = index"
+          *ngFor="let item of cart.items; let i = index; track: trackByIndex"
           class="cart-item"
           [class.item-updating]="isUpdating(item.product.id)"
           [style.animation-delay]="(i * 0.07) + 's'"
@@ -206,7 +206,7 @@
           <!-- Line items -->
           <div class="summary-lines">
             <div class="summary-line"
-                 *ngFor="let item of cart.items">
+                 *ngFor="let item of cart.items; track: trackByIndex">
               <div class="summary-line-left">
                 <span class="summary-line-name">
                   {{ item.product.name }}

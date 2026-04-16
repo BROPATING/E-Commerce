@@ -122,7 +122,7 @@
             <span class="vis-label">Today's picks</span>
           </div>
           <div class="vis-product-list">
-            <div class="vis-product" *ngFor="let p of featuredProducts.slice(0,3)">
+            <div class="vis-product" *ngFor="let p of featuredProducts.slice(0,3); track: trackByIndex">
               <div class="vis-product-img">
                 <img [src]="productService.getImageUrl(p.imagePath)"
                      [alt]="p.name" />
@@ -137,7 +137,7 @@
 
             <!-- Placeholder rows when loading -->
             <ng-container *ngIf="loading">
-              <div class="vis-product" *ngFor="let s of [1,2,3]">
+              <div class="vis-product" *ngFor="let s of [1,2,3]; track: trackByIndex">
                 <div class="vis-product-img vis-shimmer"></div>
                 <div class="vis-product-info">
                   <div class="vis-line vis-shimmer"></div>
@@ -226,7 +226,7 @@
     <div class="cat-groups">
 
       <div
-        *ngFor="let type of taxonomy; let ti = index"
+        *ngFor="let type of taxonomy; let ti = index; track: trackByIndex"
         class="cat-group"
         [attr.data-accent]="ti === 0 ? 'cyan' : ti === 1 ? 'green' : 'purple'"
       >
@@ -263,7 +263,7 @@
         <!-- Category cards row -->
         <div class="cat-cards-row">
           <div
-            *ngFor="let cat of type.categories; let ci = index"
+            *ngFor="let cat of type.categories; let ci = index; track: trackByIndex"
             class="cat-card"
             [attr.data-ci]="ci"
             (click)="browseByCategory($event, cat.id)"
@@ -284,7 +284,7 @@
               <div class="cat-card-bottom">
                 <div class="sub-tags">
                   <span
-                    *ngFor="let sub of cat.subCategories.slice(0, 3)"
+                    *ngFor="let sub of cat.subCategories.slice(0, 3); track: trackByIndex"
                     class="sub-tag"
                     (click)="browseBySubCategory($event, sub.id)"
                   >

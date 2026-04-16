@@ -71,7 +71,7 @@
     <!-- Orders list -->
     <div *ngIf="!loading && orders.length > 0" class="orders-list">
       <a
-        *ngFor="let order of orders; let i = index"
+        *ngFor="let order of orders; let i = index; track: trackByIndex"
         [routerLink]="['/orders', order.id]"
         class="order-card"
         [style.animation-delay]="(i * 0.06) + 's'"
@@ -135,7 +135,7 @@
                  *ngIf="order.items && order.items.length > 0">
               <div class="thumb-stack">
                 <img
-                  *ngFor="let item of getPreviewItems(order); let ti = index"
+                  *ngFor="let item of getPreviewItems(order); let ti = index; track: trackByIndex"
                   [src]="getImageUrl(item.product.imagePath)"
                   [alt]="item.product.name"
                   [title]="item.product.name"
@@ -149,7 +149,7 @@
                 </div>
               </div>
               <p class="thumb-names">
-                <span *ngFor="let item of order.items.slice(0,2); let last = last">
+                <span *ngFor="let item of order.items.slice(0,2); let last = last; track: trackByIndex">
                   {{ item.product.name }}{{ !last && order.items.length > 1 ? ',' : '' }}
                 </span>
                 <span *ngIf="order.items.length > 2"

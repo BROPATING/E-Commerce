@@ -31,19 +31,12 @@ export class OrderConfirmationComponent implements OnInit {
     });
   }
 
-  /**
-   * Returns the product image URL.
-   * Handles potential null or undefined paths.
-   */
   getImageUrl(imagePath: string | null): string {
     return this.productService.getImageUrl(imagePath);
   }
 
   /**
    * Calculates line total for a product row.
-   * @param price - Unit price of the product
-   * @param qty - Quantity ordered
-   * @returns Line total as a number
    */
   getLineTotal(price: number, qty: number): number {
     return Number((price * qty).toFixed(2));
@@ -73,4 +66,8 @@ export class OrderConfirmationComponent implements OnInit {
     color: ['#06b6d4', '#10b981', '#a78bfa', '#34d399', '#f59e0b']
     [Math.floor(Math.random() * 5)],
   }));
+
+  trackByIndex(index: number):number{
+    return index;
+  }
 }

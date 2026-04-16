@@ -22,7 +22,6 @@ export class OrderDetailComponent implements OnInit {
   private productService = inject(ProductService);
 
   /**
-   * Lifecycle hook: Initializes component state.
    * Detects admin view and subscribes to route parameter changes.
    */
   ngOnInit(): void {
@@ -41,7 +40,6 @@ export class OrderDetailComponent implements OnInit {
 
   /**
    * Fetches order details by ID.
-   * Handles both success and error states.
    */
   fetchOrder(id: number): void {
     this.loading = true;
@@ -57,20 +55,10 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
-  /**
-   * Returns the product image URL.
-   * Handles potential null or undefined paths.
-   */
   getImageUrl(imagePath: string | null): string {
-    // Fixed: Handles potential undefined from template
     return this.productService.getImageUrl(imagePath ?? null);
   }
 
-  /**
-   * Calculates line total for a product row.
-   * @param price - Unit price of the product
-   * @param qty - Quantity ordered
-   */
   getLineTotal(price: number, qty: number): number {
     return Number((price * qty).toFixed(2));
   }
@@ -82,12 +70,12 @@ export class OrderDetailComponent implements OnInit {
     return this.order?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
   }
 
-  /**
-   * Navigates back to the appropriate orders list.
-   * Redirects to admin orders if in admin view, otherwise to user orders.
-   */
   goBack(): void {
     const target = this.isAdminView ? '/admin/orders' : '/orders';
     this.router.navigate([target]);
+  }
+
+  trackByIndex(index: number):number{
+    return index;
   }
 }

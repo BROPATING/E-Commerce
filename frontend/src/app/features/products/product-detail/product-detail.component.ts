@@ -21,14 +21,6 @@ export class ProductDetailComponent implements OnInit {
   addingToCart = false;
   shareSuccess = false;
 
-  /**
-   * Inject required services:
-   * - ActivatedRoute: access route parameters
-   * - Router: handle navigation
-   * - ProductService: fetch product details
-   * - CartService: manage cart operations
-   * - AuthService: provide authentication state
-   */
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private productService = inject(ProductService);
@@ -38,11 +30,9 @@ export class ProductDetailComponent implements OnInit {
   public authService = inject(AuthService);
 
   /**
-   * Lifecycle hook: Initializes component state.
    * Subscribes to route parameter changes to reload product data.
    */
   ngOnInit(): void {
-    // We subscribe to paramMap so if the ID changes, the data reloads
     this.route.paramMap.subscribe(params => {
       const id = Number(params.get('id'));
 
@@ -57,7 +47,6 @@ export class ProductDetailComponent implements OnInit {
 
   /**
    * Loads product details by ID.
-   * Handles both success and error states.
    */
   loadProduct(id: number): void {
     this.loading = true;
@@ -80,17 +69,14 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  /** Returns the product image URL */
   get imageUrl(): string {
     return this.productService.getImageUrl(this.product?.imagePath ?? null);
   }
 
-  /** Checks if product is out of stock */
   get isOutOfStock(): boolean {
     return (this.product?.stock ?? 0) === 0;
   }
 
-  /** Checks if product stock is low (≤ 5 items) */
   get isLowStock(): boolean {
     const s = this.product?.stock ?? 0;
     return s > 0 && s <= 5;

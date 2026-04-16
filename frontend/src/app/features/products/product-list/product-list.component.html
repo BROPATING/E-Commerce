@@ -74,9 +74,9 @@
         <div class="filter-select-wrap">
           <select formControlName="categoryId" class="filter-select">
             <option value="">All categories</option>
-            <ng-container *ngFor="let t of taxonomy">
+            <ng-container *ngFor="let t of taxonomy; trackBy: trackByTaxonomy">
               <ng-container *ngIf="t.id == filterForm.value.typeId">
-                <option *ngFor="let c of t.categories" [value]="c.id">
+                <option *ngFor="let c of t.categories; trackBy: trackByCategory" [value]="c.id">
                   {{ c.name }}
                 </option>
               </ng-container>
@@ -96,8 +96,8 @@
         <div class="filter-select-wrap">
           <select formControlName="subCategoryId" class="filter-select">
             <option value="">All sub-categories</option>
-            <ng-container *ngFor="let t of taxonomy">
-              <ng-container *ngFor="let c of t.categories">
+            <ng-container *ngFor="let t of taxonomy; trackBy: trackByTaxonomy">
+              <ng-container *ngFor="let c of t.categories; trackBy: trackByCategory">
                 <ng-container *ngIf="c.id == filterForm.value.categoryId">
                   <option *ngFor="let s of c.subCategories" [value]="s.id">
                     {{ s.name }}
@@ -205,7 +205,7 @@
     </div>
 
     <div *ngIf="loading" class="products-grid">
-      <div *ngFor="let s of skeletons" class="skeleton-card">
+      <div *ngFor="let s of skeletons; track : trackByIndex" class="skeleton-card">
         <div class="sk-img"></div>
         <div class="sk-body">
           <div class="sk-line sk-w40"></div>
@@ -217,7 +217,7 @@
 
     <div *ngIf="!loading && products.length > 0" class="products-grid">
       <div
-        *ngFor="let product of products; let i = index"
+        *ngFor="let product of products; let i = index; trackBy: trackByProductId"
         class="product-card-wrap"
         [class.card-added]="cartSuccessId === product.id"
         [style.animation-delay]="(i % 12 * 0.04) + 's'"

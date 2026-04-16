@@ -46,7 +46,7 @@ export class ProductService {
    */
   getImageUrl(imagePath: string | null | undefined): string {
     if (!imagePath) {
-      return `${environment.imageBaseUrl}/default.png`;
+      return `${environment.imageBaseUrl}/Images/default.png`;
     }
 
     // ── Already a full URL (Flixcart, Amazon, etc.) — return as-is ──
