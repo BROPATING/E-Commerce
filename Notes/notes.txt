@@ -1141,6 +1141,217 @@ FormsModule
 
 <router-outlet/> is the placeholder where Angular dynamically loads the component associated with your link
 
+Types of Validation in form
+    built-in - Validators.min() , max, minLength, maxLength
+    custom - Define by us like 
+    cross - validator that compares multiple fields
+    dynamic - Adding/removing validators at runtime
+
+Routing Types
+    Static	/list
+    Dynamic	:id
+    Query Params(Optional)	?sort=desc
+        filterByRole(role: string) {
+            this.router.navigate(['/users'], {
+                queryParams: { role: role }
+            });
+            // Navigates to: /users?role=admin
+        }
+    Navigation	#contact ---> Scroll to that element ex. .md file
+
+array.slice(start, end)
+array.splice(start, deleteCount, item1, item2, ...)
+
+Private Fields (#bal ): 
+    The hash symbol designates 
+    #bal as a private field, making it inaccessible from
+    outside the class. This prevents direct manipulation and enforces the use of class methods for all balance
+    modifications.
+
+@for(p of products; track $index) {<div>{{p.name -- p.price}}</div>}
+What is the $?
+        $ is a special prefix used by Angular to identify built-in implicit variables.
+    In the new @for loop, Angular provides several "helper" variables to give you information about the loop's state. These variables are always prefixed with a $ to distinguish them from your own data.
+    $index: The current row number (0, 1, 2...).
+    $first: Boolean; true if it's the first item.
+    $last: Boolean; true if it's the last item.
+    $even / $odd: Boolean; true if the index is even or odd.
+    $count: The total length of the array.
+
+| Feature                     | **var**        | **let**        | **const** |
+| --- | ---                   | ---            | ---                 |
+| **Scope**                   | Function scope | Block scope    | Block scope |
+| **Hoisting**                | Yes (initialized as ``undefined``) | Yes (TDZ until declaration) | Yes (TDZ until declaration) |
+| **Redeclaration**           | Allowed         | Not allowed   | Not allowed |
+| **Reassignment**            | Allowed         | Allowed       | Not allowed |
+| **Initialization Required** | No | No         | Yes           |
+| **Global Object Property**  | Yes (if declared globally) | No | No |
+
+Shallow Copy
+    Pass to the array
+    Code:
+        const arr1 = [1, 2, 3, 4, 5];
+        const copy = [...arr1];
+        copy.push(10);
+        console.log(arr1);
+        console.log(copy);
+    Output:
+        [1, 2, 3, 4, 5]
+        [1, 2, 3, 4, 5, 10]
+
+    Passing by using index object
+    Code: 
+        const arr2 = [[3, 4, 5], [6, 8]];
+        const copy2 = [...arr2];
+        copy2[0].push(10);
+        console.log(arr2);
+        console.log(copy2);
+    Output: 
+        [[3, 4, 5, 10], [6, 8]]
+        [[3, 4, 5, 10], [6, 8]]
+
+AppDataSource.initialize() twice?
+    Expected answer: TypeORM throws an error: "DataSource is already connected, cannot be
+    connected again." A DataSource can only be initialised once per instance. The solution is to
+    create the DataSource as a module-level export and initialise it once in the entry point —
+    Node.js module caching ensures every import of the module receives the same already
+    initialised instance. 
+
+Why does Boolean(process.env.MY_FLAG) not work correctly for boolean environment variables?
+    Expected answer: Boolean() converts any truthy value to true. Any non-empty string is truthy
+    — including the string "false". So Boolean(process.env.MY_FLAG) returns true when 
+    MY_FLAG=false is set in the environment, which is the opposite of the intended behaviour. The
+    correct idiom is process.env.MY_FLAG === 'true', which returns false for any value other
+    than the exact string "true"
+
+You have a team of five developers. How do you manage database configuration so each
+developer can use a different local database without overwriting each other's settings?
+    Expected answer: Each developer creates their own local .env file, which is listed
+    in .gitignore and never committed. A .env.example file with placeholder values is
+    committed to the repository as a template. When a new developer clones the project, they
+    copy .env and fill in their local credentials. CI/CD pipelines inject the
+    appropriate credentials as environment variables in the pipeline configuration, not from a file.
+
+What is the difference between passing entity class references and a glob pattern to the 
+entities array? What is the trade-off?
+    Expected answer: Class references (
+    entities: [User, Post] ) require an explicit import for each
+    entity — TypeScript validates the import path at compile time, so a missing entity or mistyped
+    path produces a build error. A glob pattern (
+    initialize() ,
+    'src/entity/**/*.ts' ) discovers entities
+    automatically at runtime — no manual update is needed when adding new entities, but a
+    misconfigured glob silently loads zero entities with no compile-time warning. For small
+    projects, explicit references are preferable for their clarity; for large projects with many entities,
+    the glob pattern reduces maintenance overhead. 
+
+Entity({
+    name: "products",           
+    schema: "catalogue",        
+    // explicit table name
+    // database schema (PostgreSQL / MSSQL)
+    orderBy: { name: "ASC" },   // default ordering when no ORDER BY is given
+})
+
+@Column({ unique: true })
+@IsEmail({}, { message: "Must be a valid email address" })
+email: string;
+
+@Column({ default: true })
+@IsBoolean()
+isActive: boolean;
+
+Column({ length: 100 })
+@IsNotEmpty({ message: "Name must not be empty" })
+@Length(2, 100, { message: "Name must be between 2 and 100 characters" })
+name: string;
+
+If you want to...                   Use this:
+Work with a single table            getRepository(User)
+Handle multiple tables together     manager
+Handle nested/parent-child data     getTreeRepository(Category)
+Write raw SQL for performance       query()
+Build a search filter with joins    createQueryBuilder()
+
+What is the difference between Expected answer:repository.save and repository.update ?
+    .save() is "Smart" and performs an Upsert (Insert or Update) returns // Full user object returned
+    .update() is a "Raw" operation that only modifies existing rows.
+        // Updates the user directly in the DB
+        const result = await userRepository.update(1, { name: "New Name" });
+        console.log(result.affected); // Returns 1 (number of rows changed)
+    
+Feature             .leftJoin                       .leftJoinAndSelect
+SQL Join            Yes                             Yes
+SELECT Columns      No (Main table only)            Yes (Main + Joined table)
+Object Populated    No (relation is undefined)      Yes (relation is an object)
+Performance         Faster (less data transferred)  Slower (more columns/data)
+Main Usage          Filtering/Joining only          Fetching related data
+
+// Output: [{ id: 1, name: 'Sahil' }] (address property is missing)
+// Output: [{ id: 1, name: 'Sahil', address: { id: 10, city: 'Mumbai' } }]
+
+
+What is the difference between migration:create and migration:generate ?
+Expected answer:
+    migration:create produces an empty file for the developer to fill in manually
+    — useful for data migrations or complex DDL that cannot be inferred from decorators. 
+    migration:generate connects to the database, diffs it against the current entity definitions,
+    and writes the SQL automatically. 
+
+major minor patch ^ ~  in package-lock or package.json
+MAJOR.MINOR.PATCH
+    MAJOR (1.x.x): Big changes. Usually includes "breaking changes" where your old code might stop working.
+    MINOR (x.4.x): New features are added, but the library is still compatible with your old code.
+    PATCH (x.x.2): Small bug fixes. No new features, just making things stable.
+
+    These symbols are part of Semantic Versioning (SemVer). 
+    They tell npm how "aggressive" it should be when updating your libraries.
+    The Caret (^) — "Update features, but don't break my app"
+    The Tilde (~) — "Only fix bugs"
+
+libuv
+    libuv handles everything that happens "outside" the code, like talking to the hard drive, 
+    the network, or the computer's operating system.
+
+    Why is it used? (The Main Jobs)
+    1. The Event Loop
+        This is the heart of Node.js. Libuv manages the "loop" that constantly checks for completed tasks 
+        (like a database query coming back) and moves them to the callback queue so JavaScript can execute them.
+
+    2. The Thread Pool
+        JavaScript is single-threaded (it can only do one thing at a time). However, some tasks—like reading 
+        a file from a disk (fs) or encrypting a password (crypto)—take a long time.
+        Libuv maintains a Thread Pool (usually 4 threads by default).
+        It offloads these heavy tasks to these background threads so the main JavaScript thread doesn't freeze.
+
+    3. Cross-Platform Consistency
+        Operating systems handle networking and files differently (Windows uses IOCP, Linux uses epoll). 
+        Libuv acts as a bridge. You write code once in JavaScript, and libuv makes sure it works correctly whether 
+        it’s running on a Windows server or a Linux machine.
+
+Event Loop
+    Code: 
+        console.log('Start');
+        setTimeout(() => console.log('Timeout'), 0);
+        Promise.resolve().then(() => console.log('Promise'));
+        process.nextTick(() => console.log('NextTick'));
+        console.log('End');
+    Output: 
+        Start (Sync)
+        End (Sync)
+        NextTick (NextTick queue - highest priority)
+        Promise (Microtask queue - second priority)
+        Timeout (Timers phase - part of the loop)    
+
+    setImmediate vs setTimeout(0)
+        If they are called inside an I/O callback (like fs.readFile), setImmediate will always run first
+    
+"dependencies" 
+    Packages that your application needs to run in production. Created automatically when you install a package. (Covered below.)
+"devDependencies" 
+    Packages only needed during development (e.g., testing tools, linters). Not required in production. (Covered below.)
+
+
 
 
 
