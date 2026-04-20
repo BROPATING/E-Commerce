@@ -1,0 +1,23 @@
+str: string = "sahil@gamil.com";
+fun(str: string): string{
+    // find index of @
+    // before replace the string to ****
+    result: string = "";
+    ind: number = str.indexOf("@");
+    str1: string = str.slice(0, ind);
+    result = str.replace(str1, "*");
+    return result;
+}
+
+log -> process.nextTick -> promise 
+
+import express form 'express';
+
+const app = express();
+
+EMP DPT
+
+SELECT e.id, e.name, d.id, d.name FROM EMPLOYEE as e
+INNER JOIN DPT AS d ON D.ID = E.ID
+WHERE COUNT(E.ID) > 5
+

@@ -151,7 +151,7 @@ Hooks Implementation
     export class ViewInitDemoComponent implements AfterViewInit {
 
     // 2. Link the template variable to this class variable
-    @ViewChild('nameInput') nameInputRef!: ElementRef;
+    @ViewChild('nameInput') nameInputRef!: ElementRef; // Element Holds a ref to a DOM element 
 
     constructor() {
         // This would log 'undefined' because the HTML doesn't exist yet
@@ -163,7 +163,7 @@ Hooks Implementation
         console.log('ngAfterViewInit: HTML is ready!');
         
         // Now we can safely access the DOM element
-        this.nameInputRef.nativeElement.focus();
+        this.nameInputRef.nativeElement.focus();  // native Element Actual raw HTML element (div, h, p, u, input)
         this.nameInputRef.nativeElement.style.backgroundColor = '#f0f0f0';
     }
     }
@@ -756,7 +756,8 @@ Strategy    Direction           Use Case
 @Input()    Parent → Child      Passing data (like a user object or a configuration).
 @Output()   Child → Parent      Notifying the parent that something happened (like a click).
 @ViewChild  Parent → Child      Imperative control (calling a method or commanding the child).
-@ViewChildren Parent -> Child   Access multiple child components
+@ViewChildren Parent -> Child   Access multiple child components (Repeating list)
+Service     parent -> Parent (multiple Parent)  Share the content to multiple component via service 
 
 Hook	    When it Runs	                                                Common Use
 ngOnInit	After the component is created and inputs are set	            Initialize data, call APIs
@@ -1351,10 +1352,257 @@ Event Loop
 "devDependencies" 
     Packages only needed during development (e.g., testing tools, linters). Not required in production. (Covered below.)
 
+Microtask Queues (High Priority)
+    process.nextTick queue — runs first
+    Promise microtask queue — runs second
+    Processed between every phase transition. 
+Macrotask Queues (Phase Queues)
+    Timers — 
+    setTimeout , 
+    setInterval
+    I/O callbacks — file reads, network
+    Check — 
+    setImmediate
+    Close — socket close events
 
+BEGIN, END, and AS act as the "scaffolding" for your code. 
+    They help the database engine understand where a block of logic starts and where it finishes, 
+    and how to name the data you are working with.
 
+Node.js Internals & Flow
+    Libuv: The C library that handles the Event Loop and Thread Pool. It’s the "muscle" that makes Node async.
+    Buffer & Stream:    
+        * Buffer: A small "waiting room" (chunk of memory) for raw binary data.
+        Stream: The process of moving data chunk-by-chunk (like Netflix loading a video) so you don't crash the memory.
+    SetTimeout vs. SetImmediate:
+        setTimeout(fn, 0): Runs in the Timers phase.
+        setImmediate(fn): Runs in the Check phase.
+        Who wins? If called inside an I/O cycle (like inside fs.readFile), setImmediate always runs first.
 
+@PrimaryGeneratedColumn('uuid)
+id: string; // Error: Property 'id' has no initializer
+    If not want to use ! then go to tsconfig and then declare that strictPropertyInitialization: false 
+    OR
+    id: number | undefined
 
+ES2020 
+Feature             Syntax                  Primary Benefit
+Optional Chaining   obj?.prop               Prevents Cannot read property of undefined crashes.
+Nullish Coalescing  a ?? b                  Allows 0 and  to be valid values.
+BigInt              100n                    Support for massive numbers.
+Promise.allSettled  Promise.allSettled()    Handles partial success in multiple async tasks.
+Dynamic Import      import()                Improves app performance via lazy loading.
+matchAll            str.matchAll()          Better way to handle multiple Regex matches.
+
+Closure
+    A function "remembering" and accessing variables from its parent scope, even after that parent function has finished executing.
+    function createCounter() {
+    let count = 0; // "Outer" variable
+    return function() {
+        count++; // The "Inner" function uses the outer variable
+        console.log(count);
+    };
+    }
+    const counter = createCounter();
+    counter(); // Output: 1
+    counter(); // Output: 2
+    counter(); // Output: 3
+
+    Why ??
+        Data Privacy (Encapsulation)
+        Function Factories
+        Maintaining State in Asynchronous Code
+    
+Arrow vs. Normal: 
+    Normal: Has its own this.
+    Arrow: Inherits this from the parent (lexical).
+    const user = {
+        name: "Sahil",
+        greet() { // Shorthand for greet: function()
+            console.log(this.name);
+        }
+    };
+
+    user.greet(); // Output: "Sahil"
+
+    const user = {
+        name: "Sahil",
+        greet: () => {
+            console.log(user.name); // Referencing the object directly
+        }
+    };
+
+    user.greet(); // Output: "Sahil"
+
+    export class AppComponent {
+        name = "Sahil";
+        greet = () => {
+            console.log(this.name); 
+        };
+    }
+
+    user.greet(); // Output: "undefined"
+
+UNION: Combines results and removes duplicates (Slower).
+UNION ALL: Combines results and keeps duplicates (Faster).
+    -- Let's assume these two tables exist:
+    -- Table A: Customers_India (contains: Sahil, Rohan, Amit)
+    -- Table B: Customers_USA   (contains: Sahil, John, Maria)
+
+    -- UNION: Removes the duplicate "Sahil"
+    SELECT name FROM Customers_India
+    UNION
+    SELECT name FROM Customers_USA;
+    -- Result: Sahil, Rohan, Amit, John, Maria (5 rows)
+
+    ---
+
+    -- UNION ALL: Keeps both "Sahil" entries
+    SELECT name FROM Customers_India
+    UNION ALL
+    SELECT name FROM Customers_USA;
+    -- Result: Sahil, Rohan, Amit, Sahil, John, Maria (6 rows)
+
+Change Detection: 
+    Angular uses Zone.js to detect when data changes and re-renders the view.RxJS Cycle: 
+    Change Detection is the mechanism that keeps your UI in sync with your data.
+
+Morgan
+    Morgan is a popular HTTP request logger middleware for Node.js.
+    If you are building a web server (typically using Express), Morgan is the tool that automatically prints out details 
+    about every request that hits your server—like the URL, the status code (200, 404, etc.), and how long it took.
+    Morgan acts as a "security camera" for your server. Every time a request hits any route, 
+    it automatically logs the details.
+    app.use(morgan('dev'));
+    Without Morgan: Almost never in a real project. Even for a tiny hobby app, having logs makes your life 10x easier.
+    With Morgan: Always. Use morgan('dev') during development for clean, readable logs, and morgan('combined') in production if you need to save logs to a file for security audits.
+
+Pipe Types
+    Custom - Defined by ourself ex. reverse a string, calculateTax
+    In-Built - which is predefined ex. uppercase, async, lowercase, date
+    Pure - 
+        A Pure pipe is predictable
+        Characteristics:
+            Does not change the state of the application.
+            Does not call a database or an API.
+            Fast and efficient (results can be cached/memoized).
+    Impure -
+        An Impure pipe is unpredictable or stateful
+        Characteristics:
+            Might fetch data from a database or external API.
+            Depends on global variables or external state.
+            Heavier on performance because it usually can't be cached.
+
+Feature         Pure Pipe                                 Impure Pipe
+Determinism     Deterministic: Same Input = Same Output   Non-deterministic: Output can vary.
+Side Effects    None                                      May involve DB calls, Logging, or API hits.
+Dependencies    Only the input value                      External services (Services, DBs, Configs).
+Performance     Very high (Simple logic)                  Lower (I/O overhead).
+Use Case        Formatting, Parsing, Data Type conversion Business logic validation, Unique checks.
+
+ng-select
+    ng-select is a powerful, highly customizable dropdown/select component for Angular. 
+    While Angular has a native <select>, ng-select is the industry standard for handling complex 
+    features like searching, autocomplete, and massive datasets.
+        <!--Using ng-option and for loop-->
+        <ng-select [(ngModel)]="selectedCar">
+            @for (car of cars; track car.id) {
+                <ng-option [value]="car.id">{{car.name}}</ng-option>
+            }
+        </ng-select>
+
+        <!--Using items input-->
+        <ng-select [items]="cars"
+                bindLabel="name"
+                bindValue="id"
+                [(ngModel)]="selectedCar">
+        </ng-select>
+    
+Feature         Native <select>                         ng-select
+Search/Filter   ❌ None. You have to scroll to find     ✅ Built-in. Type to filter items instantly.
+Multi-Select    ❌ Requires holding Ctrl/Cmd (Ugly)     ✅ Tags/Chips interface (Modern).
+Data Binding    ⚠️ Only strings/numbers easily.         ✅ Can bind directly to full objects.
+Large Lists     ❌ Lags if you have 1000+ items         ✅ Virtual Scroll (only renders what you see).
+Custom UI       ❌ Very limited (depends on OS)         ✅ Fully customizable with <ng-template>.
+Mobile          ✅ Uses native OS wheel                 ⚠️ Uses custom UI (requires styling).
+
+MiddleWare Types
+Type            Target              Best For
+Application     Entire App          Authentication, Global Logging."  app.get  app.use(runs for all request)
+Router          Specific Modules    Organizing code (e.g., /admin routes)." const router = express.Router(); router.use
+Built-in        Core Logic          Parsing JSON, Serving CSS/Images."  app.use(express.json()); app.use(express.static('public'));
+Error-handling  Failures            Catching bugs and sending clean errors. app.use((err, req, res, next) => { res.status(500).send('Something broke!');});
+Third-party     External Plugins    Logging (Morgan), Security (Helmet)."     const cors = require('cors'); app.use(cors());
+
+<ng-content select/>
+We use the select attribute to define "reserved parking spaces" for specific HTML.
+    The Child
+        <div class="card">
+            <div class="card-header">
+                <ng-content select="[header]"></ng-content>
+            </div>
+
+            <div class="card-body">
+                <ng-content></ng-content>
+            </div>
+
+            <div class="card-footer">
+                <ng-content select=".footer"></ng-content>
+            </div>
+        </div>
+    
+    The Parent 
+        <app-card>
+            <h1 header>My Title</h1>
+            
+            <p>This is the main body text that goes into the default slot.</p>
+            
+            <div class="footer">
+                <button>Save Changes</button>
+            </div>
+        </app-card>
+
+Lock Mechanism
+    A locking mechanism is a synchronization tool used to prevent multiple users or processes 
+    from modifying the same data at the same time. To prevent the Race Condition
+
+providedIn: 'root'
+    What it does: Registers the service with the Root Injector.
+    Scope: The service is a Singleton (one single instance for the entire app).
+    Tree Shaking: ✅ Yes. If your app never actually uses this service, Angular will exclude it from the final production bundle to save space.
+    Best for: Most services (API calls, Auth state, Data sharing).
+
+providedIn: 'platform'
+    What it does: Registers the service in a special platform-level injector.
+    Scope: The service is shared across multiple Angular applications running on the same page.
+    Best for: Very rare cases, like a service that manages a shared worker or global window events used by two different micro-frontends on one page.
+
+providedIn: 'any'
+    What it does: Creates a unique instance of the service for every eager module, but a shared instance for lazy-loaded modules.
+    Scope: Multiple instances might exist if you have multiple top-level modules.
+    Best for: Ensuring that lazy-loaded modules get their own "fresh" copy of a service while keeping it tree-shakable.
+
+providedIn: Type<any>
+    @Injectable({
+        providedIn: UserModule // Only available when UserModule is loaded
+    })
+    export class UserService { }
+
+If you use 'root', your Admin Panel might see leftover data from the User Profile because they share the same service instance.
+If you use 'any', when you load the Admin Panel, Angular creates a totally empty, clean DataCacheService 
+just for that module. When you leave the Admin Panel, that specific instance is destroyed.
+
+Feature             Component                                                           Service
+Core Purpose        Presentation Layer: Manages the User Interface (UI) 
+                    and user interactions.                                      Business Logic Layer: Manages data, calculations, and external APIs."
+Primary Decorator   @Component()                                                @Injectable()
+File Structure      Usually 4 files: .ts, .html, .css, and .spec.ts.            Usually 2 files: .ts and .spec.ts.
+Template (View)     Mandatory. It must have an HTML template.                   None. It is pure logic.
+Hierarchy           Tree-structured (Parent/Child relationship).                Flat or Hierarchical (Dependency Injection).
+Instantiations      Multiple. New instance for every time it appears in HTML    Usually a Singleton (One instance shared by all).
+Lifecycle Hooks     Complex: ngOnInit, ngAfterViewInit, ngOnDestroy, etc.       Simple: Only ngOnDestroy is supported.
+Primary Goal        What do I show the user?                                    How do I process the data?
+Command             ng g c compName                                             ng g s serviceName
 
 
 

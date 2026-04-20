@@ -111,6 +111,12 @@ RESTRICT means "refuse to delete
     This is the price snapshot. It is copied at checkout time and never changes afterwards.
     This explicitly names the foreign key column in your MySQL table as type_id. Without this, TypeORM would default to typeId.
 
+Feature         Without @JoinColumn             With @JoinColumn
+Column Name     "Automatic (e.g., profileId)"   "Custom (e.g., user_profile_fk)"
+Requirement     Optional for @ManyToOne         Required for @OneToOne (owning side)
+Control         Standard defaults               "Full control (nullable, unique, etc.)"
+Foreign Key     Created automatically           Created exactly where you specify
+
 Number	Is it allowed?	Why?
 123.45	✅ YES	Total digits = 5 (Precision). Digits after dot = 2 (Scale).
 12.3	✅ YES	Total digits = 3 (Fits inside 5). Digits after dot = 1 (Fits inside 2).
@@ -193,6 +199,16 @@ Promise
         Promises allow JavaScript to say: "Go do that heavy work in the background. 
         Tell me when you're done, and I'll handle the result then."
 
+    Promise fail
+        If a Promise doesn't return a value, it doesn't mean the Promise "breaks"—it just means the result of that Promise becomes undefined.
+        
+            const myPromise = new Promise((resolve, reject) => {
+                resolve(); // We resolved it, but didn't pass any data
+            });
+
+            myPromise.then((data) => {
+            console.log(data); // Output: undefined
+            });
 what is this "process.env.JWT_SECRET!" 
     It is you telling TypeScript: "I promise you, I have defined this variable in my .env file. 
     Stop worrying that it might be undefined."
@@ -458,6 +474,10 @@ tsconfig
     tsconfig.json file. It is the brain of your TypeScript project. It tells the TypeScript compiler ($tsc$) 
     exactly how to transform your modern .ts files into the .js files that Node.js or a browser can actually execute.
 
+Feature     Without Helmet                          With Helmet
+Identity    Tells everyone I am Express             Information is hidden.
+Trust       Browser trusts all scripts              Browser only trusts approved sources.
+Framing     Anyone can put your site in an iframe   Only you (or no one) can frame it.
 
 
  
