@@ -9,7 +9,7 @@ import rateLimit from 'express-rate-limit';
  * Extends Express's Request interface to carry the authenticated user
  */
 declare global {
-    namespace Express {
+    namespace Express {  //Find the existing Express namespace.
         interface Request {
             user?: User
         }

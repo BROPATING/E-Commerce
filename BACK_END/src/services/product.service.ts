@@ -46,7 +46,7 @@ export const ProductService = {
      * @returns {Promise<{ products: Product[], pagination: object }>} Paginated product data.
      */
     async getProducts(query: ProductQuery) {
-        const productRepo = await AppDataSource.getRepository(Product);
+        // const productRepo = await AppDataSource.getRepository(Product);
         const {
             search,
             typeId,
