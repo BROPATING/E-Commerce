@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python merge_chunks.py)",
+      "PowerShell(python gen_html.py 2>&1)"
+    ]
+  }
+}
